@@ -1,0 +1,580 @@
+{
+  "dataset_id": "signature",
+  "title": "Signature",
+  "roads": [
+    {
+      "road_context_id": "road-a",
+      "name": "Location A · simulated study segment",
+      "road_class": "local",
+      "compatible_ids": [],
+      "coordinates": [
+        [
+          31.336,
+          30.047953058363237
+        ],
+        [
+          31.336,
+          30.05195305836324
+        ]
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    },
+    {
+      "road_context_id": "road-b",
+      "name": "Location B · simulated study segment",
+      "road_class": "primary",
+      "compatible_ids": [],
+      "coordinates": [
+        [
+          31.336,
+          30.052
+        ],
+        [
+          31.336,
+          30.056
+        ]
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    },
+    {
+      "road_context_id": "road-c",
+      "name": "Location C · simulated study segment",
+      "road_class": "local",
+      "compatible_ids": [],
+      "coordinates": [
+        [
+          31.336,
+          30.056946262000483
+        ],
+        [
+          31.336,
+          30.060946262000485
+        ]
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    }
+  ],
+  "rainfall": [
+    {
+      "context_id": "rain-0",
+      "end_at": "2026-09-09T06:00:00+00:00",
+      "available_at": "2026-09-09T06:00:00+00:00",
+      "hourly_mm": [
+        0,
+        0,
+        1,
+        2,
+        2,
+        1
+      ],
+      "bbox": [
+        31.325,
+        30.045,
+        31.346,
+        30.067
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    },
+    {
+      "context_id": "rain-1",
+      "end_at": "2026-09-09T09:00:00+00:00",
+      "available_at": "2026-09-09T09:00:00+00:00",
+      "hourly_mm": [
+        0,
+        0,
+        1,
+        2,
+        2,
+        1
+      ],
+      "bbox": [
+        31.325,
+        30.045,
+        31.346,
+        30.067
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    }
+  ],
+  "signals": [
+    {
+      "signal_id": "a-original",
+      "dataset_id": "signature",
+      "idempotency_key": "a-original",
+      "source_record_id": "a-original",
+      "source_family": "text",
+      "capture_group_id": "capture-a-original",
+      "text": "المياه متجمعة عند الشارع.",
+      "lat": 30.049953058363236,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-a",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:00:00+00:00",
+      "available_at": "2026-09-09T06:00:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "a-original-standing_water",
+          "signal_id": "a-original",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ]
+    },
+    {
+      "signal_id": "a-copy-0",
+      "dataset_id": "signature",
+      "idempotency_key": "a-copy-0",
+      "source_record_id": "a-copy-0",
+      "source_family": "text",
+      "capture_group_id": "copy-a-copy-0",
+      "text": "المياه متجمعة عند الشارع.",
+      "lat": 30.049953058363236,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-a",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:01:00+00:00",
+      "available_at": "2026-09-09T06:01:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "a-copy-0-standing_water",
+          "signal_id": "a-copy-0",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ],
+      "copy_lineage": "a-original"
+    },
+    {
+      "signal_id": "a-copy-1",
+      "dataset_id": "signature",
+      "idempotency_key": "a-copy-1",
+      "source_record_id": "a-copy-1",
+      "source_family": "text",
+      "capture_group_id": "copy-a-copy-1",
+      "text": "المياه متجمعة عند الشارع.",
+      "lat": 30.049953058363236,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-a",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:01:00+00:00",
+      "available_at": "2026-09-09T06:01:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "a-copy-1-standing_water",
+          "signal_id": "a-copy-1",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ],
+      "copy_lineage": "a-original"
+    },
+    {
+      "signal_id": "a-copy-2",
+      "dataset_id": "signature",
+      "idempotency_key": "a-copy-2",
+      "source_record_id": "a-copy-2",
+      "source_family": "text",
+      "capture_group_id": "copy-a-copy-2",
+      "text": "المياه متجمعة عند الشارع.",
+      "lat": 30.049953058363236,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-a",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:01:00+00:00",
+      "available_at": "2026-09-09T06:01:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "a-copy-2-standing_water",
+          "signal_id": "a-copy-2",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ],
+      "copy_lineage": "a-original"
+    },
+    {
+      "signal_id": "a-copy-3",
+      "dataset_id": "signature",
+      "idempotency_key": "a-copy-3",
+      "source_record_id": "a-copy-3",
+      "source_family": "text",
+      "capture_group_id": "copy-a-copy-3",
+      "text": "المياه متجمعة عند الشارع.",
+      "lat": 30.049953058363236,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-a",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:01:00+00:00",
+      "available_at": "2026-09-09T06:01:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "a-copy-3-standing_water",
+          "signal_id": "a-copy-3",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ],
+      "copy_lineage": "a-original"
+    },
+    {
+      "signal_id": "a-copy-4",
+      "dataset_id": "signature",
+      "idempotency_key": "a-copy-4",
+      "source_record_id": "a-copy-4",
+      "source_family": "text",
+      "capture_group_id": "copy-a-copy-4",
+      "text": "المياه متجمعة عند الشارع.",
+      "lat": 30.049953058363236,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-a",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:01:00+00:00",
+      "available_at": "2026-09-09T06:01:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "a-copy-4-standing_water",
+          "signal_id": "a-copy-4",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ],
+      "copy_lineage": "a-original"
+    },
+    {
+      "signal_id": "a-copy-5",
+      "dataset_id": "signature",
+      "idempotency_key": "a-copy-5",
+      "source_record_id": "a-copy-5",
+      "source_family": "text",
+      "capture_group_id": "copy-a-copy-5",
+      "text": "المياه متجمعة عند الشارع.",
+      "lat": 30.049953058363236,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-a",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:01:00+00:00",
+      "available_at": "2026-09-09T06:01:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "a-copy-5-standing_water",
+          "signal_id": "a-copy-5",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ],
+      "copy_lineage": "a-original"
+    },
+    {
+      "signal_id": "a-copy-6",
+      "dataset_id": "signature",
+      "idempotency_key": "a-copy-6",
+      "source_record_id": "a-copy-6",
+      "source_family": "text",
+      "capture_group_id": "copy-a-copy-6",
+      "text": "المياه متجمعة عند الشارع.",
+      "lat": 30.049953058363236,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-a",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:01:00+00:00",
+      "available_at": "2026-09-09T06:01:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "a-copy-6-standing_water",
+          "signal_id": "a-copy-6",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ],
+      "copy_lineage": "a-original"
+    },
+    {
+      "signal_id": "b-water-first",
+      "dataset_id": "signature",
+      "idempotency_key": "b-water-first",
+      "source_record_id": "b-water-first",
+      "source_family": "text",
+      "capture_group_id": "capture-b-water-first",
+      "text": "في مياه متجمعة جنب الرصيف ومش عارفين سببها.",
+      "lat": 30.054,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-b",
+      "observed_at": "2026-09-09T06:10:00+00:00",
+      "received_at": "2026-09-09T06:10:00+00:00",
+      "available_at": "2026-09-09T06:10:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "b-water-first-standing_water",
+          "signal_id": "b-water-first",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ]
+    },
+    {
+      "signal_id": "b-road-image",
+      "dataset_id": "signature",
+      "idempotency_key": "b-road-image",
+      "source_record_id": "b-road-image",
+      "source_family": "image",
+      "capture_group_id": "capture-b-road-image",
+      "text": "Structured image-family fixture: localized broken road surface. No photograph supplied.",
+      "lat": 30.054179864072744,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-b",
+      "observed_at": "2026-09-09T06:20:00+00:00",
+      "received_at": "2026-09-09T06:20:00+00:00",
+      "available_at": "2026-09-09T06:20:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "b-road-image-visible_road_damage",
+          "signal_id": "b-road-image",
+          "feature": "visible_road_damage",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "visually_suggested",
+          "span": "Hand-authored visible surface-damage annotation; no actual photograph in Phase 1"
+        }
+      ]
+    },
+    {
+      "signal_id": "b-water-later",
+      "dataset_id": "signature",
+      "idempotency_key": "b-water-later",
+      "source_record_id": "b-water-later",
+      "source_family": "text",
+      "capture_group_id": "capture-b-water-later",
+      "text": "المياه لسه موجودة في نفس المكان في الملاحظة الجديدة.",
+      "lat": 30.05408993203637,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-b",
+      "observed_at": "2026-09-09T09:10:00+00:00",
+      "received_at": "2026-09-09T09:10:00+00:00",
+      "available_at": "2026-09-09T09:10:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "b-water-later-standing_water",
+          "signal_id": "b-water-later",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ]
+    },
+    {
+      "signal_id": "c-separate",
+      "dataset_id": "signature",
+      "idempotency_key": "c-separate",
+      "source_record_id": "c-separate",
+      "source_family": "text",
+      "capture_group_id": "capture-c-separate",
+      "text": "Separate synthetic water observation at C.",
+      "lat": 30.058946262000482,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-c",
+      "observed_at": "2026-09-09T09:15:00+00:00",
+      "received_at": "2026-09-09T09:15:00+00:00",
+      "available_at": "2026-09-09T09:15:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "c-separate-standing_water",
+          "signal_id": "c-separate",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ]
+    }
+  ]
+}

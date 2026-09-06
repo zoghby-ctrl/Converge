@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "report_origins": "synthetic UI reports, real OpenAI inference",
+  "first": {"signal_id": "text-c64d67f73a7f4ae396ce3371a14dd054", "disposition": "watch", "source": "live"},
+  "second": {"signal_id": "text-33443b7985a2445dbe123f31c2abe71d", "disposition": "candidate", "source": "live"},
+  "review_revision": 3,
+  "original_preserved": true,
+  "refresh_requests": 0,
+  "api_request_delta": 2,
+  "cache_hit_delta": 1,
+  "browser_errors": []
+}

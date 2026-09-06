@@ -1,0 +1,15 @@
+.firecrawl/
+.env
+.env.*
+!.env.example
+.venv/
+.runtime/
+.tools/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.sqlite*
+node_modules/
+dist/
+output/
+.playwright-cli/

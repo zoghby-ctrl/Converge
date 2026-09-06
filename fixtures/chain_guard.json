@@ -1,0 +1,221 @@
+{
+  "dataset_id": "chain_guard",
+  "title": "Chain Guard",
+  "roads": [
+    {
+      "road_context_id": "road-a",
+      "name": "Location A · simulated study segment",
+      "road_class": "local",
+      "compatible_ids": [],
+      "coordinates": [
+        [
+          31.336,
+          30.047953058363237
+        ],
+        [
+          31.336,
+          30.05195305836324
+        ]
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    },
+    {
+      "road_context_id": "road-b",
+      "name": "Location B · simulated study segment",
+      "road_class": "primary",
+      "compatible_ids": [],
+      "coordinates": [
+        [
+          31.336,
+          30.052
+        ],
+        [
+          31.336,
+          30.056
+        ]
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    },
+    {
+      "road_context_id": "road-c",
+      "name": "Location C · simulated study segment",
+      "road_class": "local",
+      "compatible_ids": [],
+      "coordinates": [
+        [
+          31.336,
+          30.056946262000483
+        ],
+        [
+          31.336,
+          30.060946262000485
+        ]
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    }
+  ],
+  "rainfall": [
+    {
+      "context_id": "rain-0",
+      "end_at": "2026-09-09T06:00:00+00:00",
+      "available_at": "2026-09-09T06:00:00+00:00",
+      "hourly_mm": [
+        0,
+        0,
+        1,
+        2,
+        2,
+        1
+      ],
+      "bbox": [
+        31.325,
+        30.045,
+        31.346,
+        30.067
+      ],
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      }
+    }
+  ],
+  "signals": [
+    {
+      "signal_id": "chain-a",
+      "dataset_id": "chain_guard",
+      "idempotency_key": "chain-a",
+      "source_record_id": "chain-a",
+      "source_family": "text",
+      "capture_group_id": "capture-chain-a",
+      "text": "Synthetic observation chain-a: reviewed local conditions.",
+      "lat": 30.054,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-b",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:00:00+00:00",
+      "available_at": "2026-09-09T06:00:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "chain-a-standing_water",
+          "signal_id": "chain-a",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ]
+    },
+    {
+      "signal_id": "chain-b",
+      "dataset_id": "chain_guard",
+      "idempotency_key": "chain-b",
+      "source_record_id": "chain-b",
+      "source_family": "text",
+      "capture_group_id": "capture-chain-b",
+      "text": "Synthetic observation chain-b: reviewed local conditions.",
+      "lat": 30.05471945629098,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-b",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:00:00+00:00",
+      "available_at": "2026-09-09T06:00:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "chain-b-standing_water",
+          "signal_id": "chain-b",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ]
+    },
+    {
+      "signal_id": "chain-c",
+      "dataset_id": "chain_guard",
+      "idempotency_key": "chain-c",
+      "source_record_id": "chain-c",
+      "source_family": "text",
+      "capture_group_id": "capture-chain-c",
+      "text": "Synthetic observation chain-c: reviewed local conditions.",
+      "lat": 30.05543891258196,
+      "lon": 31.336,
+      "location_accuracy_m": 5,
+      "road_context_id": "road-b",
+      "observed_at": "2026-09-09T06:00:00+00:00",
+      "received_at": "2026-09-09T06:00:00+00:00",
+      "available_at": "2026-09-09T06:00:00+00:00",
+      "provenance": {
+        "content_origin": "synthetic",
+        "placement_origin": "simulated",
+        "time_origin": "simulated",
+        "source_ref": "fixtures/generate.py",
+        "author_category": "team-authored demo",
+        "license": "Team-authored synthetic fixture",
+        "reviewer": "Phase 1 fixture author; not field verification"
+      },
+      "evidence": [
+        {
+          "evidence_id": "chain-c-standing_water",
+          "signal_id": "chain-c",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "reported",
+          "span": "Hand-authored localized standing-water annotation"
+        }
+      ]
+    }
+  ]
+}

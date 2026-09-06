@@ -1,0 +1,8 @@
+{
+  "credential_present": true,
+  "credential_matches_in_project_artifacts": 0,
+  "env_example_key_empty": true,
+  "engine_sha256": "5fe1a4471281bb0355fe45573610ab9679144401821b80c68c6e76394145b17b",
+  "rules_sha256": "7d07908512e641c760e5be40c6dfb4e57e9f30d5950206b9a26159b07f252667",
+  "files_checked": 57
+}

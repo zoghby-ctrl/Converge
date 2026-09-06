@@ -1,0 +1,9 @@
+{
+  "checks": ["start", "stepwise complete replay", "eight copies at A", "B candidate", "C separate", "map selection", "1280 layout", "image ablation", "ten-duplicate invariance", "Arabic original record", "reset", "repeat replay", "production reload", "external network blocked", "local map visible"],
+  "failures": [],
+  "externalRequests": [],
+  "consoleErrors": [],
+  "failedResources": [],
+  "finalStep": 6,
+  "network_method": "Browser blocks non-loopback URLs; backend offline replay also tested with socket networking disabled."
+}

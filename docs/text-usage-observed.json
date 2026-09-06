@@ -1,0 +1,15 @@
+{
+  "total_api_requests": 63,
+  "primary_calls": 56,
+  "fallback_calls": 7,
+  "input_tokens": 73546,
+  "output_tokens": 7164,
+  "estimated_spend_usd": 0.05516545,
+  "budget_accounted_usd": 0.05516545,
+  "schema_failure_count": 0,
+  "cache_hits": 38,
+  "provider_reported_cost_usd": null,
+  "max_requests": 80,
+  "max_spend_usd": 1.0,
+  "cost_basis": "local upper estimate, not provider billing"
+}
