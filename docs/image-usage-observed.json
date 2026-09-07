@@ -1,0 +1,33 @@
+{
+  "recorded_at": "2026-09-07T13:39:00Z",
+  "development_limit_requests": 80,
+  "all_tasks": {
+    "requests": 80,
+    "input_tokens": 106769,
+    "output_tokens": 9510,
+    "estimated_spend_usd": 0.0662864,
+    "cache_hits": 50
+  },
+  "image_task": {
+    "requests": 17,
+    "primary_calls": 17,
+    "fallback_calls": 0,
+    "validated_calls": 14,
+    "schema_invalid_repair_triggers": 3,
+    "input_tokens": 33223,
+    "output_tokens": 2346,
+    "estimated_spend_usd": 0.01112095,
+    "persistent_cache_hits": 12
+  },
+  "text_task_preserved": {
+    "requests": 63,
+    "primary_calls": 56,
+    "fallback_calls": 7,
+    "input_tokens": 73546,
+    "output_tokens": 7164,
+    "estimated_spend_usd": 0.05516545,
+    "persistent_cache_hits": 38
+  },
+  "provider_reported_billed_cost": null,
+  "cost_basis": "local estimate, not provider billing"
+}

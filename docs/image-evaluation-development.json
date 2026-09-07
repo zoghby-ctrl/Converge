@@ -1,0 +1,217 @@
+{
+  "split": "development",
+  "timestamp": "2026-09-07T13:05:23.665421+00:00",
+  "corpus_hash": "49e48d7e58d3c88c6b19891436f71edb71e687bd18bdcdaf7a7bb93ec78b647f",
+  "manifest_version": "image-evaluation-1",
+  "corpus_validation": {
+    "total": 20,
+    "split_counts": {
+      "development": 10,
+      "validation": 10
+    },
+    "category_counts": {
+      "water": 6,
+      "damage": 5,
+      "benign": 2,
+      "ambiguous": 6,
+      "ambiguous_sign_only": 1
+    },
+    "unique_hashes": 20,
+    "independent_human_label_count": 0
+  },
+  "task_version": "image-perception-1",
+  "prompt_version": "image-1.2",
+  "schema_version": "image-1.0",
+  "normalization_version": "image-normalization-1",
+  "reasoning": "none",
+  "requested": 1,
+  "completed_results": 1,
+  "completed_extractions": 1,
+  "processing_failures": 0,
+  "metrics": {
+    "standing_water": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null
+    },
+    "visible_surface_damage": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "passage_obstruction": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null
+    }
+  },
+  "reference_state_counts": {
+    "standing_water": {
+      "present": 0,
+      "absent": 1,
+      "uncertain": 0,
+      "not_assessable": 0
+    },
+    "visible_surface_damage": {
+      "present": 1,
+      "absent": 0,
+      "uncertain": 0,
+      "not_assessable": 0
+    },
+    "passage_obstruction": {
+      "present": 0,
+      "absent": 0,
+      "uncertain": 0,
+      "not_assessable": 1
+    }
+  },
+  "predicted_state_counts": {
+    "standing_water": {
+      "present": 0,
+      "absent": 1,
+      "uncertain": 0,
+      "not_assessable": 0
+    },
+    "visible_surface_damage": {
+      "present": 1,
+      "absent": 0,
+      "uncertain": 0,
+      "not_assessable": 0
+    },
+    "passage_obstruction": {
+      "present": 0,
+      "absent": 0,
+      "uncertain": 0,
+      "not_assessable": 1
+    }
+  },
+  "exact_state_correct": 3,
+  "exact_state_total": 3,
+  "field_abstentions": 1,
+  "field_abstention_total": 3,
+  "field_abstention_rate": 0.3333333333333333,
+  "unusable_images": 0,
+  "unsupported_positive_claims": 0,
+  "result_cache_hits": 0,
+  "result_fallbacks": 0,
+  "usage_delta": {
+    "total_api_requests": 1,
+    "primary_calls": 1,
+    "fallback_calls": 0,
+    "input_tokens": 1960,
+    "output_tokens": 133,
+    "cache_hits": 0,
+    "schema_failure_count": 0,
+    "estimated_spend_usd": 0.0006496000000000002,
+    "image_api_requests": 1,
+    "image_primary_calls": 1,
+    "image_fallback_calls": 0,
+    "image_schema_failure_count": 0,
+    "image_cache_hits": 0
+  },
+  "results": [
+    {
+      "id": "damage-01",
+      "path": "fixtures/images/damage-01.jpg",
+      "sha256": "f0ef463c865f07a7e76f641840b0f048b718aa112b2ea247accb3836804b8342",
+      "expected": {
+        "standing_water": "absent",
+        "visible_surface_damage": "present",
+        "passage_obstruction": "not_assessable"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "absent",
+          "visible_surface_damage": "present",
+          "passage_obstruction": "not_assessable",
+          "image_quality": "usable",
+          "visible_description": "Close-up of rough, broken asphalt with a large recessed area containing loose aggregate and leaf debris. No standing water is visible.",
+          "uncertainties": [
+            {
+              "field": "passage_obstruction",
+              "reason": "unclear_boundary"
+            }
+          ],
+          "support_descriptions": [
+            {
+              "field": "visible_surface_damage",
+              "description": "A substantial irregular depression and breakup are visible in the asphalt surface."
+            },
+            {
+              "field": "standing_water",
+              "description": "The recessed area appears dry, with debris and exposed aggregate visible."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:05:23.651750+00:00",
+        "raw_response_reference": "resp_0284fd4b8736fd24016a9eb690398c87d28ac54e10f8aa5c31",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 1960,
+          "output_tokens": 133
+        },
+        "source": "live",
+        "image_metadata": {
+          "raw_hash": "f0ef463c865f07a7e76f641840b0f048b718aa112b2ea247accb3836804b8342",
+          "normalized_hash": "64fe258e8a9f9fbf293fc327a0ab4766dcf2f05b918b5b1587e8e9a540656aba",
+          "normalization_version": "image-normalization-1",
+          "width": 1280,
+          "height": 853,
+          "format": "JPEG",
+          "preserved_hash": "64fe258e8a9f9fbf293fc327a0ab4766dcf2f05b918b5b1587e8e9a540656aba",
+          "original_width": 1280,
+          "original_height": 853,
+          "perceptual_hash": "3773e4c8d8dc98bb"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "needs_review",
+        "content_hash": "f0ef463c865f07a7e76f641840b0f048b718aa112b2ea247accb3836804b8342"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-damage-01-r1-standing_water",
+          "signal_id": "eval-damage-01",
+          "feature": "standing_water",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The recessed area appears dry, with debris and exposed aggregate visible.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-damage-01-r1-visible_surface_damage",
+          "signal_id": "eval-damage-01",
+          "feature": "visible_road_damage",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "A substantial irregular depression and breakup are visible in the asphalt surface.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "unsupported_positive_count": 0,
+      "exact_state_correct": 3
+    }
+  ],
+  "metric_basis": "Present precision/recall uses provisional agent reference labels recorded before runtime model output; exact-state and abstention counts cover all three target fields.",
+  "limitation": "Small convenience sample of licensed public images with simulated placement/time. No independent human labels or municipal field-accuracy claim."
+}

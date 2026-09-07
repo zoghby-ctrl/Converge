@@ -17,6 +17,7 @@ truststore==0.10.4
 idna==3.19
 iniconfig==2.3.0
 packaging==26.3
+Pillow==12.2.0
 pluggy==1.6.0
 pydantic==2.13.5
 pydantic-core==2.46.5

@@ -1,0 +1,1159 @@
+{
+  "split": "validation",
+  "timestamp": "2026-09-07T13:14:53.463790+00:00",
+  "corpus_hash": "49e48d7e58d3c88c6b19891436f71edb71e687bd18bdcdaf7a7bb93ec78b647f",
+  "manifest_version": "image-evaluation-1",
+  "corpus_validation": {
+    "total": 20,
+    "split_counts": {
+      "development": 10,
+      "validation": 10
+    },
+    "category_counts": {
+      "water": 6,
+      "damage": 5,
+      "benign": 2,
+      "ambiguous": 6,
+      "ambiguous_sign_only": 1
+    },
+    "unique_hashes": 20,
+    "independent_human_label_count": 0
+  },
+  "task_version": "image-perception-1",
+  "prompt_version": "image-1.2",
+  "schema_version": "image-1.0",
+  "normalization_version": "image-normalization-1",
+  "reasoning": "none",
+  "requested": 10,
+  "completed_results": 10,
+  "completed_extractions": 10,
+  "processing_failures": 0,
+  "metrics": {
+    "standing_water": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "visible_surface_damage": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.6666666666666666,
+      "recall": 1.0
+    },
+    "passage_obstruction": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.3333333333333333
+    }
+  },
+  "admitted_metrics": {
+    "standing_water": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "visible_surface_damage": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "passage_obstruction": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.3333333333333333
+    }
+  },
+  "reference_state_counts": {
+    "standing_water": {
+      "present": 3,
+      "absent": 6,
+      "uncertain": 1,
+      "not_assessable": 0
+    },
+    "visible_surface_damage": {
+      "present": 2,
+      "absent": 3,
+      "uncertain": 1,
+      "not_assessable": 4
+    },
+    "passage_obstruction": {
+      "present": 3,
+      "absent": 3,
+      "uncertain": 1,
+      "not_assessable": 3
+    }
+  },
+  "predicted_state_counts": {
+    "standing_water": {
+      "present": 3,
+      "absent": 7,
+      "uncertain": 0,
+      "not_assessable": 0
+    },
+    "visible_surface_damage": {
+      "present": 3,
+      "absent": 3,
+      "uncertain": 3,
+      "not_assessable": 1
+    },
+    "passage_obstruction": {
+      "present": 1,
+      "absent": 7,
+      "uncertain": 1,
+      "not_assessable": 1
+    }
+  },
+  "exact_state_correct": 20,
+  "exact_state_total": 30,
+  "field_abstentions": 6,
+  "field_abstention_total": 30,
+  "field_abstention_rate": 0.2,
+  "unusable_images": 0,
+  "unsupported_positive_claims": 1,
+  "review_required_images": 6,
+  "result_cache_hits": 10,
+  "result_fallbacks": 0,
+  "usage_delta": {
+    "total_api_requests": 0,
+    "primary_calls": 0,
+    "fallback_calls": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hits": 10,
+    "schema_failure_count": 0,
+    "estimated_spend_usd": 0.0,
+    "image_api_requests": 0,
+    "image_primary_calls": 0,
+    "image_fallback_calls": 0,
+    "image_schema_failure_count": 0,
+    "image_cache_hits": 10
+  },
+  "results": [
+    {
+      "id": "water-04",
+      "path": "fixtures/images/water-04.jpg",
+      "sha256": "7f59c8b9a671219ca6a6817cbe80d256c6dcadc1123004fc1d8c9eadd0467ab2",
+      "expected": {
+        "standing_water": "present",
+        "visible_surface_damage": "not_assessable",
+        "passage_obstruction": "present"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "present",
+          "visible_surface_damage": "not_assessable",
+          "passage_obstruction": "absent",
+          "image_quality": "usable",
+          "visible_description": "Rainwater visibly covers much of the roadway and extends along the sidewalk edge. The road surface is largely obscured by water; no clear surface damage is visible. The roadway and sidewalk remain passable, with pedestrians and vehicles present.",
+          "uncertainties": [
+            {
+              "field": "visible_surface_damage",
+              "reason": "limited_visibility"
+            }
+          ],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "A broad reflective sheet of water visibly covers the roadway and collects along the curb and sidewalk."
+            },
+            {
+              "field": "passage_obstruction",
+              "description": "The roadway and sidewalk are visibly open; vehicles and pedestrians are moving through the scene."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:05.590945+00:00",
+        "raw_response_reference": "resp_0923bb8869138a94016a9eb6b9c3a087d2ba4d8d46d25d80f4",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 2104,
+          "output_tokens": 162
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "7f59c8b9a671219ca6a6817cbe80d256c6dcadc1123004fc1d8c9eadd0467ab2",
+          "normalized_hash": "f92f05d4286f86af3b6793150eebc52564c53cf49bc5fa5b30496327e7786f66",
+          "normalization_version": "image-normalization-1",
+          "width": 1280,
+          "height": 960,
+          "format": "JPEG",
+          "preserved_hash": "f92f05d4286f86af3b6793150eebc52564c53cf49bc5fa5b30496327e7786f66",
+          "original_width": 1280,
+          "original_height": 960,
+          "perceptual_hash": "93a38323272f276f"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "needs_review",
+        "content_hash": "7f59c8b9a671219ca6a6817cbe80d256c6dcadc1123004fc1d8c9eadd0467ab2",
+        "reused_at": "2026-09-07T13:14:52.792449+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-water-04-r1-standing_water",
+          "signal_id": "eval-water-04",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": null,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "A broad reflective sheet of water visibly covers the roadway and collects along the curb and sidewalk.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-water-04-r1-passage_obstruction",
+          "signal_id": "eval-water-04",
+          "feature": "passage_obstruction",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The roadway and sidewalk are visibly open; vehicles and pedestrians are moving through the scene.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 2
+    },
+    {
+      "id": "water-05",
+      "path": "fixtures/images/water-05.jpg",
+      "sha256": "9d598c6ee539e4b3fc6d8ef002741d0c317efe9a23561416d956e67866ad9836",
+      "expected": {
+        "standing_water": "present",
+        "visible_surface_damage": "not_assessable",
+        "passage_obstruction": "present"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "present",
+          "visible_surface_damage": "uncertain",
+          "passage_obstruction": "uncertain",
+          "image_quality": "usable",
+          "visible_description": "A large reflective pool of water covers much of the green-marked cycle lane in the foreground and extends toward the intersection. The underlying lane surface is largely obscured by water; no definite surface damage is visible.",
+          "uncertainties": [
+            {
+              "field": "visible_surface_damage",
+              "reason": "occluded"
+            },
+            {
+              "field": "passage_obstruction",
+              "reason": "unclear_boundary"
+            }
+          ],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "Extensive standing water is visibly pooled across the cycle lane, with reflections and ripples."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:08.554372+00:00",
+        "raw_response_reference": "resp_028fd9b141e1cecb016a9eb6bd067887d289227bb7b351807b",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 2104,
+          "output_tokens": 142
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "9d598c6ee539e4b3fc6d8ef002741d0c317efe9a23561416d956e67866ad9836",
+          "normalized_hash": "d344cf25587e952b1093edb89ac11aaaf7ad98f9aabdf6d4aec805901b91c420",
+          "normalization_version": "image-normalization-1",
+          "width": 1280,
+          "height": 960,
+          "format": "JPEG",
+          "preserved_hash": "d344cf25587e952b1093edb89ac11aaaf7ad98f9aabdf6d4aec805901b91c420",
+          "original_width": 1280,
+          "original_height": 960,
+          "perceptual_hash": "a3e6372667c78a0b"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "needs_review",
+        "content_hash": "9d598c6ee539e4b3fc6d8ef002741d0c317efe9a23561416d956e67866ad9836",
+        "reused_at": "2026-09-07T13:14:52.877107+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-water-05-r1-standing_water",
+          "signal_id": "eval-water-05",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": null,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "Extensive standing water is visibly pooled across the cycle lane, with reflections and ripples.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 1
+    },
+    {
+      "id": "water-06",
+      "path": "fixtures/images/water-06.jpg",
+      "sha256": "5e0658af183797a5daf41b9a3c8acc7938b616e7991d8ac3f5b56e38cf6685ff",
+      "expected": {
+        "standing_water": "present",
+        "visible_surface_damage": "not_assessable",
+        "passage_obstruction": "present"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "present",
+          "visible_surface_damage": "uncertain",
+          "passage_obstruction": "present",
+          "image_quality": "usable",
+          "visible_description": "A large puddle covers much of the foreground dirt road, with wet and muddy areas continuing along the track. Dense vegetation borders both sides.",
+          "uncertainties": [
+            {
+              "field": "visible_surface_damage",
+              "reason": "ambiguous_visual"
+            }
+          ],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "Standing water is visibly pooled across the foreground roadway."
+            },
+            {
+              "field": "passage_obstruction",
+              "description": "The large pooled area visibly occupies much of the apparent road width."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:11.244075+00:00",
+        "raw_response_reference": "resp_08966d18afa6d506016a9eb6bfd20487d2ac8a9bc72df03202",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 1024,
+          "output_tokens": 130
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "5e0658af183797a5daf41b9a3c8acc7938b616e7991d8ac3f5b56e38cf6685ff",
+          "normalized_hash": "5363e20cc46d7b9ddb2f2f7b7fac584bcb071d73d828b659c078526ba2cf7fb1",
+          "normalization_version": "image-normalization-1",
+          "width": 480,
+          "height": 640,
+          "format": "JPEG",
+          "preserved_hash": "5363e20cc46d7b9ddb2f2f7b7fac584bcb071d73d828b659c078526ba2cf7fb1",
+          "original_width": 480,
+          "original_height": 640,
+          "perceptual_hash": "460e0f0f8e8e9f0e"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "needs_review",
+        "content_hash": "5e0658af183797a5daf41b9a3c8acc7938b616e7991d8ac3f5b56e38cf6685ff",
+        "reused_at": "2026-09-07T13:14:52.912387+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-water-06-r1-standing_water",
+          "signal_id": "eval-water-06",
+          "feature": "standing_water",
+          "state": "positive",
+          "value": null,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "Standing water is visibly pooled across the foreground roadway.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-water-06-r1-passage_obstruction",
+          "signal_id": "eval-water-06",
+          "feature": "passage_obstruction",
+          "state": "positive",
+          "value": null,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The large pooled area visibly occupies much of the apparent road width.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 2
+    },
+    {
+      "id": "damage-04",
+      "path": "fixtures/images/damage-04.jpg",
+      "sha256": "623ca08f7aba884d7c4cea965b701c0285b20660e66df09361ca70f7233e89b3",
+      "expected": {
+        "standing_water": "absent",
+        "visible_surface_damage": "present",
+        "passage_obstruction": "not_assessable"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "absent",
+          "visible_surface_damage": "present",
+          "passage_obstruction": "absent",
+          "image_quality": "usable",
+          "visible_description": "A paved surface contains a rectangular metal utility cover and a nearby irregular, broken area with exposed aggregate and loose debris.",
+          "uncertainties": [],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "No pooled or standing water is visibly present on the exposed pavement."
+            },
+            {
+              "field": "visible_surface_damage",
+              "description": "The pavement on the right has a large irregular pothole-like break with cracked edges, missing material, and loose debris."
+            },
+            {
+              "field": "passage_obstruction",
+              "description": "The visible paved area is open; no object visibly blocks passage."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:18.778481+00:00",
+        "raw_response_reference": "resp_0e841803f0caf520016a9eb6c70db487d2bc605bdc9db1f925",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 1781,
+          "output_tokens": 149
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "623ca08f7aba884d7c4cea965b701c0285b20660e66df09361ca70f7233e89b3",
+          "normalized_hash": "1acd6d9496b83275094e3c81ebdfd1b63fa9bf483c75b5e4a247125195d513a2",
+          "normalization_version": "image-normalization-1",
+          "width": 1280,
+          "height": 720,
+          "format": "JPEG",
+          "preserved_hash": "1acd6d9496b83275094e3c81ebdfd1b63fa9bf483c75b5e4a247125195d513a2",
+          "original_width": 1280,
+          "original_height": 720,
+          "perceptual_hash": "1e4d4ccccc3c3c3c"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "unreviewed",
+        "content_hash": "623ca08f7aba884d7c4cea965b701c0285b20660e66df09361ca70f7233e89b3",
+        "reused_at": "2026-09-07T13:14:52.970288+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-damage-04-r1-standing_water",
+          "signal_id": "eval-damage-04",
+          "feature": "standing_water",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "No pooled or standing water is visibly present on the exposed pavement.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-damage-04-r1-visible_surface_damage",
+          "signal_id": "eval-damage-04",
+          "feature": "visible_road_damage",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The pavement on the right has a large irregular pothole-like break with cracked edges, missing material, and loose debris.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-damage-04-r1-passage_obstruction",
+          "signal_id": "eval-damage-04",
+          "feature": "passage_obstruction",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The visible paved area is open; no object visibly blocks passage.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 2
+    },
+    {
+      "id": "benign-06",
+      "path": "fixtures/images/benign-06.jpg",
+      "sha256": "9af110233681aa90edbd967147a42e509d9ed268c9dc56af28d0b6af6e5f6324",
+      "expected": {
+        "standing_water": "absent",
+        "visible_surface_damage": "absent",
+        "passage_obstruction": "absent"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "absent",
+          "visible_surface_damage": "absent",
+          "passage_obstruction": "absent",
+          "image_quality": "usable",
+          "visible_description": "A paved two-lane road is clearly visible in the foreground, with lane markings and roadside posts. The surface appears dry, with no visible standing water, obvious damage, or blockage.",
+          "uncertainties": [],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "The visible road surface appears dry; no pools or standing water are visible."
+            },
+            {
+              "field": "visible_surface_damage",
+              "description": "No obvious potholes, cracks, or other surface damage are visible on the roadway."
+            },
+            {
+              "field": "passage_obstruction",
+              "description": "The visible roadway is open with no apparent obstruction."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:22.682695+00:00",
+        "raw_response_reference": "resp_0c36776497174a73016a9eb6ca1a0c87d2bb64e62cc296d2e0",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 2248,
+          "output_tokens": 156
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "9af110233681aa90edbd967147a42e509d9ed268c9dc56af28d0b6af6e5f6324",
+          "normalized_hash": "5aed699e4cb40ea53a609bfb5bd11b9fdc02fa96671653e80ab6a9105ccd378e",
+          "normalization_version": "image-normalization-1",
+          "width": 1280,
+          "height": 1028,
+          "format": "JPEG",
+          "preserved_hash": "5aed699e4cb40ea53a609bfb5bd11b9fdc02fa96671653e80ab6a9105ccd378e",
+          "original_width": 1280,
+          "original_height": 1028,
+          "perceptual_hash": "80000438a0e69158"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "unreviewed",
+        "content_hash": "9af110233681aa90edbd967147a42e509d9ed268c9dc56af28d0b6af6e5f6324",
+        "reused_at": "2026-09-07T13:14:53.037844+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-benign-06-r1-standing_water",
+          "signal_id": "eval-benign-06",
+          "feature": "standing_water",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The visible road surface appears dry; no pools or standing water are visible.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-benign-06-r1-visible_surface_damage",
+          "signal_id": "eval-benign-06",
+          "feature": "visible_road_damage",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "No obvious potholes, cracks, or other surface damage are visible on the roadway.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-benign-06-r1-passage_obstruction",
+          "signal_id": "eval-benign-06",
+          "feature": "passage_obstruction",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The visible roadway is open with no apparent obstruction.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 3
+    },
+    {
+      "id": "ambiguous-04",
+      "path": "fixtures/images/ambiguous-04.jpg",
+      "sha256": "182ec29237f14aa69bfc35f7915ca4bc25115c613f2941b095ccb91c86798e56",
+      "expected": {
+        "standing_water": "absent",
+        "visible_surface_damage": "uncertain",
+        "passage_obstruction": "not_assessable"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "absent",
+          "visible_surface_damage": "present",
+          "passage_obstruction": "absent",
+          "image_quality": "usable",
+          "visible_description": "Concrete drainage channel beside asphalt, with chipped and eroded edges, cracks at the joints, and grass growing in the channel. No visible standing water.",
+          "uncertainties": [],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "The visible channel surfaces appear dry, with no pooled water."
+            },
+            {
+              "field": "visible_surface_damage",
+              "description": "Concrete edges are visibly chipped and worn, with cracking near the joint."
+            },
+            {
+              "field": "passage_obstruction",
+              "description": "The visible asphalt and concrete strip are not blocked by objects; grass is confined to the drainage channel."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:26.659632+00:00",
+        "raw_response_reference": "resp_0a98e405c6cc905a016a9eb6ce936887d2a148c23f8929551e",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 2104,
+          "output_tokens": 152
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "182ec29237f14aa69bfc35f7915ca4bc25115c613f2941b095ccb91c86798e56",
+          "normalized_hash": "3ac3f58d82e8b540ae2dda695f88102ae7f2ced6d5676fa87db8015a954b8830",
+          "normalization_version": "image-normalization-1",
+          "width": 1280,
+          "height": 960,
+          "format": "JPEG",
+          "preserved_hash": "3ac3f58d82e8b540ae2dda695f88102ae7f2ced6d5676fa87db8015a954b8830",
+          "original_width": 1280,
+          "original_height": 960,
+          "perceptual_hash": "2c373339183c2c26"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "unreviewed",
+        "content_hash": "182ec29237f14aa69bfc35f7915ca4bc25115c613f2941b095ccb91c86798e56",
+        "reused_at": "2026-09-07T13:14:53.127650+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-ambiguous-04-r1-standing_water",
+          "signal_id": "eval-ambiguous-04",
+          "feature": "standing_water",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The visible channel surfaces appear dry, with no pooled water.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-ambiguous-04-r1-passage_obstruction",
+          "signal_id": "eval-ambiguous-04",
+          "feature": "passage_obstruction",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The visible asphalt and concrete strip are not blocked by objects; grass is confined to the drainage channel.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [
+        "surface_damage_travel_surface_not_explicit"
+      ],
+      "unsupported_positive_count": 1,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 1
+    },
+    {
+      "id": "ambiguous-05",
+      "path": "fixtures/images/ambiguous-05.jpg",
+      "sha256": "ae0d9dad71c8db085fe3fbc35a702262a881ab444e6fe33742d165498311f1f2",
+      "expected": {
+        "standing_water": "absent",
+        "visible_surface_damage": "absent",
+        "passage_obstruction": "not_assessable"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "absent",
+          "visible_surface_damage": "absent",
+          "passage_obstruction": "not_assessable",
+          "image_quality": "limited",
+          "visible_description": "A paved surface is visible with scattered leaves, twigs, and dappled shadows. No standing water or obvious surface damage is visible.",
+          "uncertainties": [
+            {
+              "field": "passage_obstruction",
+              "reason": "unclear_boundary"
+            }
+          ],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "No pooled or standing water is visibly present on the paved surface."
+            },
+            {
+              "field": "visible_surface_damage",
+              "description": "The visible pavement appears continuous, without an obvious pothole, crack, or broken section."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:33.446168+00:00",
+        "raw_response_reference": "resp_0e6934234e8e1fe1016a9eb6d537cc87d2a83a6541a45f9880",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 2549,
+          "output_tokens": 142
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "ae0d9dad71c8db085fe3fbc35a702262a881ab444e6fe33742d165498311f1f2",
+          "normalized_hash": "0dba3d61835f7449f8d1cccca1b52f824e8aea7099a39d352fe5bc98455b4550",
+          "normalization_version": "image-normalization-1",
+          "width": 1280,
+          "height": 1238,
+          "format": "JPEG",
+          "preserved_hash": "0dba3d61835f7449f8d1cccca1b52f824e8aea7099a39d352fe5bc98455b4550",
+          "original_width": 1280,
+          "original_height": 1238,
+          "perceptual_hash": "4a3656626cadd16e"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "needs_review",
+        "content_hash": "ae0d9dad71c8db085fe3fbc35a702262a881ab444e6fe33742d165498311f1f2",
+        "reused_at": "2026-09-07T13:14:53.222367+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-ambiguous-05-r1-standing_water",
+          "signal_id": "eval-ambiguous-05",
+          "feature": "standing_water",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.4,
+          "span": "No pooled or standing water is visibly present on the paved surface.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-ambiguous-05-r1-visible_surface_damage",
+          "signal_id": "eval-ambiguous-05",
+          "feature": "visible_road_damage",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.4,
+          "span": "The visible pavement appears continuous, without an obvious pothole, crack, or broken section.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 3
+    },
+    {
+      "id": "ambiguous-06",
+      "path": "fixtures/images/ambiguous-06.jpg",
+      "sha256": "05d014547b211c16106edd5c68874fd75f014803f5a57599ab61331f2570a91e",
+      "expected": {
+        "standing_water": "absent",
+        "visible_surface_damage": "absent",
+        "passage_obstruction": "absent"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "absent",
+          "visible_surface_damage": "absent",
+          "passage_obstruction": "absent",
+          "image_quality": "usable",
+          "visible_description": "A paved roadway extends through open agricultural fields under a clear sky. The visible road surface appears continuous, with no standing water, obvious damage, or blockage.",
+          "uncertainties": [],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "No visible pooled or flowing water on the roadway."
+            },
+            {
+              "field": "visible_surface_damage",
+              "description": "The visible paved surface appears intact without obvious cracks, potholes, or breaks."
+            },
+            {
+              "field": "passage_obstruction",
+              "description": "The roadway is visibly open and unobstructed."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:37.503611+00:00",
+        "raw_response_reference": "resp_0c362a4f18c1354f016a9eb6d92ee087d288539dca961bd550",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 2104,
+          "output_tokens": 144
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "05d014547b211c16106edd5c68874fd75f014803f5a57599ab61331f2570a91e",
+          "normalized_hash": "dd4d526db27902f17f797ca04c86b049e683f0d9a9b62213e752e03340f8ec70",
+          "normalization_version": "image-normalization-1",
+          "width": 1280,
+          "height": 960,
+          "format": "JPEG",
+          "preserved_hash": "dd4d526db27902f17f797ca04c86b049e683f0d9a9b62213e752e03340f8ec70",
+          "original_width": 1280,
+          "original_height": 960,
+          "perceptual_hash": "fdfc8ef2e100c623"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "unreviewed",
+        "content_hash": "05d014547b211c16106edd5c68874fd75f014803f5a57599ab61331f2570a91e",
+        "reused_at": "2026-09-07T13:14:53.293303+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-ambiguous-06-r1-standing_water",
+          "signal_id": "eval-ambiguous-06",
+          "feature": "standing_water",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "No visible pooled or flowing water on the roadway.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-ambiguous-06-r1-visible_surface_damage",
+          "signal_id": "eval-ambiguous-06",
+          "feature": "visible_road_damage",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The visible paved surface appears intact without obvious cracks, potholes, or breaks.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-ambiguous-06-r1-passage_obstruction",
+          "signal_id": "eval-ambiguous-06",
+          "feature": "passage_obstruction",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The roadway is visibly open and unobstructed.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 3
+    },
+    {
+      "id": "damage-05",
+      "path": "fixtures/images/damage-05.jpg",
+      "sha256": "474745fdb58f46bc87757bd59920af57a1329baeef36f2a3eb8686eb8b2a65bb",
+      "expected": {
+        "standing_water": "absent",
+        "visible_surface_damage": "present",
+        "passage_obstruction": "uncertain"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "absent",
+          "visible_surface_damage": "present",
+          "passage_obstruction": "absent",
+          "image_quality": "usable",
+          "visible_description": "Two views show paved residential roads with multiple potholes, cracked asphalt, and patch repairs. No standing water is visible, and the roadway is passable.",
+          "uncertainties": [],
+          "support_descriptions": [
+            {
+              "field": "visible_surface_damage",
+              "description": "Large potholes, broken asphalt edges, cracks, and patched sections are visible in the road surface."
+            },
+            {
+              "field": "standing_water",
+              "description": "The visible roadway surfaces appear dry with no pooled water."
+            },
+            {
+              "field": "passage_obstruction",
+              "description": "The roadway remains visibly open; parked cars line the sides but do not block the apparent travel lane."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:41.808033+00:00",
+        "raw_response_reference": "resp_0c4c53a9e8271913016a9eb6dd4b5c87d2bbcbb1e5f6754acb",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 2008,
+          "output_tokens": 158
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "474745fdb58f46bc87757bd59920af57a1329baeef36f2a3eb8686eb8b2a65bb",
+          "normalized_hash": "50b4f75e1776a3fa0368c052cfe101fcbdc631d85f30d8cba4963fa8e20359ad",
+          "normalization_version": "image-normalization-1",
+          "width": 890,
+          "height": 1280,
+          "format": "JPEG",
+          "preserved_hash": "50b4f75e1776a3fa0368c052cfe101fcbdc631d85f30d8cba4963fa8e20359ad",
+          "original_width": 890,
+          "original_height": 1280,
+          "perceptual_hash": "e5573727298113dc"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "unreviewed",
+        "content_hash": "474745fdb58f46bc87757bd59920af57a1329baeef36f2a3eb8686eb8b2a65bb",
+        "reused_at": "2026-09-07T13:14:53.375954+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-damage-05-r1-standing_water",
+          "signal_id": "eval-damage-05",
+          "feature": "standing_water",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The visible roadway surfaces appear dry with no pooled water.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-damage-05-r1-visible_surface_damage",
+          "signal_id": "eval-damage-05",
+          "feature": "visible_road_damage",
+          "state": "positive",
+          "value": 0.5,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "Large potholes, broken asphalt edges, cracks, and patched sections are visible in the road surface.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-damage-05-r1-passage_obstruction",
+          "signal_id": "eval-damage-05",
+          "feature": "passage_obstruction",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The roadway remains visibly open; parked cars line the sides but do not block the apparent travel lane.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 2
+    },
+    {
+      "id": "damage-06",
+      "path": "fixtures/images/damage-06.jpg",
+      "sha256": "d8df742dba60f5a258597d7a8ecdcbc38aaad485312da6c5e0d219188f87fed1",
+      "expected": {
+        "standing_water": "uncertain",
+        "visible_surface_damage": "not_assessable",
+        "passage_obstruction": "absent"
+      },
+      "result": {
+        "extraction": {
+          "standing_water": "absent",
+          "visible_surface_damage": "uncertain",
+          "passage_obstruction": "absent",
+          "image_quality": "usable",
+          "visible_description": "Urban sidewalk and roadway beneath a railway bridge. The pavement appears wet, with scattered leaves. A warning sign reading “POTHOLE” is visible, but the pothole itself is not clearly visible.",
+          "uncertainties": [
+            {
+              "field": "visible_surface_damage",
+              "reason": "unclear_boundary"
+            }
+          ],
+          "support_descriptions": [
+            {
+              "field": "standing_water",
+              "description": "No pooled or visibly standing water is apparent on the visible sidewalk or roadway."
+            },
+            {
+              "field": "passage_obstruction",
+              "description": "The sidewalk and roadway remain visibly passable; no blockage is apparent."
+            }
+          ]
+        },
+        "provider": "openai",
+        "model": "gpt-5.6-luna",
+        "model_identifier": "gpt-5.6-luna",
+        "prompt_version": "image-1.2",
+        "schema_version": "image-1.0",
+        "task_version": "image-perception-1",
+        "processed_at": "2026-09-07T13:06:44.685789+00:00",
+        "raw_response_reference": "resp_093bc757f76b3431016a9eb6e15ea087d29badc1561f574330",
+        "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+        "usage": {
+          "input_tokens": 2104,
+          "output_tokens": 151
+        },
+        "source": "cached",
+        "image_metadata": {
+          "raw_hash": "d8df742dba60f5a258597d7a8ecdcbc38aaad485312da6c5e0d219188f87fed1",
+          "normalized_hash": "c525e6d8c59986d99a8d004a610be06d5efba0eaaa480eb218fd43999a26ea3b",
+          "normalization_version": "image-normalization-1",
+          "width": 960,
+          "height": 1280,
+          "format": "JPEG",
+          "preserved_hash": "c525e6d8c59986d99a8d004a610be06d5efba0eaaa480eb218fd43999a26ea3b",
+          "original_width": 960,
+          "original_height": 1280,
+          "perceptual_hash": "008cc78596d39702"
+        },
+        "fallback_used": false,
+        "fallback_reason": null,
+        "primary_extraction": null,
+        "primary_response_reference": null,
+        "review_state": "needs_review",
+        "content_hash": "d8df742dba60f5a258597d7a8ecdcbc38aaad485312da6c5e0d219188f87fed1",
+        "reused_at": "2026-09-07T13:14:53.455490+00:00"
+      },
+      "admitted_evidence": [
+        {
+          "evidence_id": "eval-damage-06-r1-standing_water",
+          "signal_id": "eval-damage-06",
+          "feature": "standing_water",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "No pooled or visibly standing water is apparent on the visible sidewalk or roadway.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        },
+        {
+          "evidence_id": "eval-damage-06-r1-passage_obstruction",
+          "signal_id": "eval-damage-06",
+          "feature": "passage_obstruction",
+          "state": "negative",
+          "value": 0,
+          "basis": "visually_suggested",
+          "quality": 0.7,
+          "span": "The sidewalk and roadway remain visibly passable; no blockage is apparent.",
+          "field_verified": false,
+          "quality_reason": "Schema-validated AI visual observation; not field verification."
+        }
+      ],
+      "admission_warnings": [],
+      "unsupported_positive_count": 0,
+      "admitted_unsupported_positive_count": 0,
+      "exact_state_correct": 1
+    }
+  ],
+  "metric_basis": "Present precision/recall uses provisional agent reference labels recorded before runtime model output; exact-state and abstention counts cover all three target fields.",
+  "limitation": "Small convenience sample of licensed public images with simulated placement/time. No independent human labels or municipal field-accuracy claim."
+}

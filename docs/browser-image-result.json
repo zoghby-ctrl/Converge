@@ -1,0 +1,23 @@
+{
+  "verified_at": "2026-09-07T13:38:19Z",
+  "browser": "Chromium via Playwright CLI",
+  "server_network_mode": "OpenAI API key deliberately blank; loopback application only",
+  "checks": {
+    "signature_image_source_thumbnail": true,
+    "signature_candidate_risk": "68",
+    "signature_evidence_strength": "Moderate",
+    "signature_independent_captures": 3,
+    "image_ablation_risk": "52–83",
+    "image_ablation_evidence_strength": "Limited",
+    "ten_duplicate_invariance": true,
+    "selected_upload_preview": true,
+    "cached_luna_extraction_visible": true,
+    "saved_source_thumbnail_visible": true,
+    "needs_review_visible": true,
+    "human_review_revision": 2,
+    "human_review_status": "processed",
+    "console_errors_after_fixes": 0
+  },
+  "api_requests_during_cached_image_upload": 0,
+  "screenshot": "output/playwright/phase2b-image-ui.png"
+}

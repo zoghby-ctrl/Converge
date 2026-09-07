@@ -1,0 +1,29 @@
+{
+  "verified_at": "2026-09-07T13:40:00Z",
+  "checks": {
+    "env_ignored": true,
+    "env_tracked": false,
+    "env_example_has_no_credential": true,
+    "exact_secret_matches_outside_env": 0,
+    "frontend_bundle_contains_credential": false,
+    "client_model_selection_accepted": false,
+    "runtime_image_tools": 0,
+    "server_storage_paths_redacted": true,
+    "scoped_image_delivery": true,
+    "invalid_image_rejected": true,
+    "five_megabyte_limit_enforced": true,
+    "twelve_megapixel_limit_enforced": true,
+    "exif_orientation_applied": true,
+    "persisted_copy_metadata_stripped": true,
+    "prompt_injection_image_tested": true,
+    "exact_duplicate_corroboration_inflation": false,
+    "npm_production_vulnerabilities": 0,
+    "browser_console_errors_after_fixes": 0
+  },
+  "frozen_engine_sha256": "5fe1a4471281bb0355fe45573610ab9679144401821b80c68c6e76394145b17b",
+  "frozen_config_sha256": "7d07908512e641c760e5be40c6dfb4e57e9f30d5950206b9a26159b07f252667",
+  "pytest": "85 passed",
+  "frontend": "typecheck and production build passed",
+  "python_compileall": "passed",
+  "notes": "Provider exception bodies and credentials are not returned. pip-audit was not installed; npm audit --omit=dev reported zero vulnerabilities."
+}

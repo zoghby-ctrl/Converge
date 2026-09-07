@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "verified_at": "2026-09-07T13:26:08.807001+00:00",
+  "network_mode": "offline_api_key_blank",
+  "api_requests": 0,
+  "cache_hits": 2,
+  "uploads": [
+    {
+      "id": "water-04",
+      "signal_id": "image-27bb06c7f85b4b3498527b2b8f3e65a0",
+      "status": "needs_review",
+      "source": "cached",
+      "model": "gpt-5.6-luna",
+      "states": {
+        "standing_water": "present",
+        "visible_surface_damage": "not_assessable",
+        "passage_obstruction": "absent"
+      },
+      "image_status": 200
+    },
+    {
+      "id": "damage-01",
+      "signal_id": "image-d3181cce4c1941009ec9317e31decb47",
+      "status": "needs_review",
+      "source": "cached",
+      "model": "gpt-5.6-luna",
+      "states": {
+        "standing_water": "absent",
+        "visible_surface_damage": "present",
+        "passage_obstruction": "not_assessable"
+      },
+      "image_status": 200
+    }
+  ],
+  "incident": {
+    "status": "candidate",
+    "independent_capture_count": 2,
+    "standing_water": "conflicting",
+    "visible_road_damage": "positive",
+    "risk_display": "15\u201385",
+    "evidence_strength": "Limited"
+  }
+}

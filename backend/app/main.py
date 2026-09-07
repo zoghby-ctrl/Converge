@@ -4,6 +4,7 @@ from threading import RLock
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 
@@ -34,11 +35,12 @@ def load_fixture(name):
 
 
 def create_app(db_path=None, perception_settings=None, perception_client=None):
-    app = FastAPI(title="Converge — Phase 2A", version="2.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Converge — Phase 2B", version="2.1", docs_url=None, redoc_url=None)
     store = Store(db_path)
     app.state.store = store
     lock = RLock()
     from .observations import Observations, register_observations
+    from .image_observations import signal_for_client
     live_store = Store(store.path.with_name(store.path.stem + '-text.sqlite3'))
     observations = Observations(live_store, perception_settings, perception_client)
     app.state.observations = observations
@@ -54,16 +56,23 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
         visible = [store.get_signal(s.signal_id) for s in dataset.signals]
         return {"dataset_id": dataset.dataset_id, "version": "1.0", "title": dataset.title,
                 "incidents": store.incidents(), "step": state["step"], "total_steps": len(times),
-                "clock": state["clock"], "signals": [s for s in visible if s], "roads": dataset.roads,
+                "clock": state["clock"], "signals": [signal_for_client(s) for s in visible if s], "roads": dataset.roads,
                 "excluded": json.loads(state["excluded_json"]), "mode": dataset.mode}
 
     @app.get("/api/v1/health")
     def health():
         with store.connection() as db:
             ready = db.execute("PRAGMA foreign_keys").fetchone()[0] == 1
-        return {"status": "ok", "version": "1.0", "sqlite_foreign_keys": ready,
-                "mode": "manual_structured", "openai_enabled": False, "network_dependencies": [],
+        configured = bool(observations.perception.settings.api_key)
+        return {"status": "ok", "version": "2.1", "sqlite_foreign_keys": ready,
+                "mode": "cached_and_live_perception", "openai_enabled": False,
+                "network_dependencies": [],
+                "uncached_perception_requires_network": configured,
                 "text_perception": {"configured": bool(observations.perception.settings.api_key),
+                    "primary": observations.perception.settings.primary, "fallback": observations.perception.settings.fallback,
+                    "fallback_enabled": observations.perception.settings.fallback_enabled,
+                    "reasoning_effort": observations.perception.settings.reasoning},
+                "image_perception": {"configured": configured,
                     "primary": observations.perception.settings.primary, "fallback": observations.perception.settings.fallback,
                     "fallback_enabled": observations.perception.settings.fallback_enabled,
                     "reasoning_effort": observations.perception.settings.reasoning}}
@@ -87,7 +96,28 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
             item = store.get_signal(signal_id) or live_store.get_signal(signal_id)
             if item is None:
                 raise HTTPException(404, "Signal not yet available or not found")
-            return item
+            return signal_for_client(item)
+
+    @app.get("/api/v1/signals/{signal_id}/image")
+    def signal_image(signal_id: str):
+        # The lookup resolves only a stored image job reference and then checks
+        # that it remains under the runtime directory; callers cannot provide a
+        # filesystem path.
+        try:
+            path = app.state.observations.images.image_path(signal_id)
+        except HTTPException as error:
+            if error.status_code != 404:
+                raise
+            signal = store.get_signal(signal_id)
+            if signal is None or signal.source_family != "image" or not signal.image_path:
+                raise HTTPException(404, "Image signal not found") from None
+            base = (FIXTURES / "images").resolve()
+            candidate = Path(signal.image_path)
+            path = (candidate if candidate.is_absolute() else ROOT / candidate).resolve()
+            if not path.is_relative_to(base) or path.suffix.lower() not in {".jpg", ".jpeg", ".png"} or not path.is_file():
+                raise HTTPException(404, "Image file not found") from None
+        media = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
+        return FileResponse(path, media_type=media)
 
     @app.post("/api/v1/demo/replay")
     def replay(request: ReplayRequest):
@@ -98,9 +128,12 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
                 dataset = request.dataset or load_fixture(request.scenario)
                 if not dataset.signals:
                     raise HTTPException(422, "Demo requires at least one observation")
-                if any(s.provenance.content_origin != "synthetic" or s.provenance.placement_origin != "simulated"
-                       or s.provenance.time_origin != "simulated" for s in dataset.signals):
-                    raise HTTPException(422, "Phase 1 accepts explicitly synthetic demo observations only")
+                if any(s.provenance.placement_origin != "simulated" or
+                       s.provenance.time_origin != "simulated" or
+                       (s.provenance.content_origin != "synthetic" and not
+                        (s.source_family == "image" and s.provenance.content_origin == "public_source"))
+                       for s in dataset.signals):
+                    raise HTTPException(422, "Bundled demos require synthetic records or public-source images with simulated placement and time")
                 if len({s.idempotency_key for s in dataset.signals}) != len(dataset.signals):
                     raise HTTPException(422, "Duplicate idempotency keys in structured dataset")
                 store.reset(dataset)

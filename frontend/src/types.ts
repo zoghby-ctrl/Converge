@@ -1,7 +1,7 @@
 export type Contribution = {rule_id: string; evidence_ids: string[]; strength: number; weight: number; points: number}
 export type Evidence = {evidence_id: string; signal_id: string; feature: string; state: string; value: number | null; basis: string; quality: number; span: string; field_verified: boolean}
 export type Provenance = {content_origin: string; placement_origin: string; time_origin: string; source_ref: string; reviewer: string; annotation_method: string}
-export type Signal = {signal_id: string; source_family: string; capture_group_id: string; duplicate_of: string | null; text: string | null; lat: number; lon: number; observed_at: string; received_at: string; available_at: string; provenance: Provenance; evidence: Evidence[]}
+export type Signal = {signal_id: string; source_family: string; capture_group_id: string; duplicate_of: string | null; text: string | null; image_url?: string | null; exact_image_hash?: string | null; lat: number; lon: number; observed_at: string; received_at: string; available_at: string; provenance: Provenance; evidence: Evidence[]}
 export type Road = {road_context_id: string; name: string; coordinates: [number, number][]; provenance: Provenance}
 export type Exclusion = {signal_id: string; evidence_id?: string; rule_ids: string[]}
 export type Feature = {state: string; strength: number; value: number | null; evidence_ids: string[]; rule_id: string}

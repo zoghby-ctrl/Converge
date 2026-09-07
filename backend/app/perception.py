@@ -7,6 +7,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from threading import RLock
+from typing import Any, Callable
 
 from dotenv import dotenv_values
 from openai import OpenAI, APIConnectionError, APIStatusError, AuthenticationError
@@ -101,11 +102,20 @@ class Perception:
             CREATE TABLE IF NOT EXISTS extraction_cache(cache_key TEXT PRIMARY KEY, payload TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS api_usage(id INTEGER PRIMARY KEY, model TEXT, role TEXT,
                 started_at TEXT, input_tokens INTEGER, output_tokens INTEGER, reserved_usd REAL,
-                estimated_usd REAL, outcome TEXT, response_ref TEXT);
-            CREATE TABLE IF NOT EXISTS cache_events(id INTEGER PRIMARY KEY, at TEXT, cache_key TEXT);
+                estimated_usd REAL, outcome TEXT, response_ref TEXT, task TEXT NOT NULL DEFAULT 'text');
+            CREATE TABLE IF NOT EXISTS cache_events(id INTEGER PRIMARY KEY, at TEXT, cache_key TEXT,
+                task TEXT NOT NULL DEFAULT 'text');
             CREATE TABLE IF NOT EXISTS raw_text_responses(response_ref TEXT PRIMARY KEY, model TEXT,
                 status TEXT, received_at TEXT, output_text TEXT);
+            CREATE TABLE IF NOT EXISTS raw_responses(response_ref TEXT PRIMARY KEY, model TEXT, role TEXT,
+                status TEXT, received_at TEXT, output_text TEXT);
             """)
+            usage_columns = {row[1] for row in db.execute("PRAGMA table_info(api_usage)")}
+            if "task" not in usage_columns:
+                db.execute("ALTER TABLE api_usage ADD COLUMN task TEXT NOT NULL DEFAULT 'text'")
+            cache_columns = {row[1] for row in db.execute("PRAGMA table_info(cache_events)")}
+            if "task" not in cache_columns:
+                db.execute("ALTER TABLE cache_events ADD COLUMN task TEXT NOT NULL DEFAULT 'text'")
 
     def cache_key(self, text, model):
         # Exact hash additionally prevents normalized cache hits from invalidating original substrings.
@@ -120,39 +130,69 @@ class Perception:
                 sum(input_tokens) input_tokens, sum(output_tokens) output_tokens,
                 coalesce(sum(estimated_usd),0) estimated_spend_usd,
                 coalesce(sum(coalesce(estimated_usd,reserved_usd)),0) budget_accounted_usd,
-                coalesce(sum(outcome='schema_invalid'),0) schema_failure_count FROM api_usage""").fetchone())
+                coalesce(sum(outcome='schema_invalid'),0) schema_failure_count,
+                coalesce(sum(task='image'),0) image_api_requests,
+                coalesce(sum(task='image' AND role='primary'),0) image_primary_calls,
+                coalesce(sum(task='image' AND role='fallback'),0) image_fallback_calls,
+                coalesce(sum(task='image' AND outcome='schema_invalid'),0) image_schema_failure_count
+                FROM api_usage""").fetchone())
             row["cache_hits"] = db.execute("SELECT count(*) FROM cache_events").fetchone()[0]
+            row["image_cache_hits"] = db.execute("SELECT count(*) FROM cache_events WHERE task='image'").fetchone()[0]
         return {**row, "provider_reported_cost_usd": None, "max_requests": self.settings.max_requests,
                 "max_spend_usd": self.settings.max_spend_usd, "cost_basis": "local upper estimate, not provider billing"}
 
     def call(self, text, model, role, repair=False):
         settings = self.settings
-        # Reviewed standard text rates, 2026-09-06. Unknown models fail closed for cost safety.
+        system = PROMPT + ("\nPrevious output failed validation. Re-extract from source with exact spans and all required fields." if repair else "")
+        schema = TextExtraction.model_json_schema()
+        def parse(output):
+            result = TextExtraction.model_validate_json(output)
+            return result.validate_source(text)
+        result = self.call_structured(model=model, role=role, system=system,
+            user_content=text, schema=schema, parser=parse,
+            input_bound=system + text + json.dumps(schema), max_output_tokens=1800)
+        return {"extraction": result["parsed"].model_dump(mode="json"), "provider": "openai",
+            "model": model, "model_identifier": result["model_identifier"],
+            "prompt_version": PROMPT_VERSION, "schema_version": SCHEMA_VERSION,
+            "task_version": TASK_VERSION, "processed_at": now(),
+            "raw_response_reference": result["response_ref"],
+            "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+            "usage": result["usage"]}
+
+    def call_structured(self, *, model: str, role: str, system: str, user_content: Any,
+                        schema: dict, parser: Callable[[str], Any], input_bound: Any = None,
+                        max_output_tokens: int = 1800, schema_name: str = "text_observation",
+                        task: str = "text"):
+        """Shared provider, budget, usage, retry-boundary and validation plumbing.
+
+        Task adapters supply their own prompt, schema, input content and parser;
+        this method deliberately contains no task semantics.
+        """
+        settings = self.settings
         rates = {"gpt-5.6-luna": (0.2, 1.2), "gpt-5.6-terra": (2.0, 12.0)}
         if model not in rates:
             raise ProcessingError("unpriced_model_configuration", "needs_review")
         if not settings.api_key and self.client is None:
             raise ProcessingError("api_key_missing")
-        system = PROMPT + ("\nPrevious output failed validation. Re-extract from source with exact spans and all required fields." if repair else "")
-        schema = TextExtraction.model_json_schema()
-        input_bound = len((system + text + json.dumps(schema)).encode("utf-8")) + 1024
+        serialized_bound = input_bound if isinstance(input_bound, str) else json.dumps(input_bound or user_content)
+        input_bound_bytes = len((system + serialized_bound + json.dumps(schema)).encode("utf-8")) + 1024
         in_rate, out_rate = rates[model]
-        reserve = (input_bound * in_rate * 1.25 + 1800 * out_rate) / 1_000_000
+        reserve = (input_bound_bytes * in_rate * 1.25 + max_output_tokens * out_rate) / 1_000_000
         with self.store.connection() as db:
             db.execute("BEGIN IMMEDIATE")
             used = db.execute("SELECT count(*),coalesce(sum(coalesce(estimated_usd,reserved_usd)),0) FROM api_usage").fetchone()
             if used[0] >= settings.max_requests or used[1] + reserve > settings.max_spend_usd:
                 raise ProcessingError("development_usage_limit", "needs_review")
-            call_id = db.execute("INSERT INTO api_usage(model,role,started_at,reserved_usd,outcome) VALUES(?,?,?,?,?)",
-                                (model, role, now(), reserve, "reserved")).lastrowid
+            call_id = db.execute("INSERT INTO api_usage(model,role,started_at,reserved_usd,outcome,task) VALUES(?,?,?,?,?,?)",
+                                (model, role, now(), reserve, "reserved", task)).lastrowid
         try:
             if self.client is None:
                 self.client = OpenAI(api_key=settings.api_key, base_url="https://api.openai.com/v1",
                                      timeout=35, max_retries=0)
             response = self.client.responses.create(model=model, reasoning={"effort": settings.reasoning},
-                input=[{"role": "system", "content": system}, {"role": "user", "content": text}],
-                text={"format": {"type": "json_schema", "name": "text_observation", "strict": True, "schema": schema}},
-                max_output_tokens=1800, tools=[], store=False)
+                input=[{"role": "system", "content": system}, {"role": "user", "content": user_content}],
+                text={"format": {"type": "json_schema", "name": schema_name, "strict": True, "schema": schema}},
+                max_output_tokens=max_output_tokens, tools=[], store=False)
         except AuthenticationError:
             self.outcome(call_id, "invalid_api_key")
             raise ProcessingError("invalid_api_key") from None
@@ -176,21 +216,22 @@ class Perception:
             raw = response.output_text
             if settings.api_key:
                 raw = raw.replace(settings.api_key, "[REDACTED]")
-            db.execute("INSERT OR IGNORE INTO raw_text_responses VALUES(?,?,?,?,?)",
+            db.execute("INSERT OR IGNORE INTO raw_responses VALUES(?,?,?,?,?,?)",
+                       (response.id, response.model, role, response.status, now(), raw))
+            if task == "text" and role in ("primary", "fallback"):
+                db.execute("INSERT OR IGNORE INTO raw_text_responses VALUES(?,?,?,?,?)",
                        (response.id, response.model, response.status, now(), raw))
         try:
             if response.status != "completed" or not response.output_text:
                 raise ValueError("No completed structured response")
-            result = TextExtraction.model_validate_json(response.output_text).validate_source(text)
-        except (ValidationError, ValueError):
+            parsed = parser(response.output_text)
+        except (ValidationError, ValueError, TypeError):
             self.outcome(call_id, "schema_invalid")
             raise ProcessingError("schema_invalid", "needs_review") from None
         self.outcome(call_id, "validated")
-        return {"extraction": result.model_dump(mode="json"), "provider": "openai", "model": model,
-            "model_identifier": response.model, "prompt_version": PROMPT_VERSION, "schema_version": SCHEMA_VERSION,
-            "task_version": TASK_VERSION, "processed_at": now(), "raw_response_reference": response.id,
-            "raw_response_storage": "local SQLite raw_text_responses; structured output text only; provider store=false",
-            "usage": {"input_tokens": input_tokens, "output_tokens": output_tokens}}
+        return {"parsed": parsed, "model_identifier": response.model,
+                "response_ref": response.id,
+                "usage": {"input_tokens": input_tokens, "output_tokens": output_tokens}}
 
     def outcome(self, call_id, value):
         with self.store.connection() as db:
@@ -213,7 +254,7 @@ class Perception:
                 TextExtraction.model_validate(item["extraction"]).validate_source(text)
                 if item["fallback_used"] and not settings.fallback_enabled:
                     raise ProcessingError("fallback_disabled", "needs_review")
-                db.execute("INSERT INTO cache_events(at,cache_key) VALUES(?,?)", (now(), key))
+                db.execute("INSERT INTO cache_events(at,cache_key,task) VALUES(?,?,?)", (now(), key, "text"))
                 return {**item, "source": "cached", "reused_at": now()}
         reason = "explicit_deeper_review" if deeper else None
         try:

@@ -1,9 +1,10 @@
 # Converge
 
-Phase 2A: a local municipal inspection workbench with OpenAI text perception and
-an offline structured replay. Team: **Control Alt Delete**, IMPACTX 2026 Smart Cities.
-AI extracts report claims; the existing deterministic engine controls membership,
-risk, hypotheses and evidence strength. Image inference and deployment are deferred.
+Phase 2B: a local municipal inspection workbench with bounded OpenAI text and
+image perception plus an offline structured replay. Team: **Control Alt Delete**,
+IMPACTX 2026 Smart Cities. AI extracts report claims and visibly supported image
+conditions; the existing deterministic engine alone controls membership, risk,
+hypotheses and evidence strength. Deployment and Phase 3 are deferred.
 
 ## Run on this Windows machine
 
@@ -18,8 +19,9 @@ npm run build --prefix frontend
 
 Open **http://127.0.0.1:8000**. The backend serves the production frontend and all
 map assets. After the first build, only the last command is needed. The prepared
-structured replay requires no internet. New uncached text analysis uses OpenAI;
-cached analysis and human correction work locally.
+structured replay requires no internet. Cached analysis and human correction work
+locally. New uncached text or image analysis uses OpenAI, but the prepared database
+has reached its persistent 80-request development cap.
 
 For frontend development, leave the backend running and open a second terminal:
 
@@ -74,24 +76,32 @@ Defaults apply when optional entries are missing. Usage limits persist in the
 local text database; restarting does not reset them. The spend limit uses a
 conservative local token-price estimate and reservations, **not provider-reported
 billing**. Unknown/unpriced model IDs fail closed. SDK retries are disabled. Luna
-gets at most one schema repair; Terra is called only after that fails, for material
-admission ambiguity, or through **Deeper review with Terra**. Remaining ambiguity
-requires human review. Use one local backend worker; no background API polling.
+gets at most one schema repair. For images, Terra is called only if that repair
+fails or through **Deeper image review with Terra**; text keeps its Phase 2A
+material-ambiguity fallback. No ensembling occurs. Remaining ambiguity requires
+human review. Use one local backend worker; no background API polling.
 
-## Enter and review a report
+## Enter and review an observation
 
 1. Click **New observation**. Enter text, coordinates within the existing study
    extent, observation time, location accuracy, operator and reviewed road segment.
 2. Confirm capture independence only when the source supports it. Copies share
    a capture group. Uncertain independence prevents engine admission. Mark authored
    demo reports as **synthetic** so provenance does not imply field collection.
-3. Click **Submit for text analysis**. Pending/analyzing jobs become processed,
+3. Optionally attach a JPEG/PNG up to 5 MiB and 12 megapixels. Select collected,
+   public-source, or synthetic provenance; public sources require a reference and
+   licence. The server applies EXIF orientation, strips metadata and stores a clean
+   copy outside OneDrive. Text and image in one submission share one capture.
+4. Click **Submit for text analysis** or **Submit image and report**.
+   Pending/analyzing jobs become processed,
    needs review or failed. The saved report, exact source quotes, temporal claims,
-   model, fallback reason and live/cached/manual origin remain visible.
-4. The operator queue shows the engine's watch/candidate result or admission
-   exclusions. **Correct extraction** appends a human-reviewed revision and
+   visible image states/support, model, fallback reason and live/cached/manual
+   origin remain visible.
+5. The operator queue shows the engine's watch/candidate result or admission
+   exclusions. **Correct extraction** or **Correct image labels** appends a
+   human-reviewed revision and
    recomputes locally. The original report and prior revisions remain unchanged.
-5. **Show offline replay** returns to Phase 1. Reset affects only that synthetic
+6. **Show offline replay** returns to the deterministic replay. Reset affects only that
    dataset, not operator records, extraction revisions, cache or usage.
 
 Text presence alone does not measure severity. Positive evidence therefore has
@@ -108,10 +118,12 @@ revision as the active evidence until a replacement is accepted.
 
 ## Replay the signature story
 
-1. Select `signature`, click **Reset**, then **Start replay**.
+1. Select `signature_image`, click **Reset**, then **Start replay**. This
+   mixed-source variant includes one licensed public image extraction with explicit
+   simulated placement/time; `signature` remains the fully structured legacy case.
 2. **Advance**: A now contains eight copies, one capture, and remains a watch item.
 3. **Advance** twice: B receives an Arabic water report and an independent
-   image-family road annotation. A candidate forms.
+   cached image-derived road-damage observation. A candidate forms.
 4. **Advance**: later independent water evidence establishes temporal persistence.
 5. **Advance**: C stays separate. B has three captures, Moderate evidence, and a
    **68/100** inspection-triage index.
@@ -124,10 +136,12 @@ Expand calculation, membership and hypothesis sections to inspect evidence/rule
 IDs. Open an evidence record for original Arabic and provenance. The timeline
 uses observation time; availability controls what each replay step can know.
 
-All Phase 1 reports, image-family annotations, rainfall, road segments, locations
-and event times are synthetic. No photographs or cached model outputs are included.
-The map is an explicitly labeled schematic in the Nasr City study extent. Nothing
-in the demo claims a real incident, a physical diagnosis, or a failure probability.
+In `signature_image`, the photograph content is a licensed Wikimedia Commons
+source; its placement and time, all reports, rainfall, road segments and other
+events are simulated. The map is an explicitly labeled schematic in the Nasr City
+study extent. Nothing in the demo claims a real incident, a physical diagnosis, or
+a failure probability. Full source/licence details are in
+`fixtures/images/manifest.json`.
 
 ## Verify
 
@@ -152,6 +166,17 @@ checks reset, comparisons, Arabic record viewing, local resource failures and
 installation may need the internet. This is a simulated loss of external network
 access while retaining the local server, not a physical Wi-Fi disconnection.
 
+The Phase 2B image check uses the locked `damage-01` cache entry. To guarantee it
+cannot make a provider call, start the backend with `OPENAI_API_KEY` blank, then run:
+
+```powershell
+$env:CONVERGE_IMAGE_LIVE='1'
+npx --yes --package @playwright/cli playwright-cli -s=converge run-code --filename docs/browser-image-qa.js
+```
+
+It checks upload preview, cached Luna output, the saved thumbnail, review state and
+a persisted human-correction revision. See `docs/browser-image-result.json`.
+
 ## Project layout
 
 - `backend/app/models.py`: validated domain contracts and provenance.
@@ -159,13 +184,18 @@ access while retaining the local server, not a physical Wi-Fi disconnection.
 - `backend/app/store.py`, `main.py`: SQLite and API wiring.
 - `backend/app/text_contract.py`, `perception.py`, `observations.py`: strict text
   contract, server-only Responses adapter, cache/usage and durable review workflow.
+- `backend/app/image_contract.py`, `image_ingestion.py`, `image_perception.py`,
+  `image_observations.py`: strict visual contract, safe normalization, cached
+  Responses adapter, duplicate controls and human-review workflow.
 - `backend/evaluate_text.py`: explicitly invoked development/validation evaluation.
+- `backend/evaluate_image.py`, `verify_image_e2e.py`: locked image metrics and an
+  offline raw-upload-to-incident verification.
 - `frontend/`: React, TypeScript, Vite and MapLibre municipal workbench.
-- `fixtures/`: ten reproducible structured development scenarios and their authoring script.
+- `fixtures/`: reproducible structured scenarios, image corpus/manifest and authoring script.
 - `tests/`: engine guards, persistence, API, isolation and offline regression checks.
 - `docs/`: implementation decisions and browser QA procedure.
 - `PRODUCT_ARCHITECTURE_FREEZE.md`: approved product/architecture source of truth.
-- `BUILD_STATUS.md`: actual verification results, limitations, and Phase 2 recommendation.
+- `BUILD_STATUS.md`: actual verification results, limitations, and next-phase recommendation.
 
 ## API
 
@@ -198,25 +228,37 @@ Additional APIs:
 - `POST /api/v1/signals/{id}/reanalyze`: `{action: "retry_primary"|"deeper_review", expected_revision}`.
 - `GET /api/v1/live/incidents`: operator dataset using the unchanged engine contracts.
 - `GET /api/v1/perception/usage`: persistent requests, primary/fallback calls, tokens and cache hits.
+- `POST /api/v1/images`: bounded multipart image plus operator metadata (202).
+- `GET /api/v1/signals/{id}/image`: scoped normalized source-image delivery.
 
-`GET /api/v1/health` retains Phase 1's offline mode fields; `text_perception` separately
-reports server configuration without returning credentials. Inputs are capped at
-4,000 characters and 500 stored operator observations. No client model/key fields
-are accepted. Schema failures and provider errors return safe job error codes.
+`GET /api/v1/health` retains Phase 1's offline mode fields; `text_perception` and
+`image_perception` separately report server configuration without returning
+credentials. Text is capped at 4,000 characters; images at 5 MiB / 12 MP; operator
+storage at 500 records. No client model/key fields are accepted. Schema failures
+and provider errors return safe job error codes.
 
-## Text evaluation and browser checks
+## Perception evaluation and browser checks
 
 These commands reuse cached validated outputs without making OpenAI calls:
 
 ```powershell
 .\.venv\Scripts\python.exe -m backend.evaluate_text --split development
 .\.venv\Scripts\python.exe -m backend.evaluate_text --split validation
+.\.venv\Scripts\python.exe -m backend.evaluate_image --split development
+.\.venv\Scripts\python.exe -m backend.evaluate_image --split validation
+.\.venv\Scripts\python.exe -m backend.verify_image_e2e
 ```
 
 On a machine without this cache, missing cases are reported as `not_cached`.
 For an explicitly billed run on cache misses, append `--live`. Development has 18
 reports; the locked validation set has 18. Reports go to `docs/text-evaluation-*.json`.
 Do not tune using validation and then describe a rerun as held-out accuracy.
+
+The image corpus has 10 development and 10 locked validation images. Image
+evaluation reports raw model states separately from evidence admitted through
+local safety checks. `verify_image_e2e` needs the locked `water-04` and `damage-01`
+cache entries; it runs in a disposable runtime with the API key blank and makes no
+provider request. Detailed measured results and limits are in `BUILD_STATUS.md`.
 
 The text browser check submits two clearly labeled synthetic reports to the real
 OpenAI adapter, checks watch-to-candidate formation, cache reuse, human revision
@@ -227,5 +269,6 @@ npx --yes --package @playwright/cli playwright-cli -s=converge open http://127.0
 npx --yes --package @playwright/cli playwright-cli -s=converge run-code --filename docs/browser-text-qa.js
 ```
 
-Run this on a fresh operator dataset/segment for its initial-watch assertion.
-The UI test can make two provider calls; it is not run automatically by pytest.
+Run the text check on a fresh operator dataset/segment for its initial-watch
+assertion. It can make two provider calls. The image check is cache-only with the
+locked local entry. Neither browser check runs automatically under pytest.

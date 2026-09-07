@@ -60,6 +60,33 @@ def test_comparison_is_transient_and_duplicate_invariant(tmp_path):
         assert client.get('/api/v1/incidents').json() == state
 
 
+def test_cached_image_signature_replay_and_scoped_image_delivery(tmp_path):
+    with TestClient(create_app(tmp_path / 'test.sqlite3')) as client:
+        state = complete(client, 'signature_image')
+        b = next(i for i in state['incidents'] if i['status'] == 'candidate')
+        image = next(s for s in state['signals'] if s['signal_id'] == 'b-road-image')
+        assert state['mode'] == 'cached_extraction'
+        assert (b['risk']['display'], b['evidence_strength'],
+                b['independent_capture_count']) == ('68', 'Moderate', 3)
+        assert image['provenance']['annotation_method'] == 'ai_image'
+        assert image['image_url'] == '/api/v1/signals/b-road-image/image'
+        assert image.get('image_path') is None
+        delivered = client.get(image['image_url'])
+        assert delivered.status_code == 200 and delivered.headers['content-type'] == 'image/jpeg'
+        ablation = client.post('/api/v1/demo/compare', json={'disable_families': ['image']}).json()
+        changed = next(i for i in ablation['incidents'] if i['status'] == 'candidate')
+        assert changed['risk']['display'] == '52–83' and changed['evidence_strength'] == 'Limited'
+
+
+def test_legacy_structured_image_does_not_advertise_missing_file(tmp_path):
+    with TestClient(create_app(tmp_path / 'test.sqlite3')) as client:
+        state = complete(client, 'signature')
+        image = next(s for s in state['signals'] if s['signal_id'] == 'b-road-image')
+        assert 'image_url' not in image and client.get(
+            '/api/v1/signals/b-road-image/image'
+        ).status_code == 404
+
+
 def test_structured_input_and_limits_are_enforced(tmp_path):
     with TestClient(create_app(tmp_path / 'test.sqlite3')) as client:
         assert client.post('/api/v1/demo/compare', json={}).status_code == 409

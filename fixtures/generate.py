@@ -37,14 +37,50 @@ def roads():
             for letter, offset in (("a", math.degrees(-450 / 6371008.8)), ("b", 0), ("c", math.degrees(550 / 6371008.8)))]
 
 
-def dataset(name, signals):
+def cached_image_signal():
+    """The validated image-1.2 extraction for fixtures/images/damage-01.jpg."""
+    item = signal(
+        "b-road-image", minutes=20, meters=20, family="image", water=None, damage=None,
+        text=("Cached image extraction: close-up of rough, broken asphalt with a large "
+              "recessed area containing loose aggregate and leaf debris."),
+    )
+    item.update(
+        image_path="fixtures/images/damage-01.jpg",
+        exact_image_hash="f0ef463c865f07a7e76f641840b0f048b718aa112b2ea247accb3836804b8342",
+        content_hash="f0ef463c865f07a7e76f641840b0f048b718aa112b2ea247accb3836804b8342",
+        provenance=dict(
+            content_origin="public_source", placement_origin="simulated", time_origin="simulated",
+            source_ref="https://commons.wikimedia.org/wiki/File:Pothole_in_an_asphalt_pavement.jpg",
+            author_category="Wikimedia Commons contributor: Frankie Fouganthin",
+            license="CC BY-SA 4.0", annotation_method="ai_image",
+            reviewer="gpt-5.6-luna image-1.2 cached extraction; not human or field verification",
+        ),
+        evidence=[
+            dict(
+                evidence_id="b-road-image-visible_surface_damage", signal_id="b-road-image",
+                feature="visible_road_damage", state="positive", value=0.5,
+                basis="visually_suggested", quality=0.7,
+                span="A substantial irregular depression and breakup are visible in the asphalt surface.",
+                field_verified=False,
+                quality_reason="Schema-validated AI visual observation; not field verification.",
+            ),
+        ],
+    )
+    return item
+
+
+def dataset(name, signals, mode="manual_structured"):
     for s in signals:
         s["dataset_id"] = name
     clocks = sorted({s["available_at"][:13] for s in signals})
     rain = [dict(context_id="rain-" + str(i), end_at=stamp + ":00:00+00:00", available_at=stamp + ":00:00+00:00",
                  hourly_mm=[0, 0, 1, 2, 2, 1], bbox=[31.325, 30.045, 31.346, 30.067], provenance=deepcopy(PROVENANCE))
             for i, stamp in enumerate(clocks)]
-    return dict(dataset_id=name, title=name.replace("_", " ").title(), roads=roads(), rainfall=rain, signals=signals)
+    payload = dict(dataset_id=name, title=name.replace("_", " ").title(),
+                   roads=roads(), rainfall=rain, signals=signals)
+    if mode != "manual_structured":
+        payload["mode"] = mode
+    return payload
 
 
 def build():
@@ -67,6 +103,13 @@ def build():
     # Road image captured later ensures it remains current to the road feature; no inference of worsening.
     main = [a] + copies + [b1, b2, b3, c]
     cases = {"signature": dataset("signature", main)}
+    signature_image = [deepcopy(item) for item in main]
+    signature_image[signature_image.index(next(
+        item for item in signature_image if item["signal_id"] == "b-road-image"
+    ))] = cached_image_signal()
+    cases["signature_image"] = dataset(
+        "signature_image", signature_image, mode="cached_extraction"
+    )
     cases["missing_road_damage"] = dataset("missing_road_damage", [deepcopy(s) for s in main if s["source_family"] != "image"])
     cases["conflicting_water"] = dataset("conflicting_water", [signal("conflict-positive"), signal("conflict-negative", minutes=5, water=False)])
     for label, meters in (("spatial_119m", 119), ("spatial_121m", 121)):

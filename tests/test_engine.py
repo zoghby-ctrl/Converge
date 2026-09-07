@@ -57,6 +57,21 @@ def test_signature_candidate_and_duplicate_invariance():
     assert clean_a.hypotheses == a.hypotheses
 
 
+def test_image_signature_preserves_frozen_signature_outcomes():
+    payload = build()['signature_image']
+    items, _, _ = run(payload)
+    image = next(item for item in payload['signals'] if item['signal_id'] == 'b-road-image')
+    b = b_incident(items)
+    assert payload['mode'] == 'cached_extraction'
+    assert image['image_path'] == 'fixtures/images/damage-01.jpg'
+    assert image['provenance']['annotation_method'] == 'ai_image'
+    assert (b.status, b.risk.display, b.evidence_strength,
+            b.independent_capture_count) == ('candidate', '68', 'Moderate', 3)
+    without_image = b_incident(run(payload, disabled=['image'])[0])
+    assert (without_image.risk.display, without_image.evidence_strength,
+            without_image.independent_capture_count) == ('52–83', 'Limited', 2)
+
+
 def test_ten_copies_cannot_refresh_features_or_inflate_score():
     payload = dataset('dup', [signal('original'), signal('independent', minutes=180)])
     base, _, _ = run(payload)

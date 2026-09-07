@@ -24,7 +24,7 @@ class Provenance(Contract):
     source_ref: str
     author_category: str
     license: str
-    annotation_method: Literal["manual_structured", "ai_text", "human_reviewed"] = "manual_structured"
+    annotation_method: Literal["manual_structured", "ai_text", "ai_image", "human_reviewed"] = "manual_structured"
     reviewer: str
 
 
@@ -94,6 +94,56 @@ class Signal(Contract):
             raise ValueError("available_at cannot precede received_at")
         if len({e.evidence_id for e in self.evidence}) != len(self.evidence):
             raise ValueError("Duplicate evidence IDs")
+        return self
+
+
+class ImageObservationMetadata(Contract):
+    """Operator-owned metadata for an uploaded image.
+
+    The image itself is handled by the image adapter.  This contract deliberately
+    contains no model, extraction, score, or incident fields.
+    """
+    text: str | None = Field(default=None, max_length=4000)
+    lat: float = Field(ge=30.045, le=30.063)
+    lon: float = Field(ge=31.325, le=31.346)
+    observed_at: datetime
+    location_accuracy_m: float = Field(ge=0, le=500)
+    road_context_id: str = Field(min_length=1, max_length=80, pattern=r"^[\w -]+$")
+    capture_group_id: str = Field(min_length=1, max_length=80, pattern=r"^[\w-]+$")
+    independence: Literal["asserted", "uncertain"] = "uncertain"
+    copy_lineage: str | None = Field(default=None, max_length=80)
+    operator: str = Field(min_length=1, max_length=80)
+    idempotency_key: str = Field(min_length=1, max_length=80)
+    content_origin: Literal["public_source", "collected", "synthetic"] = "collected"
+    source_ref: str = Field(default="", max_length=500)
+    license: str = Field(default="local operator supplied", max_length=240)
+    placement_origin: Literal["simulated", "original", "unknown"] = "unknown"
+    time_origin: Literal["simulated", "original", "inferred", "unknown"] = "unknown"
+
+    _utc = field_validator("observed_at")(classmethod(Signal.utc.__func__))
+
+    @field_validator("operator", "road_context_id")
+    @classmethod
+    def nonblank(cls, value):
+        if not value.strip():
+            raise ValueError("Must not be blank")
+        return value
+
+    @model_validator(mode="after")
+    def provenance_is_explicit(self):
+        # Synthetic placement is never silently represented as an original
+        # photograph.  Callers may still explicitly use unknown for an
+        # unverified public source.
+        if self.content_origin == "synthetic" and self.placement_origin == "unknown":
+            self.placement_origin = "simulated"
+        if self.content_origin == "synthetic" and self.time_origin == "unknown":
+            self.time_origin = "simulated"
+        if self.content_origin == "public_source" and (not self.source_ref.strip() or not self.license.strip()):
+            raise ValueError("Public-source images require source_ref and license")
+        if self.placement_origin == "simulated" and self.content_origin != "synthetic":
+            # A real image can be deliberately relocated for a demo, but the
+            # caller must say so through source metadata; accepting it is safe.
+            pass
         return self
 
 
@@ -206,7 +256,7 @@ class IncidentRevision(Contract):
 class Dataset(Contract):
     dataset_id: str
     title: str
-    mode: Literal["manual_structured"] = "manual_structured"
+    mode: Literal["manual_structured", "cached_extraction"] = "manual_structured"
     roads: list[RoadContext]
     rainfall: list[RainContext]
     signals: list[Signal] = Field(max_length=1000)
