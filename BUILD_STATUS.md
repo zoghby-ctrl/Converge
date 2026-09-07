@@ -1,15 +1,44 @@
+# Converge — Phase 4 build status
+
+**Completed and verified: Phase 4 — Responsive Installable Web Application (PWA) & Municipal Workbench, 7 September 2026.**
+No commit was made. Phase 1, Phase 2A, Phase 2B, and Phase 3 were preserved and verified.
+
+The approved Phase 4 design specification (`docs/PHASE4_DESIGN_SPEC.md`) is implemented in full within the single existing React/Vite frontend and FastAPI backend without modifying backend correlation, scoring formulas, or frozen engine semantics:
+- `/` — Minimal Entry Gateway (`Converge` branding, value proposition, quick links to `/report` and `/operations`).
+- `/report` — Mobile-First Signal Capture (full-device mobile viewport, narrative input, camera dropzone, manual location fallback, time chips, single capture group for text + photo, clean confirmation receipt).
+- `/operations` — Desktop/Projector Municipal Incident-Intelligence Workbench (calibrated for 1280×720 zero page scroll, MapLibre hero with quiet road network and bold selected road context, explicit spatial threshold guide `≤120 m all-member correlation threshold — not a flood extent`, tabbed inspector: `Overview | Evidence | Hypotheses | Review`, collapsible 34px Convergence Ribbon, and quarantined Replay & Audit Sandbox).
+
+## Delivered Phase 4 Architecture & Constraints
+
+1. **Service Worker (`frontend/public/sw.js`):** Strictly caches only the application shell (`/`, `/index.html`, `/manifest.json`, `/favicon.svg`, `/icons/icon.svg`) and immutable static assets. Never intercepts or caches dynamic API requests (`/api/*`), observation submissions, image uploads, or mutation endpoints.
+2. **SPA Route Fallbacks:** FastAPI cleanly resolves `/report` and `/operations` to `dist/index.html` without intercepting or shadowing `/api/*`, static assets, or OpenAPI routes.
+3. **Capture Group Semantics:** Text and image submitted together through `/report` form a single capture group (`cg-...`), preserving witness independence rules.
+4. **Location Fallback:** Geolocation permission is completely optional; intuitive manual fallback permits selecting/editing road name and coordinates.
+5. **Offline & Inference Integrity:** Offline cached replay functions without external network; uncached AI perception requires explicit review/state and never produces fake confidence scores.
+6. **Projector Zero-Scroll Optimization:** At 1280×720 resolution, all essential triage information (queue, hero map, selected incident, risk band, evidence strength, why inspect here, leading hypothesis, key uncertainty) is visible without page scrolling.
+7. **PWA Assets:** Includes `manifest.json`, scalable SVG app icon (`icons/icon.svg`), and theme color `#0F766E`.
+
+## Measured Verification Summary
+
+| Check | Result |
+|---|---|
+| Full regression suite | **121 passed** in **19.87 s** (including `tests/test_phase4_routes.py`) |
+| TypeScript `npm run typecheck --prefix frontend` | **Passed** with 0 errors |
+| Production bundle `npm run build --prefix frontend` | **Passed** in 756 ms; `dist` populated with shell, PWA manifest, and SW |
+| SPA Route Fallback Test | `/`, `/report`, `/operations` serve 200 HTML; `/api/*` unshadowed; 404 preserved for unknown API endpoints |
+| Mobile `/report` Verification (420×800) | Full-screen layout, manual location fallback, observation submission, and confirmation receipt verified in browser |
+| Projector `/operations` (1280×720) | Zero page scroll verified; MapLibre hero with quiet roads and bold selected road context; 4-tab inspector verified |
+| Convergence Ribbon & Replay Sandbox | 34px collapsed bar expandable to full accretion timeline; quarantined sandbox controls accessible in Replay & Audit mode |
+| Network and Secrets Integrity | 0 external network requests required; no API credentials exposed in frontend or service worker |
+
+---
+
 # Converge — Phase 3 build status
 
 **Completed and verified: Phase 3 — Real context integration, 7 September 2026.**
 No commit was made. Phase 1, Phase 2A and Phase 2B were read and preserved, not
 redone. Starting status was clean at `cabb472 Complete Phase 2B image perception`,
 following `351f314 Complete Phase 2A text perception`.
-
-The approved product clarification is recorded in the architecture freeze and
-README: one responsive React/Vite PWA and shared backend, with eventual `/report`
-Signal Capture and `/operations` municipal workbench surfaces. This phase does not
-implement those routes, installability, a UI redesign or Phase 4. No new AI model,
-training, extraction request, or external message was introduced.
 
 ## Delivered context integration
 

@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Converge Phase 4 — Visual & UX Refined Preview</title>
+  <style>
+    /* ==========================================================================
+       CONVERGE PHASE 4 DESIGN SYSTEM TOKENS (REFINED)
+       ========================================================================== */
+    :root {
+      --cv-brand-primary: #0F766E;
+      --cv-brand-primary-hover: #0D9488;
+      --cv-brand-subtle: #CCFBF1;
+      --cv-brand-dark: #115E59;
+      
+      /* Subtle Surface Contrast (Replaces heavy borders) */
+      --cv-surface-bg: #F8FAFC;
+      --cv-surface-card: #FFFFFF;
+      --cv-surface-sidebar: #F1F5F9;
+      --cv-surface-sunken: #E2E8F0;
+      
+      /* Hairline Dividers */
+      --cv-border-light: #E2E8F0;
+      --cv-border-medium: #CBD5E1;
+      --cv-border-strong: #94A3B8;
+      
+      --cv-text-primary: #0F172A;
+      --cv-text-secondary: #475569;
+      --cv-text-muted: #64748B;
+      --cv-text-inverse: #FFFFFF;
+      
+      --cv-risk-high: #B91C1C;
+      --cv-risk-high-bg: #FEE2E2;
+      --cv-risk-med: #B45309;
+      --cv-risk-med-bg: #FEF3C7;
+      --cv-risk-low: #475569;
+      --cv-risk-low-bg: #F1F5F9;
+      
+      --cv-verified: #15803D;
+      --cv-verified-bg: #DCFCE7;
+      --cv-uncertain: #6B21A8;
+      --cv-uncertain-bg: #F3E8FF;
+
+      /* Offline Bundled Font Stacks */
+      --font-sans: "Inter", "Noto Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", "Roboto Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      overflow: hidden; /* Zero page scroll at 1280x720 */
+      font-family: var(--font-sans);
+      background: #0F172A;
+      color: var(--cv-text-primary);
+      direction: ltr; /* Strictly LTR root layout */
+    }
+
+    /* Meta bar to switch views in the preview */
+    .preview-switcher-bar {
+      height: 38px;
+      background: #020617;
+      color: #94A3B8;
+      padding: 0 16px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1E293B;
+      z-index: 1000;
+      flex-shrink: 0;
+    }
+    .preview-switcher-bar .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+    .preview-switcher-bar .brand-badge span {
+      background: var(--cv-brand-primary);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+    .switcher-buttons {
+      display: flex;
+      gap: 6px;
+    }
+    .switcher-btn {
+      background: #1E293B;
+      border: 1px solid #334155;
+      color: #E2E8F0;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+    .switcher-btn:hover {
+      background: #334155;
+      color: #FFFFFF;
+    }
+    .switcher-btn.active {
+      background: var(--cv-brand-primary);
+      border-color: var(--cv-brand-primary);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    /* Master view containers */
+    .preview-viewport {
+      height: calc(100vh - 38px);
+      display: flex;
+      flex-direction: column;
+      background: var(--cv-surface-bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .screen-view {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      overflow: hidden;
+    }
+    .screen-view.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================================================
+       1. HEAVILY SIMPLIFIED ENTRY SCREEN (/)
+       ========================================================================== */
+    #view-entry {
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #F8FAFC 0%, #EDF2F7 100%);
+      padding: 20px;
+      text-align: center;
+    }
+    .entry-card {
+      max-width: 520px;
+      width: 100%;
+      background: #FFFFFF;
+      border-radius: 10px;
+      padding: 40px 36px;
+      box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.07);
+    }
+    .entry-brand-mark {
+      width: 48px;
+      height: 48px;
+      background: var(--cv-brand-subtle);
+      color: var(--cv-brand-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 16px;
+      font-weight: 700;
+    }
+    .entry-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--cv-text-primary);
+      margin-bottom: 6px;
+    }
+    .entry-subtitle {
+      font-size: 15px;
+      color: var(--cv-text-secondary);
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+    .entry-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .btn-lg {
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--cv-brand-primary);
+      color: #FFFFFF;
+      border: 1px solid var(--cv-brand-primary);
+    }
+    .btn-primary:hover {
+      background: var(--cv-brand-primary-hover);
+    }
+    .btn-secondary {
+      background: #FFFFFF;
+      color: var(--cv-text-primary);
+      border: 1px solid var(--cv-border-medium);
+    }
+    .btn-secondary:hover {
+      background: var(--cv-surface-sidebar);
+    }
+    .entry-footer-meta {
+      font-size: 12px;
+      color: var(--cv-text-muted);
+    }
+
+    /* ==========================================================================
+       2. MOBILE-FIRST REPORT SCREEN (/report)
+       ========================================================================== */
+    #view-report {
+      align-items: center;
+      justify-content: center;
+      background: #0B1320;
+      padding: 12px;
+    }
+    /* Phone frame is purely illustrative in design preview */
+    .mobile-frame {
+      width: 100%;
+      max-width: 400px;
+      height: 100%;
+      max-height: 660px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+      border: 4px solid #1E293B;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .mobile-top-bar {
+      height: 42px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--cv-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      flex-shrink: 0;
+    }
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--cv-brand-primary);
+    }
+    .mobile-clock {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cv-text-muted);
+      font-family: var(--font-mono);
+    }
+    .mobile-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cv-text-primary);
+    }
+    .form-hint {
+      font-size: 11px;
+      color: var(--cv-text-muted);
+    }
+    .form-textarea {
+      width: 100%;
+      height: 80px;
+      padding: 8px 10px;
+      border: 1px solid var(--cv-border-medium);
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      resize: none;
+      color: var(--cv-text-primary);
+    }
+    .form-textarea:focus {
+      outline: 2px solid var(--cv-brand-primary);
+      border-color: var(--cv-brand-primary);
+    }
+    .photo-capture-box {
+      border: 1.5px dashed var(--cv-border-medium);
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+      background: var(--cv-surface-bg);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .photo-capture-box:hover {
+      border-color: var(--cv-brand-primary);
+      background: var(--cv-brand-subtle);
+    }
+    .photo-capture-icon {
+      font-size: 20px;
+      color: var(--cv-brand-primary);
+    }
+    .location-pill-box {
+      background: var(--cv-surface-sidebar);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .loc-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .loc-road {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cv-text-primary);
+    }
+    .loc-detected {
+      font-size: 10px;
+      color: var(--cv-verified);
+      font-weight: 500;
+    }
+    .time-selector {
+      display: flex;
+      gap: 6px;
+    }
+    .time-chip {
+      flex: 1;
+      padding: 6px;
+      font-size: 11px;
+      border: 1px solid var(--cv-border-medium);
+      background: #FFFFFF;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+    }
+    .time-chip.active {
+      border-color: var(--cv-brand-primary);
+      background: var(--cv-brand-subtle);
+      color: var(--cv-brand-dark);
+      font-weight: 600;
+    }
+    .report-submit-btn {
+      width: 100%;
+      padding: 11px;
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      background: var(--cv-brand-primary);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .report-receipt-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 24px 14px;
+      gap: 12px;
+    }
+    .receipt-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--cv-verified-bg);
+      color: var(--cv-verified);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    /* ==========================================================================
+       3. DESKTOP OPERATIONS WORKBENCH (/operations) — PROJECTOR CALIBRATED
+       ========================================================================== */
+    #view-operations {
+      background: var(--cv-surface-bg);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Top Status Bar (Height: 46px) */
+    .ops-header {
+      height: 46px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--cv-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .ops-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ops-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--cv-brand-primary);
+      letter-spacing: -0.01em;
+    }
+    .ops-sector-pill {
+      font-size: 11px;
+      background: var(--cv-surface-sidebar);
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: var(--cv-text-secondary);
+      font-weight: 500;
+    }
+    .mode-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .mode-live {
+      background: #DCFCE7;
+      color: #166534;
+    }
+    .mode-sandbox {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+    .ops-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ops-clock-widget {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cv-text-primary);
+    }
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid var(--cv-border-medium);
+      background: #FFFFFF;
+      color: var(--cv-text-primary);
+    }
+    .btn-sm.primary {
+      background: var(--cv-brand-primary);
+      color: #FFFFFF;
+      border-color: var(--cv-brand-primary);
+    }
+
+    /* Main 3-Column Split (Calibrated for 1280x720 Zero Page Scroll) */
+    .ops-workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px 1fr 380px;
+      height: calc(100% - 46px - 34px); /* Subtract Header + Collapsed Ribbon */
+      min-height: 0;
+      overflow: hidden;
+      background: var(--cv-surface-bg);
+      transition: height 0.2s ease;
+    }
+    .ops-workspace.ribbon-expanded {
+      height: calc(100% - 46px - 140px); /* Subtract Header + Expanded Ribbon */
+    }
+
+    /* Column 1: Inspection Queue */
+    .ops-col-queue {
+      background: var(--cv-surface-sidebar);
+      border-right: 1px solid var(--cv-border-light);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .queue-header-area {
+      padding: 10px 14px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--cv-border-light);
+    }
+    .queue-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--cv-text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .queue-count-badge {
+      background: var(--cv-brand-subtle);
+      color: var(--cv-brand-dark);
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 10px;
+    }
+    .queue-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .queue-card {
+      background: #FFFFFF;
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .queue-card:hover {
+      background: #F8FAFC;
+    }
+    .queue-card.selected {
+      background: #F0FDFA;
+      border-left: 3px solid var(--cv-brand-primary);
+      box-shadow: 0 2px 6px rgba(15, 118, 110, 0.08);
+    }
+    .qc-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .qc-road-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cv-text-primary);
+    }
+    .qc-risk-metric {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--cv-risk-high);
+      line-height: 1;
+    }
+    .qc-risk-metric small {
+      font-size: 10px;
+      color: var(--cv-text-muted);
+    }
+    .qc-tags-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+    }
+    .qc-pill {
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .qc-pill-candidate {
+      background: #FEF3C7;
+      color: #B45309;
+    }
+    .qc-pill-watch {
+      background: #E2E8F0;
+      color: #475569;
+    }
+    .qc-corroboration {
+      font-size: 10px;
+      color: var(--cv-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Column 2: Cartographic Hero Map (Quieter Non-Selected, Bold Selected) */
+    .ops-col-map {
+      position: relative;
+      background: #EAEFEA;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .map-canvas-mock {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .map-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .map-overlay-caption {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 5px;
+      padding: 6px 10px;
+      font-size: 10px;
+      pointer-events: none;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .map-overlay-caption b {
+      display: block;
+      color: var(--cv-text-primary);
+      font-size: 11px;
+    }
+    .map-spatial-guide-badge {
+      position: absolute;
+      top: 55px;
+      left: 10px;
+      background: #F0FDFA;
+      border: 1px solid var(--cv-brand-primary);
+      color: var(--cv-brand-dark);
+      border-radius: 4px;
+      padding: 3px 6px;
+      font-size: 9px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .map-overlay-legend {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 5px;
+      padding: 6px 10px;
+      font-size: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* Column 3: Tabbed Incident Inspector */
+    .ops-col-inspector {
+      background: #FFFFFF;
+      border-left: 1px solid var(--cv-border-light);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      direction: ltr; /* Strictly LTR */
+    }
+    
+    /* Inspector Tabs Header */
+    .inspector-tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--cv-border-light);
+      background: #F8FAFC;
+      flex-shrink: 0;
+    }
+    .inspector-tab-btn {
+      flex: 1;
+      padding: 8px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cv-text-secondary);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .inspector-tab-btn:hover {
+      color: var(--cv-text-primary);
+      background: #FFFFFF;
+    }
+    .inspector-tab-btn.active {
+      color: var(--cv-brand-primary);
+      border-bottom-color: var(--cv-brand-primary);
+      background: #FFFFFF;
+    }
+
+    /* Inspector Scrollable Body */
+    .inspector-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* Overview Tab: Zero-Scroll Compact Layout */
+    .inspector-eyebrow {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--cv-brand-primary);
+    }
+    .inspector-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--cv-text-primary);
+      line-height: 1.2;
+    }
+    
+    /* Dual Metric Module */
+    .dual-metric-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--cv-surface-sidebar);
+      border-radius: 6px;
+      padding: 10px;
+    }
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .metric-header {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--cv-text-muted);
+    }
+    .metric-score {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--cv-risk-high);
+    }
+    .metric-score small {
+      font-size: 11px;
+      color: var(--cv-text-muted);
+    }
+    .metric-band-pill {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--cv-risk-high-bg);
+      color: var(--cv-risk-high);
+      width: fit-content;
+    }
+    .corroboration-pips {
+      display: flex;
+      gap: 3px;
+      margin: 3px 0;
+    }
+    .corroboration-pip {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #CBD5E1;
+    }
+    .corroboration-pip.filled {
+      background: var(--cv-brand-primary);
+    }
+    .corroboration-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cv-brand-dark);
+    }
+
+    .overview-summary-box {
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--cv-text-secondary);
+      background: #FFFFFF;
+      border-left: 2px solid var(--cv-brand-primary);
+      padding: 4px 8px;
+    }
+    .overview-item-card {
+      background: var(--cv-surface-sidebar);
+      border-radius: 5px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .overview-item-card.leading {
+      background: #F0FDFA;
+      border-left: 2px solid var(--cv-brand-primary);
+    }
+
+    /* Provenance Badges */
+    .prov-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .prov-ai { background: #F1F5F9; color: #334155; }
+    .prov-human { background: #DCFCE7; color: #166534; }
+    .prov-cached { background: #F8FAFC; color: #475569; }
+
+    /* Evidence & Hypotheses Items */
+    .evidence-item {
+      background: var(--cv-surface-sidebar);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .evidence-quote {
+      font-style: italic;
+      color: var(--cv-text-primary);
+      background: #FFFFFF;
+      padding: 5px 8px;
+      border-radius: 4px;
+    }
+
+    /* Bottom Collapsible Signature Convergence Ribbon */
+    .ops-bottom-tray {
+      background: #FFFFFF;
+      border-top: 1px solid var(--cv-border-light);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    
+    /* Collapsed Bar Handle (Takes only 34px) */
+    .ribbon-handle-bar {
+      height: 34px;
+      background: #F8FAFC;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .ribbon-handle-title {
+      font-weight: 600;
+      color: var(--cv-text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ribbon-toggle-btn {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cv-brand-primary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Expanded Content Tray */
+    .ribbon-expanded-content {
+      display: none;
+      height: 106px;
+      border-top: 1px solid var(--cv-border-light);
+      background: #FFFFFF;
+      flex-direction: column;
+    }
+    .tray-timeline-area {
+      flex: 1;
+      overflow-x: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .timeline-node {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 130px;
+      background: var(--cv-surface-sidebar);
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-size: 10px;
+    }
+    .timeline-node.highlight {
+      background: #F0FDFA;
+      border: 1px solid var(--cv-brand-primary);
+    }
+    .timeline-arrow {
+      color: var(--cv-border-strong);
+      font-size: 12px;
+    }
+
+    /* Quarantined Replay Sandbox Bar inside Expanded Tray */
+    .tray-sandbox-bar {
+      height: 36px;
+      background: #FFFBEB;
+      border-top: 1px solid #FDE68A;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 10px;
+    }
+    .sandbox-tag {
+      font-weight: 700;
+      color: #92400E;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       PREVIEW NAVIGATION SWITCHER BAR
+       ======================================================================== -->
+  <div class="preview-switcher-bar">
+    <div class="brand-badge">
+      <span>⋈ Converge</span> Phase 4 UI/UX Specification Preview
+    </div>
+    <div class="switcher-buttons">
+      <button class="switcher-btn" onclick="switchView('view-entry', this)">1. / (Entry Gateway)</button>
+      <button class="switcher-btn" onclick="switchView('view-report', this)">2. /report (Signal Capture)</button>
+      <button class="switcher-btn active" onclick="switchView('view-operations', this)">3. /operations (1280×720 Workbench)</button>
+    </div>
+    <div style="font-family: var(--font-mono); font-size: 10px; color: #38BDF8;">
+      Zero Page Scroll · Projector Calibrated
+    </div>
+  </div>
+
+  <div class="preview-viewport">
+
+    <!-- ======================================================================
+         SCREEN 1: HEAVILY SIMPLIFIED ENTRY GATEWAY (/)
+         ====================================================================== -->
+    <div id="view-entry" class="screen-view">
+      <div class="entry-card">
+        <div class="entry-brand-mark">⋈</div>
+        <h1 class="entry-title">Converge</h1>
+        <p class="entry-subtitle">
+          Turn scattered urban signals into actionable incident intelligence.
+        </p>
+
+        <div class="entry-actions">
+          <button class="btn-lg btn-primary" onclick="switchView('view-report')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+            Report an observation
+          </button>
+          <button class="btn-lg btn-secondary" onclick="switchView('view-operations')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+            Open operations
+          </button>
+        </div>
+
+        <div class="entry-footer-meta">
+          <span>Nasr City Study Prototype · IMPACTX 2026</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ======================================================================
+         SCREEN 2: MOBILE-FIRST SIGNAL CAPTURE (/report)
+         ====================================================================== -->
+    <div id="view-report" class="screen-view">
+      <div class="mobile-frame">
+        <div class="mobile-top-bar">
+          <div class="mobile-brand">
+            <span>⋈</span> Converge Signal Capture
+          </div>
+          <div class="mobile-clock">09:31 Cairo</div>
+        </div>
+
+        <!-- Intake Form -->
+        <div id="report-form" class="mobile-scroll">
+          <div class="form-group">
+            <label class="form-label">What do you see?</label>
+            <span class="form-hint">Describe water accumulation, road deterioration, or obstruction.</span>
+            <!-- Element-level dir="auto" for natural bilingual handling -->
+            <textarea class="form-textarea" dir="auto" placeholder="e.g. مياه متراكمة في الحارة اليمين وكسر في الأسفلت"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Add a photo (optional)</label>
+            <div class="photo-capture-box" onclick="alert('Photo picker triggered: Selects camera or local JPEG/PNG')">
+              <div class="photo-capture-icon">📷</div>
+              <span style="font-size: 11px; font-weight: 600; color: var(--cv-brand-primary);">Take photo or choose from library</span>
+              <span style="font-size: 10px; color: var(--cv-text-muted);">Photo metadata is removed for privacy.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Location detected</label>
+            <div class="location-pill-box">
+              <div class="loc-info">
+                <span class="loc-road">Street 14, Nasr City</span>
+                <span class="loc-detected">● Accurate location available</span>
+              </div>
+              <button class="btn-sm" onclick="alert('Opens map pin selector')">Change</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">When was this observed?</label>
+            <div class="time-selector">
+              <div class="time-chip active">Just now (09:31)</div>
+              <div class="time-chip">15m ago</div>
+              <div class="time-chip">Earlier today</div>
+            </div>
+          </div>
+
+          <button class="report-submit-btn" onclick="submitMockReport()">
+            Send observation
+          </button>
+          <span style="font-size: 10px; color: var(--cv-text-muted); text-align: center;">
+            Reports are registered as observational signals for municipal engineering.
+          </span>
+        </div>
+
+        <!-- Post-Submission Receipt Screen -->
+        <div id="report-receipt" class="report-receipt-box">
+          <div class="receipt-icon">✓</div>
+          <h2 style="font-size: 16px; color: var(--cv-text-primary);">Observation registered</h2>
+          <p style="font-size: 11px; color: var(--cv-text-secondary); line-height: 1.4;">
+            Signal <strong>#sig-8f20b</strong> has been received. It will be synthesized with nearby observations, road context, and weather data.
+          </p>
+          <button class="btn-sm primary" style="width: 100%; padding: 8px;" onclick="resetMockReport()">
+            Submit another observation
+          </button>
+          <button class="btn-sm" style="width: 100%; padding: 8px;" onclick="switchView('view-operations')">
+            Open operations
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ======================================================================
+         SCREEN 3: DESKTOP OPERATIONS WORKBENCH (/operations)
+         ====================================================================== -->
+    <div id="view-operations" class="screen-view active">
+      
+      <!-- Top Status Bar -->
+      <header class="ops-header">
+        <div class="ops-header-left">
+          <div class="ops-brand">
+            <span>⋈</span> Converge
+          </div>
+          <span class="ops-sector-pill">Nasr City Sector 1</span>
+          <div id="header-mode-pill" class="mode-pill mode-live">
+            ● Live Municipal Mode
+          </div>
+        </div>
+        <div class="ops-header-right">
+          <div class="ops-clock-widget">
+            <span>09:31:00</span>
+            <small style="color: var(--cv-text-muted);">Cairo</small>
+          </div>
+          <button id="toggle-mode-btn" class="btn-sm" onclick="toggleOperationalMode()">
+            Toggle Replay Sandbox
+          </button>
+          <button class="btn-sm primary" onclick="switchView('view-report')">+ New observation</button>
+        </div>
+      </header>
+
+      <!-- Main 3-Column Split Workspace -->
+      <div id="ops-main-workspace" class="ops-workspace">
+
+        <!-- Column 1: Queue -->
+        <aside class="ops-col-queue">
+          <div class="queue-header-area">
+            <div class="queue-title">
+              <span>Candidate Incidents</span>
+              <span class="queue-count-badge">1 Active</span>
+            </div>
+          </div>
+          <div class="queue-list">
+            <!-- Candidate B Card (Selected) -->
+            <div class="queue-card selected">
+              <div class="qc-top-row">
+                <span class="qc-road-name">Street 14 · Medoid</span>
+                <span class="qc-risk-metric">68<small>/100</small></span>
+              </div>
+              <div class="qc-tags-row">
+                <span class="qc-pill qc-pill-candidate">Candidate</span>
+                <span class="qc-pill" style="background:#FEE2E2; color:#B91C1C;">Inspect First</span>
+              </div>
+              <div class="qc-corroboration">
+                <span>●●○ Moderate Evidence</span> · 3 Captures
+              </div>
+              <div style="font-size: 10px; color: var(--cv-text-muted);">
+                Water + Road Deterioration
+              </div>
+            </div>
+
+            <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--cv-text-muted); margin-top: 6px; padding: 0 4px;">
+              Watch Items
+            </div>
+
+            <!-- Watch Item A Card -->
+            <div class="queue-card" onclick="alert('Location A has 8 complaint copies that collapsed to 1 capture group; complaint volume is not corroboration.')">
+              <div class="qc-top-row">
+                <span class="qc-road-name">El-Nasr Road (A)</span>
+                <span class="qc-risk-metric" style="color: var(--cv-text-secondary);">32<small>/100</small></span>
+              </div>
+              <div class="qc-tags-row">
+                <span class="qc-pill qc-pill-watch">Watch Item</span>
+                <span class="qc-pill" style="background:#E2E8F0; color:#475569;">Watch</span>
+              </div>
+              <div class="qc-corroboration">
+                <span>●○○ Limited</span> · 1 Capture (8 Copies)
+              </div>
+            </div>
+
+            <!-- Watch Item C Card -->
+            <div class="queue-card">
+              <div class="qc-top-row">
+                <span class="qc-road-name">Abbas El-Akkad (C)</span>
+                <span class="qc-risk-metric" style="color: var(--cv-text-secondary);">15<small>/100</small></span>
+              </div>
+              <div class="qc-tags-row">
+                <span class="qc-pill qc-pill-watch">Watch Item</span>
+              </div>
+              <div class="qc-corroboration">
+                <span>●○○ Limited</span> · 1 Capture
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Column 2: Cartographic Hero Map (Quieter non-selected, Bold selected) -->
+        <main class="ops-col-map">
+          <div class="map-canvas-mock">
+            <svg class="map-svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+              <!-- Canvas Background -->
+              <rect width="800" height="600" fill="#F1F5F9"/>
+              
+              <!-- Quieter Non-Selected Roads -->
+              <path d="M 50,150 L 750,120" stroke="#CBD5E1" stroke-width="14" stroke-linecap="round"/>
+              <path d="M 50,150 L 750,120" stroke="#F8FAFC" stroke-width="10" stroke-linecap="round"/>
+              
+              <path d="M 120,40 L 180,560" stroke="#CBD5E1" stroke-width="12" stroke-linecap="round"/>
+              <path d="M 120,40 L 180,560" stroke="#F8FAFC" stroke-width="8" stroke-linecap="round"/>
+              
+              <!-- Street 14 Non-Selected Base -->
+              <path d="M 280,50 L 520,540" stroke="#CBD5E1" stroke-width="16" stroke-linecap="round"/>
+              <path d="M 280,50 L 520,540" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+              
+              <!-- Bold Selected Road Context: Street 14 Segment -->
+              <path d="M 345,190 L 455,405" stroke="#0F766E" stroke-width="7" stroke-linecap="round"/>
+              <path d="M 345,190 L 455,405" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+
+              <!-- All-Member Pairwise Spatial Guide Lines -->
+              <line x1="360" y1="230" x2="400" y2="295" stroke="#0F766E" stroke-width="1.2" stroke-dasharray="3,3"/>
+              <line x1="430" y1="355" x2="400" y2="295" stroke="#0F766E" stroke-width="1.2" stroke-dasharray="3,3"/>
+              <line x1="410" y1="240" x2="400" y2="295" stroke="#0F766E" stroke-width="1.2" stroke-dasharray="3,3"/>
+              
+              <!-- Candidate Medoid Centroid (B) -->
+              <circle cx="400" cy="295" r="14" fill="#B45309" stroke="#FFFFFF" stroke-width="2.5"/>
+              <text x="400" y="299" font-family="sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">B</text>
+
+              <!-- Member Observation Pin 1: Text -->
+              <circle cx="360" cy="230" r="6" fill="#0D9488" stroke="#FFFFFF" stroke-width="1.5"/>
+              <!-- Member Observation Pin 2: Image -->
+              <circle cx="430" cy="355" r="6" fill="#D97706" stroke="#FFFFFF" stroke-width="1.5"/>
+              <!-- Member Observation Pin 3: Text -->
+              <circle cx="410" cy="240" r="6" fill="#0D9488" stroke="#FFFFFF" stroke-width="1.5"/>
+
+              <!-- Unrelated Watch items -->
+              <circle cx="160" cy="220" r="9" fill="#94A3B8" stroke="#FFFFFF" stroke-width="1.5"/>
+              <text x="160" y="223" font-family="sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">A</text>
+              <circle cx="620" cy="130" r="9" fill="#94A3B8" stroke="#FFFFFF" stroke-width="1.5"/>
+              <text x="620" y="133" font-family="sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">C</text>
+            </svg>
+          </div>
+
+          <!-- Floating Overlays -->
+          <div class="map-overlay-caption">
+            <b>Nasr City Study Extent</b>
+            <span style="color: var(--cv-text-muted);">Real OSM Geometry</span>
+          </div>
+
+          <div class="map-spatial-guide-badge">
+            <span>⋈</span>
+            <span>≤120 m all-member correlation threshold — not a flood extent.</span>
+          </div>
+
+          <div class="map-overlay-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#B45309;"></div>
+              <span>Candidate Medoid</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#0D9488;"></div>
+              <span>Text Member Pin</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#D97706;"></div>
+              <span>Image Member Pin</span>
+            </div>
+            <div class="legend-item">
+              <div style="width:12px; border-bottom: 2.5px solid #0F766E;"></div>
+              <span>Matched Road (Street 14)</span>
+            </div>
+          </div>
+        </main>
+
+        <!-- Column 3: Tabbed Incident Inspector (Zero Scroll Overview) -->
+        <aside class="ops-col-inspector">
+          
+          <!-- Inspector Tab Header -->
+          <div class="inspector-tab-bar">
+            <button class="inspector-tab-btn active" onclick="switchInspectorTab('tab-overview', this)">Overview</button>
+            <button class="inspector-tab-btn" onclick="switchInspectorTab('tab-evidence', this)">Evidence (3)</button>
+            <button class="inspector-tab-btn" onclick="switchInspectorTab('tab-hypo', this)">Hypotheses (3)</button>
+            <button class="inspector-tab-btn" onclick="switchInspectorTab('tab-review', this)">Review</button>
+          </div>
+
+          <!-- Inspector Tab Body -->
+          <div class="inspector-body">
+            
+            <!-- TAB 1: OVERVIEW (DEFAULT ZERO-SCROLL FOR 1280x720) -->
+            <div id="tab-overview" class="tab-content active">
+              <div>
+                <div class="inspector-eyebrow">Candidate #inc-b82f · Rev 3</div>
+                <h2 class="inspector-title">Street 14 · Tertiary Road</h2>
+                <span style="font-size: 10px; color: var(--cv-text-muted);">Water + Road Deterioration</span>
+              </div>
+
+              <!-- Dual Metric Panel (CRITICAL: Risk vs Evidence) -->
+              <div class="dual-metric-panel">
+                <!-- Metric 1: Risk -->
+                <div class="metric-card">
+                  <div class="metric-header">Risk Index (Triage)</div>
+                  <div class="metric-score">68<small> /100</small></div>
+                  <div class="metric-band-pill">Inspect First</div>
+                </div>
+
+                <!-- Metric 2: Evidence Strength -->
+                <div class="metric-card">
+                  <div class="metric-header">Evidence Strength</div>
+                  <div class="corroboration-pips">
+                    <div class="corroboration-pip filled"></div>
+                    <div class="corroboration-pip filled"></div>
+                    <div class="corroboration-pip"></div>
+                  </div>
+                  <div class="corroboration-label">Moderate Corroboration</div>
+                  <span style="font-size: 9px; color: var(--cv-text-muted);">3 captures · Dual modality</span>
+                </div>
+              </div>
+
+              <!-- "Why Inspect Here?" Executive Summary -->
+              <div class="overview-summary-box">
+                <strong>Why Inspect Here?</strong><br/>
+                3 independent captures on Street 14 within 120 m pairwise distance over 17 minutes. Localized water co-occurs with visible asphalt deterioration.
+              </div>
+
+              <!-- Strongest Current Hypothesis -->
+              <div class="overview-item-card leading">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700;">
+                  <span style="color: var(--cv-brand-dark);">Strongest Hypothesis: H1</span>
+                  <span style="color: var(--cv-verified);">5.10 pts (Leading)</span>
+                </div>
+                <div style="font-size: 11px; color: var(--cv-text-primary);">
+                  Persistent rainfall ponding / probable drainage inlet limitation.
+                </div>
+              </div>
+
+              <!-- Key Uncertainty -->
+              <div class="overview-item-card">
+                <div style="font-size: 10px; font-weight: 700; color: var(--cv-uncertain);">
+                  Key Uncertainty / Gap
+                </div>
+                <div style="font-size: 11px; color: var(--cv-text-secondary);">
+                  Drain inlet clearance unobserved. Road damage verified by photo.
+                </div>
+              </div>
+
+            </div>
+
+            <!-- TAB 2: DETAILED EVIDENCE -->
+            <div id="tab-evidence" class="tab-content">
+              <div style="font-size: 11px; font-weight: 700; color: var(--cv-text-primary);">Admitted Evidence Items</div>
+              <div class="evidence-item">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>STANDING WATER · PRESENT</strong>
+                  <span class="prov-badge prov-ai">⚡ AI Extracted</span>
+                </div>
+                <div class="evidence-quote" dir="auto">"مياه متراكمة في شارع 14 بعرض الطريق كله"</div>
+                <div style="font-size: 9px; color: var(--cv-text-muted);">09:14 Cairo · Egyptian Arabic · Text #sig-01</div>
+              </div>
+
+              <div class="evidence-item">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>ROAD DAMAGE · PRESENT</strong>
+                  <span class="prov-badge prov-cached">⟳ Cached AI</span>
+                </div>
+                <div style="font-size: 10px; color: var(--cv-text-secondary);">Visible broken surface edge and pothole under water.</div>
+                <div style="font-size: 9px; color: var(--cv-text-muted);">09:18 Cairo · Image #img-02 · GPT-5.6 Luna</div>
+              </div>
+
+              <div class="evidence-item">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>STANDING WATER · PRESENT</strong>
+                  <span class="prov-badge prov-human">✓ Human Reviewed</span>
+                </div>
+                <div class="evidence-quote" dir="auto">"Water still obstructing traffic near intersection"</div>
+                <div style="font-size: 9px; color: var(--cv-text-muted);">09:31 Cairo · English · Text #sig-03 (Engineer Verified)</div>
+              </div>
+            </div>
+
+            <!-- TAB 3: HYPOTHESES -->
+            <div id="tab-hypo" class="tab-content">
+              <div style="font-size: 11px; font-weight: 700; color: var(--cv-text-primary);">Competing Physical Hypotheses</div>
+              <div class="overview-item-card leading">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700;">
+                  <span>H1: Rainfall Ponding / Drainage Limitation</span>
+                  <span style="color: var(--cv-verified);">5.10 pts (Leading)</span>
+                </div>
+                <div style="font-size: 11px; color: var(--cv-text-secondary); margin-top: 2px;">
+                  Supported by 6.0 mm ERA5 rainfall, persistent water claims, and road damage.
+                </div>
+              </div>
+
+              <div class="overview-item-card">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700;">
+                  <span>H3: Non-Rainfall Water Source</span>
+                  <span style="color: var(--cv-text-muted);">1.90 pts (Alternative)</span>
+                </div>
+                <div style="font-size: 11px; color: var(--cv-text-secondary); margin-top: 2px;">
+                  Pipe burst or continuous discharge unverified by field reports.
+                </div>
+              </div>
+
+              <div class="overview-item-card">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700;">
+                  <span>H2: Transient Surface Runoff</span>
+                  <span style="color: var(--cv-text-muted);">1.60 pts (Alternative)</span>
+                </div>
+                <div style="font-size: 11px; color: var(--cv-text-secondary); margin-top: 2px;">
+                  Short-lived ponding contradicted by 17-minute temporal persistence.
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 4: REVIEW & FIELD CHECK -->
+            <div id="tab-review" class="tab-content">
+              <div style="font-size: 11px; font-weight: 700; color: var(--cv-text-primary);">Field Inspection Checklist</div>
+              <div style="display:flex; flex-direction:column; gap:5px; font-size:11px;">
+                <label style="display:flex; align-items:flex-start; gap:6px;">
+                  <input type="checkbox" style="margin-top: 2px;" />
+                  <span>Verify drain inlet clearance and grating obstruction.</span>
+                </label>
+                <label style="display:flex; align-items:flex-start; gap:6px;">
+                  <input type="checkbox" style="margin-top: 2px;" />
+                  <span>Measure water depth in asphalt depression if safe.</span>
+                </label>
+                <label style="display:flex; align-items:flex-start; gap:6px;">
+                  <input type="checkbox" style="margin-top: 2px;" />
+                  <span>Check upstream discharge source.</span>
+                </label>
+              </div>
+              <button class="btn-sm" style="margin-top: 8px;" onclick="alert('Opens Human Correction Drawer for Signal Extraction')">
+                Correct AI Extraction Labels
+              </button>
+            </div>
+
+          </div>
+        </aside>
+      </div>
+
+      <!-- Bottom Collapsible Signature Convergence Ribbon -->
+      <footer class="ops-bottom-tray">
+        
+        <!-- Collapsed Handle Bar (34px height) -->
+        <div class="ribbon-handle-bar" onclick="toggleRibbon()">
+          <div class="ribbon-handle-title">
+            <span style="color: var(--cv-brand-primary);">⋈</span>
+            <span>Convergence Ribbon: 3 independent signals + ERA5 context → Candidate #inc-b82f</span>
+          </div>
+          <button id="ribbon-toggle-btn" class="ribbon-toggle-btn">
+            <span>Expand Ribbon</span> ⌃
+          </button>
+        </div>
+
+        <!-- Expanded Drawer Content -->
+        <div id="ribbon-drawer" class="ribbon-expanded-content">
+          <div class="tray-timeline-area">
+            <div class="timeline-node">
+              <span style="font-weight: 700; color: var(--cv-brand-primary);">09:14 Text Report</span>
+              <span>Water Present (Arabic)</span>
+              <span class="prov-badge prov-ai">AI Extracted</span>
+            </div>
+
+            <div class="timeline-arrow">➔</div>
+
+            <div class="timeline-node">
+              <span style="font-weight: 700; color: var(--cv-risk-med);">09:18 Field Image</span>
+              <span>Visible Road Damage</span>
+              <span class="prov-badge prov-cached">Cached AI</span>
+            </div>
+
+            <div class="timeline-arrow">➔</div>
+
+            <div class="timeline-node highlight">
+              <span style="font-weight: 700; color: var(--cv-brand-primary);">09:31 Text Report</span>
+              <span>Temporal Persistence</span>
+              <span class="prov-badge prov-human">Human Reviewed</span>
+            </div>
+
+            <div class="timeline-arrow">➔</div>
+
+            <div class="timeline-node" style="background:#FEF3C7;">
+              <span style="font-weight: 700; color: #92400E;">ERA5 Context</span>
+              <span>6.0 mm Rain (6h)</span>
+              <span style="font-size: 8px; color: #B45309;">Modeled Reanalysis</span>
+            </div>
+
+            <div class="timeline-arrow">➔</div>
+
+            <div class="timeline-node" style="background:var(--cv-brand-primary); color:white;">
+              <span style="font-weight: 700; color: white;">Candidate B Formed</span>
+              <span style="font-size: 9px; opacity: 0.9;">3 Independent Captures</span>
+              <span style="font-size: 9px; font-weight: 700;">Triage: 68 / 100</span>
+            </div>
+          </div>
+
+          <!-- Quarantined Replay Sandbox Sub-Bar -->
+          <div id="sandbox-subpanel" class="tray-sandbox-bar" style="display: none;">
+            <div class="sandbox-tag">
+              <span>REPLAY & AUDIT SANDBOX</span>
+              <span>Simulation Tool — Inactive in Live Municipal Mode</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <button class="btn-sm" onclick="alert('Replay: Step 1')">Start</button>
+              <button class="btn-sm primary" onclick="alert('Replay: Advance')">Advance</button>
+              <button class="btn-sm" onclick="alert('Replay: Reset')">Reset</button>
+              <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; margin-left: 8px;">
+                <input type="checkbox" onchange="alert('Ablation: Image evidence excluded. Risk widens to interval [52–83].')" />
+                <span>Hide Images</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                <input type="checkbox" onchange="alert('Invariance Test: Added 10 duplicates. Independent capture count remains 3. Risk remains 68.')" />
+                <span>Add 10 Duplicates</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </footer>
+
+    </div>
+
+  </div>
+
+  <script>
+    let isLiveMode = true;
+    let isRibbonExpanded = false;
+
+    function switchView(viewId, btn) {
+      document.querySelectorAll('.screen-view').forEach(v => v.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+      if (btn) {
+        document.querySelectorAll('.switcher-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+
+    function switchInspectorTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.inspector-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function toggleRibbon() {
+      isRibbonExpanded = !isRibbonExpanded;
+      const workspace = document.getElementById('ops-main-workspace');
+      const drawer = document.getElementById('ribbon-drawer');
+      const btn = document.getElementById('ribbon-toggle-btn');
+
+      if (isRibbonExpanded) {
+        workspace.classList.add('ribbon-expanded');
+        drawer.style.display = 'flex';
+        btn.innerHTML = '<span>Collapse Ribbon</span> ⌄';
+      } else {
+        workspace.classList.remove('ribbon-expanded');
+        drawer.style.display = 'none';
+        btn.innerHTML = '<span>Expand Ribbon</span> ⌃';
+      }
+    }
+
+    function toggleOperationalMode() {
+      isLiveMode = !isLiveMode;
+      const pill = document.getElementById('header-mode-pill');
+      const sandboxBar = document.getElementById('sandbox-subpanel');
+      const toggleBtn = document.getElementById('toggle-mode-btn');
+
+      if (isLiveMode) {
+        pill.className = 'mode-pill mode-live';
+        pill.textContent = '● Live Municipal Mode';
+        sandboxBar.style.display = 'none';
+        toggleBtn.textContent = 'Toggle Replay Sandbox';
+      } else {
+        pill.className = 'mode-pill mode-sandbox';
+        pill.textContent = '● Replay Sandbox Active';
+        sandboxBar.style.display = 'flex';
+        toggleBtn.textContent = 'Switch to Live Mode';
+        // Auto-expand ribbon when entering sandbox mode
+        if (!isRibbonExpanded) toggleRibbon();
+      }
+    }
+
+    function submitMockReport() {
+      document.getElementById('report-form').style.display = 'none';
+      document.getElementById('report-receipt').style.display = 'flex';
+    }
+
+    function resetMockReport() {
+      document.getElementById('report-receipt').style.display = 'none';
+      document.getElementById('report-form').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>

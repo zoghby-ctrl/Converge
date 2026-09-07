@@ -229,6 +229,12 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
 
     dist = ROOT / "frontend" / "dist"
     if dist.exists():
+        index_file = dist / "index.html"
+        if index_file.is_file():
+            @app.get("/report", include_in_schema=False)
+            @app.get("/operations", include_in_schema=False)
+            def spa_route_fallback():
+                return FileResponse(index_file)
         app.mount("/", StaticFiles(directory=dist, html=True), name="frontend")
     return app
 
