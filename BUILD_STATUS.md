@@ -1,3 +1,123 @@
+# Converge — Phase 3 build status
+
+**Completed and verified: Phase 3 — Real context integration, 7 September 2026.**
+No commit was made. Phase 1, Phase 2A and Phase 2B were read and preserved, not
+redone. Starting status was clean at `cabb472 Complete Phase 2B image perception`,
+following `351f314 Complete Phase 2A text perception`.
+
+The approved product clarification is recorded in the architecture freeze and
+README: one responsive React/Vite PWA and shared backend, with eventual `/report`
+Signal Capture and `/operations` municipal workbench surfaces. This phase does not
+implement those routes, installability, a UI redesign or Phase 4. No new AI model,
+training, extraction request, or external message was introduced.
+
+## Delivered context integration
+
+- Authentic OpenStreetMap API response for the frozen study box, acquired
+  2026-09-07, preserved losslessly as gzip with a SHA-256 manifest. Derived local
+  GeoJSON contains **910 highway ways** and a catalog of **20 short sections**,
+  each at most **110 m**. Source IDs, tags/classes, URLs, acquisition times,
+  source/code-review limits and ODbL attribution are retained.
+- Conservative road assignment enforces **30 m nearest distance**, **10 m
+  ambiguity margin** and **50 m maximum known accuracy**. All mapped highway ways
+  compete, including ways outside the selected catalog. Cross-section compatibility
+  lists are empty; nearby parallel/crossing/bridge roads never acquire an inferred
+  connection. Unknown/manual road class remains unknown exposure.
+- Existing text/image submissions can opt into sourced OSM IDs. The small
+  **Match sourced road** helper and read-only match endpoint expose assignments or
+  review reasons; the server validates the geometry again before perception.
+  Existing manually reviewed segment submissions preserve their prior behavior.
+- The Open-Meteo **ERA5** adapter validates UTC, mm, product/grid identity, unique
+  whole-hour timestamps, finite nonnegative values and source hashes. It selects
+  the six completed **preceding-hour sums**, preserving missing hours as null.
+  Complete dry/wet context feeds only frozen N/R hypothesis contributions.
+- Authentic weather cache: **48 hourly values**, 2025-01-01 through 2025-01-02,
+  all **0 mm**, returned grid **30.0 latitude / 31.25 longitude**, **0.25°** ERA5.
+  It is a real provider response, not a street gauge or fabricated rain event.
+- `context_signature` retains synthetic 6 mm rainfall and the signature evidence
+  story on real roads. `context_archive` places that fictional evidence in January
+  and consumes authentic unmodified weather dates/values. Only this explicit
+  retrospective demo relaxes effective availability; actual acquisition time and
+  original interval ends remain in the source trace and visible UI. Default
+  adapter availability never pretends reanalysis was available as-issued.
+- Map attribution, context/provider provenance, synthetic placement/time and
+  retrospective labels appear in the existing workbench. All vectors are bundled;
+  no raster tiles, live basemap, weather polling, arbitrary fetch API or AI request
+  is required. The health endpoint identifies the cache as historical, not current
+  operator weather. Missing/corrupt rain is unknown; missing background vectors
+  fall back to stored reviewed sections. Missing required catalog blocks new
+  sourced assignment/reset with an explicit unavailable response.
+- `.gitattributes` preserves provider and derived cache bytes across Windows
+  checkout; otherwise automatic line-ending conversion could invalidate hashes.
+
+## Measured verification
+
+| Check | Result |
+|---|---|
+| Baseline before changes | **85 passed** |
+| Full regression suite after integration | **120 passed**, including all 85 existing tests and 35 Phase 3 tests; **18.40 s** |
+| TypeScript `npm run typecheck --prefix frontend` | Passed |
+| Production `npm run build --prefix frontend` | Passed; Vite build **718 ms**, existing non-failing large-chunk advisory |
+| Python `compileall` for backend and context builder | Passed |
+| `git diff --check` | Passed |
+| Both context replay candidates | **68/100**, **3 independent captures**, **Moderate**; no exclusions |
+| Image ablation, both sourced replays | **52–83**, **Limited**; duplicate copies do not increase risk/support/captures |
+| Missing road class | Exposure unknown; B raw risk **52.5–67.5**, without changing witness count |
+| Missing/invalid/stale/unavailable/out-of-footprint rain | Unknown; no silent dry/zero contribution; risk unaffected by rain |
+| Context duplication / context-only dataset | No support or witness inflation / no incidents |
+| Operator text and image source integration | Sourced class/provenance persisted; invalid OSM ID rejected before perception |
+| Browser, production build, external network blocked | Both replays, local map, source labels, ablation, copies and reload passed; **0 console errors**, **0 external requests** |
+| 1280×720 browser layout | No horizontal document overflow; screenshots visually inspected |
+| AI provider requests in Phase 3 | **0**; tests use fake adapters or a blank key |
+
+The only pytest warning is Starlette's deprecated AnyIO `BlockingPortal` alias.
+The browser used a disposable SQLite runtime and blank OpenAI key, preserving the
+user's saved observations and 80-request perception ledger.
+
+Pure-engine timing on the **12-record** context fixtures, 20 warm recomputations
+each (not a 500-record load test or end-to-end latency claim):
+
+| Scenario | p50 | p95 | Rain | H1 / H2 / H3 support |
+|---|---:|---:|---:|---|
+| `context_signature` | 3.798 ms | 4.907 ms | synthetic 6 mm | 4.743115 / 1.722156 / 1.813053 |
+| `context_archive` | 3.873 ms | 4.754 ms | modeled 0 mm | 2.943115 / -0.077844 / 3.613053 |
+
+Dry context changes the alternatives, not impact severity: H3 and H1 remain within
+the frozen one-point tie margin. No root cause is established. Machine-readable
+results: [context-verification.json](docs/context-verification.json) and
+[browser-context-result.json](docs/browser-context-result.json). Browser procedure:
+[browser-context-qa.js](docs/browser-context-qa.js).
+
+Frozen files remain byte-for-byte unchanged on this machine:
+
+- Engine SHA-256: `5fe1a4471281bb0355fe45573610ab9679144401821b80c68c6e76394145b17b`.
+- Config SHA-256: `7d07908512e641c760e5be40c6dfb4e57e9f30d5950206b9a26159b07f252667`.
+
+## Known limitations and stopping point
+
+The selected road sections have source-geometry/code review, **not independent
+human or field review**. Empty compatibility lists deliberately over-split and
+ambiguous pins require manual review. OSM completeness, bridge/barrier semantics,
+road class as an exposure proxy, and grid rainfall cannot establish drainage
+connectivity, traffic exposure or street-level weather. Whole background ways can
+extend beyond the requested box; scored sections and pin matching stay inside it.
+
+Only the historical two-day ERA5 response is bundled. Current operator weather
+therefore remains unknown, with no automatic refresh or invented local rain.
+The 2026 road snapshot and 2025 weather are explicitly non-contemporaneous context
+for a synthetic demo, not an incident reconstruction. Source licences and the
+non-commercial API restriction are documented in
+[fixtures/context/README.md](fixtures/context/README.md).
+
+Existing Phase 2B perception quality limitations remain as recorded below. No new
+field labels, municipal outcomes, accuracy claim, training, deployment, PWA
+implementation or Phase 4 work was added. **Stop: Phase 3 is verified.**
+
+## Historical Phase 2B record
+
+The following is the prior committed build record. Its phase-authorization and
+next-step statements describe the state before the separate Phase 3 instruction.
+
 # Converge — Phase 2B build status
 
 **Completed: Phase 2B — OpenAI image perception, 7 September 2026.**

@@ -1,0 +1,54 @@
+{
+  "roads": {
+    "raw_ref": "osm-map.xml.gz",
+    "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388+00:00",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  "weather": {
+    "raw_ref": "open-meteo-era5.json",
+    "raw_sha256": "8df48cbb9244fb429023b16a20fbf69c70338d34ba2d1cb56ee995fdd974ad6c",
+    "source": {
+      "provider": "Open-Meteo",
+      "product": "ERA5",
+      "request_url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.054&longitude=31.3355&start_date=2025-01-01&end_date=2025-01-02&hourly=rain&models=era5&timezone=GMT",
+      "acquired_at": "2026-09-07T17:35:49.387869+00:00",
+      "raw_ref": "fixtures/context/open-meteo-era5.json",
+      "raw_sha256": "8df48cbb9244fb429023b16a20fbf69c70338d34ba2d1cb56ee995fdd974ad6c",
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence.",
+      "grid_center": [
+        31.25,
+        30.0
+      ],
+      "resolution_degrees": 0.25
+    }
+  },
+  "catalog": {
+    "raw_ref": "roads.json",
+    "raw_sha256": "6321a5ff6cac67a90413011f18ae0e93dd20966f28536bc9899984e0c7ac2708"
+  },
+  "geography": {
+    "raw_ref": "roads.geojson",
+    "raw_sha256": "6cd98a0a25d9ebffd51c2ea3f5938082aeaa686ae912fa4140240621ae0ddcd1"
+  },
+  "review": {
+    "method": "Conservative source-geometry/code review, no human field verification",
+    "segments": 20,
+    "max_segment_length_m": 110,
+    "compatible_pairs": [],
+    "notes": "Same short section only. Cross-segment matches abstain; all source highway ways compete during pin assignment. No routing, barrier inference, or drainage connectivity."
+  },
+  "demo_placement": {
+    "a": "osm-217280778-0-0",
+    "b": "osm-29982808-9-1",
+    "c": "osm-29982808-12-0",
+    "notes": "All observations deliberately placed at segment midpoints; public image location/time are simulated. No real event is claimed."
+  }
+}

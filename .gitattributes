@@ -1,0 +1,6 @@
+# Context hashes must survive Windows checkout with core.autocrlf=true.
+fixtures/context/*.json text eol=lf
+fixtures/context/*.geojson text eol=lf
+# Preserve authentic provider bytes exactly (gzip is a lossless transport wrapper).
+fixtures/context/open-meteo-era5.json -text
+fixtures/context/*.gz binary

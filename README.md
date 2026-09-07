@@ -1,10 +1,10 @@
 # Converge
 
-Phase 2B: a local municipal inspection workbench with bounded OpenAI text and
-image perception plus an offline structured replay. Team: **Control Alt Delete**,
+Phase 3: a local municipal inspection workbench with bounded OpenAI text and
+image perception, sourced road geography and cached modeled rainfall context. Team: **Control Alt Delete**,
 IMPACTX 2026 Smart Cities. AI extracts report claims and visibly supported image
 conditions; the existing deterministic engine alone controls membership, risk,
-hypotheses and evidence strength. Deployment and Phase 3 are deferred.
+hypotheses and evidence strength. Deployment, responsive PWA work and Phase 4 are deferred.
 
 ## Run on this Windows machine
 
@@ -107,7 +107,9 @@ human review. Use one local backend worker; no background API polling.
 Text presence alone does not measure severity. Positive evidence therefore has
 unknown ordinal severity; reported duration does not establish independently
 corroborated persistence. Text-only risk can remain **0–100** with Limited evidence.
-Road class/rainfall stay unknown; the LLM never fills those gaps. The incident
+A matched sourced OSM section supplies road-class exposure; a manual segment with
+unknown class retains its risk range. Current operator rainfall remains unknown:
+the bundled weather covers a historical demo period. The LLM never fills context gaps. The incident
 clock is the last local computation, not a continuously refreshed forecast.
 
 Operator data is stored at `%LOCALAPPDATA%\Converge\runtime\converge-text.sqlite3`.
@@ -142,6 +144,50 @@ events are simulated. The map is an explicitly labeled schematic in the Nasr Cit
 study extent. Nothing in the demo claims a real incident, a physical diagnosis, or
 a failure probability. Full source/licence details are in
 `fixtures/images/manifest.json`.
+
+## Real context demo (Phase 3)
+
+Select **context signature**, Reset, then Start/Advance. This preserves the
+signature evidence story on real OpenStreetMap roads with explicitly synthetic
+rainfall. **context archive** uses the same fictional observations placed in
+January 2025 and the authentic, unchanged Open-Meteo ERA5 response for that period.
+Its 0 mm is provider-modeled dry context, not a measurement at the street.
+
+Both variants retain B's **68/100**, three captures and Moderate evidence; image
+ablation remains **52–83**. Weather changes only the existing hypothesis rules.
+The historical example explicitly relaxes availability for retrospective replay,
+while retaining the true acquisition time and provider interval timestamps. It is
+not an as-issued forecast test and does not claim any real incident occurred.
+The original `signature` and `signature_image` fixtures remain unchanged.
+
+The local map contains 910 sourced highway ways and 20 selected short context
+sections, each no longer than 110 m. All cross-section compatibility lists are
+empty. A pin must be within 30 m of its nearest section, with no incompatible
+competitor within nearest distance + 10 m, and accuracy at most 50 m. Unreviewed
+mapped ways compete too. These conservative defaults can split a real event;
+no road or drainage connectivity is inferred. Independent human geography review
+has not been performed.
+
+In **New observation**, **Match sourced road** fills a validated OSM segment ID
+when the pin is unambiguous. Text and image submission recheck it server-side.
+Ambiguous/unmapped pins require manual review; manual labels retain the previous
+operator workflow with unknown exposure. Context never adds a witness.
+
+Provenance is visible in the map attribution and incident context panel. Raw
+response hashes, request URLs, acquisition timestamps, grid/product identity,
+ODbL/CC BY attribution and adapter semantics are in
+[fixtures/context/README.md](fixtures/context/README.md) and its manifest.
+No weather or map request occurs during replay or scoring; all map assets are local.
+
+The eventual product is one responsive React/Vite PWA and shared backend:
+`/report` for mobile-first Signal Capture and `/operations` for the desktop-first
+municipal workbench. Those surfaces and installability are **not implemented in
+Phase 3**; no separate native/mobile codebase is planned.
+
+Additional read-only APIs: `GET /api/v1/context` returns the source manifest and
+selected sections; `GET /api/v1/context/road-match?lon=...&lat=...&accuracy_m=...`
+returns an assignment or explicit review reason. `/health` reports the historical
+weather cache separately from current weather. There is no arbitrary URL-fetch API.
 
 ## Verify
 
@@ -216,8 +262,8 @@ current analysis clock with the same engine and never committed.
 
 Implementation interpretations and deferred pieces are in
 [`docs/PHASE1_DECISIONS.md`](docs/PHASE1_DECISIONS.md). Phase 2A implementation and
-measured results are in [`BUILD_STATUS.md`](BUILD_STATUS.md). Stop after text
-perception; Phase 2B needs a separate instruction.
+measured results are in [`BUILD_STATUS.md`](BUILD_STATUS.md). Phase 1, 2A and 2B are complete. Phase 3 verification is recorded below and in
+`BUILD_STATUS.md`; Phase 4 is not started.
 
 Additional APIs:
 

@@ -1,0 +1,64 @@
+{
+  "phase": "3",
+  "ai_provider_calls": 0,
+  "frozen_hashes": {
+    "backend/app/engine.py": "5fe1a4471281bb0355fe45573610ab9679144401821b80c68c6e76394145b17b",
+    "backend/app/config.py": "7d07908512e641c760e5be40c6dfb4e57e9f30d5950206b9a26159b07f252667"
+  },
+  "context_assets_bytes": 1290761,
+  "replay": {
+    "context_signature": {
+      "engine_runs": 20,
+      "p50_ms": 3.798,
+      "p95_ms": 4.907,
+      "records": 12,
+      "independent_captures": 3,
+      "risk": "68",
+      "evidence_strength": "Moderate",
+      "rainfall_mm": 6.0,
+      "hypotheses": {
+        "H1": 4.743115,
+        "H3": 1.813053,
+        "H2": 1.722156
+      },
+      "excluded": []
+    },
+    "context_archive": {
+      "engine_runs": 20,
+      "p50_ms": 3.873,
+      "p95_ms": 4.754,
+      "records": 12,
+      "independent_captures": 3,
+      "risk": "68",
+      "evidence_strength": "Moderate",
+      "rainfall_mm": 0.0,
+      "hypotheses": {
+        "H3": 3.613053,
+        "H1": 2.943115,
+        "H2": -0.077844
+      },
+      "excluded": []
+    }
+  },
+  "source_hashes": {
+    "roads": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+    "weather": "8df48cbb9244fb429023b16a20fbf69c70338d34ba2d1cb56ee995fdd974ad6c",
+    "catalog": "6321a5ff6cac67a90413011f18ae0e93dd20966f28536bc9899984e0c7ac2708",
+    "geography": "6cd98a0a25d9ebffd51c2ea3f5938082aeaa686ae912fa4140240621ae0ddcd1"
+  },
+  "checks": {
+    "pytest": {
+      "passed": 120,
+      "existing": 85,
+      "phase3": 35,
+      "seconds": 18.4,
+      "warnings": 1
+    },
+    "typescript": "passed",
+    "frontend_build": "passed",
+    "python_compileall": "passed",
+    "git_diff_check": "passed",
+    "browser_failures": 0,
+    "browser_external_requests": 0
+  }
+}

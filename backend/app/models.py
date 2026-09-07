@@ -147,6 +147,22 @@ class ImageObservationMetadata(Contract):
         return self
 
 
+class ContextSource(Contract):
+    provider: str
+    product: str
+    request_url: str
+    acquired_at: datetime
+    raw_ref: str
+    raw_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    application: Literal["original", "retrospective_demo"] = "original"
+    grid_center: tuple[float, float] | None = None
+    resolution_degrees: float | None = None
+    interval_ends: list[datetime] = Field(default_factory=list)
+    notes: str
+
+    _utc = field_validator("acquired_at")(classmethod(Signal.utc.__func__))
+
+
 class RoadContext(Contract):
     road_context_id: str
     name: str
@@ -154,6 +170,7 @@ class RoadContext(Contract):
     compatible_ids: list[str] = Field(default_factory=list)
     coordinates: list[tuple[float, float]]
     provenance: Provenance
+    source: ContextSource | None = None
 
 
 class RainContext(Contract):
@@ -163,6 +180,7 @@ class RainContext(Contract):
     hourly_mm: list[float | None] = Field(min_length=6, max_length=6)
     bbox: tuple[float, float, float, float]
     provenance: Provenance
+    source: ContextSource | None = None
 
     _utc = field_validator("end_at", "available_at")(classmethod(Signal.utc.__func__))
 

@@ -28,6 +28,12 @@ class CompareRequest(Contract):
 
 
 def load_fixture(name):
+    if name in {"context_signature", "context_archive"}:
+        from .context import load_context_demo
+        try:
+            return load_context_demo(name)
+        except (OSError, ValueError, KeyError):
+            raise HTTPException(503, "Bundled road context unavailable or invalid") from None
     allowed = {p.stem: p for p in FIXTURES.glob("*.json") if not p.stem.startswith("text_")}
     if name not in allowed:
         raise HTTPException(404, "Unknown bundled scenario")
@@ -35,7 +41,7 @@ def load_fixture(name):
 
 
 def create_app(db_path=None, perception_settings=None, perception_client=None):
-    app = FastAPI(title="Converge — Phase 2B", version="2.1", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Converge — Phase 3", version="3.0", docs_url=None, redoc_url=None)
     store = Store(db_path)
     app.state.store = store
     lock = RLock()
@@ -57,14 +63,53 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
         return {"dataset_id": dataset.dataset_id, "version": "1.0", "title": dataset.title,
                 "incidents": store.incidents(), "step": state["step"], "total_steps": len(times),
                 "clock": state["clock"], "signals": [signal_for_client(s) for s in visible if s], "roads": dataset.roads,
-                "excluded": json.loads(state["excluded_json"]), "mode": dataset.mode}
+                "excluded": json.loads(state["excluded_json"]), "mode": dataset.mode,
+                **context_response(dataset)}
+
+    def context_response(dataset):
+        if dataset.dataset_id not in {"context_signature", "context_archive"}:
+            return {}
+        from .context import geography
+        try:
+            vectors = geography()
+        except (OSError, ValueError, KeyError):
+            vectors = None  # Keep stored reviewed sections and evidence usable.
+        return {"geography": vectors, "context_notice": dataset.title +
+                ". Reports, image placement and observation times are synthetic; no real incident or as-issued evaluation.",
+                "rainfall": dataset.rainfall}
+
+    @app.get("/api/v1/context")
+    def context_catalog():
+        from .context import load_roads, manifest
+        try:
+            return {"roads": load_roads(), "manifest": manifest(), "network_required": False}
+        except (OSError, ValueError, KeyError):
+            raise HTTPException(503, "Bundled context unavailable or invalid") from None
+
+    @app.get("/api/v1/context/road-match")
+    def road_match(lon: float, lat: float, accuracy_m: float | None = None):
+        from .context import assign_road
+        try:
+            return assign_road(lon, lat, accuracy_m)
+        except (OSError, ValueError, KeyError):
+            raise HTTPException(503, "Bundled road context unavailable or invalid") from None
 
     @app.get("/api/v1/health")
     def health():
         with store.connection() as db:
             ready = db.execute("PRAGMA foreign_keys").fetchone()[0] == 1
         configured = bool(observations.perception.settings.api_key)
+        from .context import manifest, read_verified
+        try:
+            context_info = manifest()
+            read_verified(context_info["weather"])
+            context_health = {"weather": "cached_historical_ERA5_not_current_weather",
+                "acquired_at": context_info["weather"]["source"]["acquired_at"],
+                "runtime_provider_calls": False}
+        except (OSError, ValueError, KeyError):
+            context_health = {"weather": "cache_unavailable_or_invalid", "runtime_provider_calls": False}
         return {"status": "ok", "version": "2.1", "sqlite_foreign_keys": ready,
+                "context": context_health,
                 "mode": "cached_and_live_perception", "openai_enabled": False,
                 "network_dependencies": [],
                 "uncached_perception_requires_network": configured,

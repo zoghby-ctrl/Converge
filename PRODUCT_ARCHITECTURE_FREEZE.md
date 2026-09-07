@@ -10,6 +10,22 @@ The supplied [event page](https://impactx-2026.vercel.app/#about) confirms a **2
 
 The event, technology capabilities, and source limitations cited below are externally supported. The proposed algorithms, scores, interface, estimates, and gates are our design decisions. No source establishes that this prototype can diagnose drainage faults or forecast infrastructure failure.
 
+## Approved product clarification — 7 September 2026
+
+Converge ultimately ships as **one responsive installable web application/PWA**,
+using the existing React/Vite frontend and a shared backend, with two surfaces:
+`/report` is mobile-first Signal Capture for text observations, images, location
+and observed time; `/operations` is the desktop-first municipal
+incident-intelligence workbench. Municipalities remain the primary decision-support
+user. Reports are one input signal, not a complaint-management product.
+
+This clarification supersedes older single-desktop-surface/mobile exclusions only
+for the eventual delivery surface. Do not create a React Native app or separate
+mobile/web codebases. Phase 3 is authorized for real context integration only;
+responsive redesign, routes, installability and Phase 4 remain deferred. The
+frozen deterministic engine, rule table and completed Phase 1/2A/2B behavior remain
+unchanged.
+
 ## 1. Final product definition
 
 **Converge converts scattered infrastructure observations into explainable candidate incidents and a prioritized field-inspection queue.** Its first scenario is water accumulation co-occurring with visible road deterioration in one small urban area.

@@ -189,7 +189,9 @@ class ImageObservations:
                     location_method="operator reviewed coordinates", road_context_id=metadata.road_context_id,
                     observed_at=metadata.observed_at, received_at=received, available_at=received,
                     provenance=provenance, evidence=[])
-                if not any(r.road_context_id == metadata.road_context_id for r in dataset.roads):
+                from .context import attach_operator_road
+                sourced = attach_operator_road(dataset, signal)
+                if not sourced and not any(r.road_context_id == metadata.road_context_id for r in dataset.roads):
                     dataset.roads.append(RoadContext(road_context_id=metadata.road_context_id,
                         name=metadata.road_context_id, road_class=None,
                         coordinates=[(metadata.lon, metadata.lat), (metadata.lon, metadata.lat)],

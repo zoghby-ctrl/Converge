@@ -1,0 +1,37 @@
+{
+  "states": [
+    {
+      "scenario": "context_signature",
+      "captures": 3,
+      "risk": "68",
+      "rainfall": 6,
+      "road": "Ali Amin Street"
+    },
+    {
+      "scenario": "context_archive",
+      "captures": 3,
+      "risk": "68",
+      "rainfall": 0,
+      "road": "Ali Amin Street"
+    }
+  ],
+  "checks": [
+    "two sourced replays",
+    "OSM map rendered",
+    "attribution",
+    "retrospective/weather provenance",
+    "1280x720 overflow",
+    "image ablation",
+    "duplicate invariance",
+    "reload persistence",
+    "external network blocked"
+  ],
+  "failures": [],
+  "consoleErrors": [],
+  "externalRequests": [],
+  "runtime": "Disposable SQLite; OpenAI key blank; Chromium through Playwright CLI; production Vite build",
+  "screenshots": [
+    "output/playwright/phase3-context_signature.png",
+    "output/playwright/phase3-context_archive.png"
+  ]
+}

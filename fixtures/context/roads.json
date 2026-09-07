@@ -1,0 +1,782 @@
+[
+  {
+    "road_context_id": "osm-217280770-12-1",
+    "name": "Mohamed Youssef Moussa Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.334997100000002,
+        30.0543088
+      ],
+      [
+        31.3356031,
+        30.0543766
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280770",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-699913212-0-1",
+    "name": "Mohamed Youssef Moussa Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.336333,
+        30.054572
+      ],
+      [
+        31.335353700000002,
+        30.054464499999998
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/699913212",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-699913212-0-2",
+    "name": "Mohamed Youssef Moussa Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.335353700000002,
+        30.054464499999998
+      ],
+      [
+        31.3343744,
+        30.054357
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/699913212",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-217280770-12-0",
+    "name": "Mohamed Youssef Moussa Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3343911,
+        30.054241
+      ],
+      [
+        31.334997100000002,
+        30.0543088
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280770",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-217280770-14-0",
+    "name": "Mohamed Youssef Moussa Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3359345,
+        30.0544106
+      ],
+      [
+        31.3366313,
+        30.0544866
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280770",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-29982808-9-1",
+    "name": "Ali Amin Street",
+    "road_class": "primary",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.336731200000003,
+        30.05371105
+      ],
+      [
+        31.3360403,
+        30.0536375
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/29982808",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-217280778-1-0",
+    "name": "Ibn Al Haytham Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3351342,
+        30.0549637
+      ],
+      [
+        31.3357695,
+        30.0550373
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280778",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-217280778-0-0",
+    "name": "Ibn Al Haytham Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3343007,
+        30.0548672
+      ],
+      [
+        31.3351342,
+        30.0549637
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280778",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-28641433-1-0",
+    "name": "Hassn Al Imam Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3343744,
+        30.054357
+      ],
+      [
+        31.3343007,
+        30.0548672
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/28641433",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-217280778-2-0",
+    "name": "Ibn Al Haytham Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3357695,
+        30.0550373
+      ],
+      [
+        31.3365052,
+        30.05512255
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280778",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-699913212-1-0",
+    "name": "Mohamed Youssef Moussa Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3343744,
+        30.054357
+      ],
+      [
+        31.3338482,
+        30.0542976
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/699913212",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-29982808-9-0",
+    "name": "Ali Amin Street",
+    "road_class": "primary",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3374221,
+        30.0537846
+      ],
+      [
+        31.336731200000003,
+        30.05371105
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/29982808",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-217280785-0-0",
+    "name": "Tamim Ibn Al Moez Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3357695,
+        30.0550373
+      ],
+      [
+        31.3356786,
+        30.055735
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280785",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-28826000-0-0",
+    "name": "Mohamed Sakr Khafaga Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3351342,
+        30.0549637
+      ],
+      [
+        31.33499435,
+        30.05586205
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/28826000",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-29982808-12-0",
+    "name": "Ali Amin Street",
+    "road_class": "primary",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3341155,
+        30.053401
+      ],
+      [
+        31.33348495,
+        30.053320300000003
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/29982808",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-28641433-2-0",
+    "name": "Hassn Al Imam Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3343007,
+        30.0548672
+      ],
+      [
+        31.3342025,
+        30.0555473
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/28641433",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-652088553-26-0",
+    "name": "Ahmed Qasem Gouda Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3373281,
+        30.0545626
+      ],
+      [
+        31.3374221,
+        30.0537846
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/652088553",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-652088553-24-0",
+    "name": "Ahmed Qasem Gouda Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3372409,
+        30.0552078
+      ],
+      [
+        31.3373123,
+        30.0546795
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/652088553",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-217280779-0-0",
+    "name": "Rafah Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3356786,
+        30.055735
+      ],
+      [
+        31.336415600000002,
+        30.0557978
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280779",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  },
+  {
+    "road_context_id": "osm-217280785-1-0",
+    "name": "Tamim Ibn Al Moez Street",
+    "road_class": "local",
+    "compatible_ids": [],
+    "coordinates": [
+      [
+        31.3356786,
+        30.055735
+      ],
+      [
+        31.3355973,
+        30.0562976
+      ]
+    ],
+    "provenance": {
+      "content_origin": "public_source",
+      "placement_origin": "original",
+      "time_origin": "original",
+      "source_ref": "https://www.openstreetmap.org/way/217280785",
+      "author_category": "OpenStreetMap contributors",
+      "license": "Open Database License (ODbL) 1.0",
+      "annotation_method": "manual_structured",
+      "reviewer": "Phase 3 source-geometry/code review; no independent human or field review"
+    },
+    "source": {
+      "provider": "OpenStreetMap",
+      "product": "OSM API 0.6 bounded map",
+      "request_url": "https://api.openstreetmap.org/api/0.6/map?bbox=31.325,30.045,31.346,30.063",
+      "acquired_at": "2026-09-07T17:37:03.141388Z",
+      "raw_ref": "fixtures/context/osm-map.xml.gz",
+      "raw_sha256": "15a9f8be795442e4c17164ee5f9ffccc49dd9088f3137359f2f8e1536d8f4872",
+      "application": "original",
+      "grid_center": null,
+      "resolution_degrees": null,
+      "interval_ends": [],
+      "notes": "Authentic provider bytes. Acquisition is not historical as-issued availability. OSM snapshot and ERA5 period are not contemporaneous incident evidence."
+    }
+  }
+]
