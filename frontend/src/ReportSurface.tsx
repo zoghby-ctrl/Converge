@@ -8,6 +8,23 @@ interface RoadMatchResult {
   matched_point?: [number, number]
 }
 
+const STUDY_BOUNDS = {
+  minLat: 30.045,
+  maxLat: 30.063,
+  minLon: 31.325,
+  maxLon: 31.346,
+}
+
+const STUDY_PRESETS = [
+  { name: 'Street 14', lat: 30.054, lon: 31.336 },
+  { name: 'Al-Tayaran', lat: 30.057, lon: 31.331 },
+  { name: 'Youssef Abbas', lat: 30.059, lon: 31.334 },
+]
+
+function isInsideStudyArea(lat: number, lon: number): boolean {
+  return lat >= STUDY_BOUNDS.minLat && lat <= STUDY_BOUNDS.maxLat && lon >= STUDY_BOUNDS.minLon && lon <= STUDY_BOUNDS.maxLon
+}
+
 export function ReportSurface() {
   const [text, setText] = useState('')
   const [file, setFile] = useState<File | null>(null)
@@ -20,6 +37,7 @@ export function ReportSurface() {
   const [matchedRoad, setMatchedRoad] = useState<string | null>(null)
   const [roadLabel, setRoadLabel] = useState('Street 14')
   const [showLocationEdit, setShowLocationEdit] = useState(false)
+  const [locationSource, setLocationSource] = useState<'default_demo' | 'detected_gps' | 'preset' | 'manual'>('default_demo')
   
   // Time selector
   const [timeChoice, setTimeChoice] = useState<'just_now' | '15m_ago' | 'earlier'>('just_now')
@@ -45,27 +63,29 @@ export function ReportSurface() {
         }
       })
       .catch(() => {
-        if (active) setMatchedRoad(null)
+        if (!active) setMatchedRoad(null)
       })
     return () => { active = false }
   }, [lat, lon, accuracy])
 
-  // Optional HTML5 geolocation attempt on mount (Constraint 4: not required)
+  // Optional HTML5 geolocation attempt on mount (Constraint 3: never silently substitute Street 14)
   useEffect(() => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const userLat = pos.coords.latitude
-          const userLon = pos.coords.longitude
-          // Bounded to Nasr City extent
-          if (userLat >= 30.045 && userLat <= 30.063 && userLon >= 31.325 && userLon <= 31.346) {
-            setLat(Number(userLat.toFixed(5)))
-            setLon(Number(userLon.toFixed(5)))
-            setAccuracy(Math.min(500, Math.round(pos.coords.accuracy || 10)))
+          const userLat = Number(pos.coords.latitude.toFixed(5))
+          const userLon = Number(pos.coords.longitude.toFixed(5))
+          const userAccuracy = Math.min(500, Math.round(pos.coords.accuracy || 10))
+          setLat(userLat)
+          setLon(userLon)
+          setAccuracy(userAccuracy)
+          setLocationSource('detected_gps')
+          if (!isInsideStudyArea(userLat, userLon)) {
+            setShowLocationEdit(true)
           }
         },
         () => {
-          // Geolocation denied or unavailable; graceful fallback retained
+          // Geolocation denied or unavailable; retains explicit default demo coordinates
         },
         { timeout: 4000 }
       )
@@ -118,6 +138,10 @@ export function ReportSurface() {
     e.preventDefault()
     if (!text.trim() && !file) {
       setError('Please describe what you observed or attach a photo.')
+      return
+    }
+    if (!isInsideStudyArea(lat, lon)) {
+      setError(`Coordinates (${lat}°, ${lon}°) are outside the active Nasr City study area (30.045°–30.063° N, 31.325°–31.346° E). Please select a study location preset or adjust coordinates before sending.`)
       return
     }
     setBusy(true)
@@ -178,8 +202,13 @@ export function ReportSurface() {
         minute: '2-digit',
         second: '2-digit'
       }).format(new Date()))
-    } catch (err) {
-      setError(String(err instanceof Error ? err.message : err))
+    } catch (err: any) {
+      const isOffline = (typeof navigator !== 'undefined' && !navigator.onLine) || (err instanceof TypeError && /failed to fetch|network|load/i.test(err.message))
+      if (isOffline) {
+        setError('Offline: Report was NOT sent. Your entered text and photo are preserved. You can retry sending once your connection is restored.')
+      } else {
+        setError(String(err instanceof Error ? err.message : err))
+      }
     } finally {
       setBusy(false)
     }
@@ -275,13 +304,46 @@ export function ReportSurface() {
 
             <div className="form-group">
               <label className="form-label">Location</label>
+
+              {!isInsideStudyArea(lat, lon) && (
+                <div className="report-out-of-area-banner" role="alert">
+                  <strong>Location outside study area:</strong>
+                  <p style={{ margin: '4px 0' }}>
+                    Detected coordinates ({lat}° N, {lon}° E) are outside the active Nasr City coverage area (30.045°–30.063° N, 31.325°–31.346° E). The backend requires an observation within this sector.
+                  </p>
+                  <div className="preset-buttons-row">
+                    <span>Select a study area location:</span>
+                    {STUDY_PRESETS.map(preset => (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        className="btn-preset"
+                        onClick={() => {
+                          setLat(preset.lat)
+                          setLon(preset.lon)
+                          setRoadLabel(preset.name)
+                          setLocationSource('preset')
+                          setError('')
+                        }}
+                      >
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="location-pill-card">
                 <div className="loc-info">
                   <span className="loc-title">
-                    {matchedRoad ? 'Location detected' : 'Nasr City Study Area'}
+                    {isInsideStudyArea(lat, lon)
+                      ? (matchedRoad ? 'Location detected' : 'Nasr City Study Area')
+                      : 'Location outside study area'}
                   </span>
-                  <span className="loc-subtitle">
-                    {matchedRoad ? `${roadLabel} (Accurate)` : `${lat}° N, ${lon}° E (Manual selection)`}
+                  <span className="loc-subtitle" style={!isInsideStudyArea(lat, lon) ? { color: '#B45309' } : undefined}>
+                    {isInsideStudyArea(lat, lon)
+                      ? (matchedRoad ? `${roadLabel} (Accurate)` : `${lat}° N, ${lon}° E (Study area)`)
+                      : `${lat}° N, ${lon}° E (Adjustment required)`}
                   </span>
                 </div>
                 <button
@@ -330,6 +392,26 @@ export function ReportSurface() {
                       />
                     </label>
                   </div>
+                  {isInsideStudyArea(lat, lon) && (
+                    <div className="preset-buttons-row">
+                      <span>Presets:</span>
+                      {STUDY_PRESETS.map(preset => (
+                        <button
+                          key={preset.name}
+                          type="button"
+                          className="btn-preset"
+                          onClick={() => {
+                            setLat(preset.lat)
+                            setLon(preset.lon)
+                            setRoadLabel(preset.name)
+                            setLocationSource('preset')
+                          }}
+                        >
+                          {preset.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -365,9 +447,13 @@ export function ReportSurface() {
               id="report-submit-btn"
               type="submit"
               className="btn-lg btn-primary report-submit-btn"
-              disabled={busy || (!text.trim() && !file)}
+              disabled={busy || (!text.trim() && !file) || !isInsideStudyArea(lat, lon)}
             >
-              {busy ? 'Registering signal…' : 'Send observation'}
+              {busy
+                ? 'Registering signal…'
+                : (!isInsideStudyArea(lat, lon)
+                  ? 'Adjust location to send'
+                  : (error.startsWith('Offline:') ? 'Retry sending observation' : 'Send observation'))}
             </button>
 
             <p className="report-disclaimer">

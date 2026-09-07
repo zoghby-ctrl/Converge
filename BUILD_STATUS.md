@@ -1,3 +1,43 @@
+# Converge — Phase 5B Surgical Blocker Repair Status
+
+**Completed and verified: Phase 5B — Hostile Audit Blocker Repair, 8 September 2026.**
+No git commit was made. Phase 1, Phase 2A, Phase 2B, Phase 3, and Phase 4 were preserved and verified. All frozen engine semantics, correlation formulas, and risk weights remain untouched.
+
+## Delivered Repairs & Audit Resolutions
+
+1. **Restored Human Review/Correction Workflow:**
+   - Integrated directly into the existing `/operations` workbench under Tab 4 (Review tab).
+   - Reused existing backend review/correction API (`POST /api/v1/signals/{sid}/review`) and `ReviewForm`/`ImageReviewForm` components from `ObservationPanel.tsx`.
+   - Preserves complete revision lineage (`extraction_revisions`), retains raw source evidence unmodified, and automatically recomputes incidents and triage upon review save.
+2. **AI Ledger Runtime State Verified (Finding SYS-HIGH-02 Refuted):**
+   - Measured actual live runtime SQLite database (`%LOCALAPPDATA%\Converge\runtime\converge-text.sqlite3`): exactly 2 requests used, $0.00087 spent out of an 80-request / $1.00 budget cap.
+   - Live submissions are **not blocked** (78 requests remain). Auditor mistook static evaluation artifact `docs/image-usage-observed.json` for live database state. Historical records were preserved without tampering.
+3. **Honest Geolocation & Study Area Boundary:**
+   - Prohibited silent coordinate substitution. Real detected GPS coordinates are preserved in state and displayed honestly.
+   - If detected location is outside the Nasr City study area (30.045°–30.063° N, 31.325°–31.346° E), the UI displays an amber warning banner, explains the boundary constraint, and offers one-click study area presets (Street 14, Al-Tayaran, Youssef Abbas).
+   - Prevents invalid submission with an explicit error message instead of failing silently or mutating data.
+4. **Offline Form State Preservation:**
+   - Network failures and offline states preserve entered narrative text and attached photo in memory.
+   - Displays clear notice: *"Offline: Report was NOT sent. Your entered text and photo are preserved. You can retry sending once your connection is restored."*
+   - Submit button updates to allow immediate retry without losing inputs.
+5. **Service Worker Navigation Fallback Fix:**
+   - Fixed un-awaited Promise chain in `frontend/public/sw.js` navigation handler: `caches.match('/index.html').then((cached) => cached || caches.match('/'))`.
+6. **FastAPI Metadata Update:**
+   - App title updated to `"Converge — Incident Intelligence"`, version set to `"4.0"`.
+
+## Verification Summary
+
+| Check | Result |
+|---|---|
+| Complete Test Suite | **126 passed** in **23.80 s** (121 existing + 5 Phase 5B regression tests) |
+| TypeScript `npm run typecheck` | **Passed** with 0 errors |
+| Production Bundle `npm run build` | **Passed** in 852 ms; `dist` freshly populated |
+| Review Workflow Contract | Lineage preserved, raw text preserved, incident recomputed with `human_reviewed: True` |
+| Geolocation Bounds Guard | Out-of-area coordinates rejected with HTTP 422; in-bounds presets accepted with HTTP 202 |
+| SW Promise Fallback | Syntax verified in `/sw.js` test |
+
+---
+
 # Converge — Phase 4 build status
 
 **Completed and verified: Phase 4 — Responsive Installable Web Application (PWA) & Municipal Workbench, 7 September 2026.**

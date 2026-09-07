@@ -6,6 +6,15 @@ import mapWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import type { Comparison, Contribution, Incident, Replay, Signal } from './types'
 import { navigate } from './router'
+import {
+  ReviewForm,
+  ImageReviewForm,
+  ImageResult,
+  isImageJob,
+  type Job,
+  conditions,
+  type Revision
+} from './ObservationPanel'
 
 maplibregl.setWorkerUrl(mapWorkerUrl)
 
@@ -312,13 +321,49 @@ function MapPanel({
 function TabbedInspector({
   incident: i,
   signals,
-  onInspectSignal
+  onInspectSignal,
+  onReviewSaved
 }: {
   incident: Incident
   signals: Signal[]
   onInspectSignal: (s: Signal) => void
+  onReviewSaved?: () => void
 }) {
   const [tab, setTab] = useState<'overview' | 'evidence' | 'hypotheses' | 'review'>('overview')
+  const [selectedSid, setSelectedSid] = useState<string>(i.signal_ids[0] ?? '')
+  const [job, setJob] = useState<Job | null>(null)
+  const [jobLoading, setJobLoading] = useState(false)
+  const [editing, setEditing] = useState(false)
+
+  useEffect(() => {
+    if (!i.signal_ids.includes(selectedSid)) {
+      setSelectedSid(i.signal_ids[0] ?? '')
+      setEditing(false)
+    }
+  }, [i.incident_id, i.signal_ids, selectedSid])
+
+  useEffect(() => {
+    if (!selectedSid) {
+      setJob(null)
+      return
+    }
+    let canceled = false
+    setJobLoading(true)
+    api<Job>(`signals/${selectedSid}/processing`)
+      .then(res => {
+        if (!canceled) {
+          setJob(res)
+          setJobLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!canceled) {
+          setJob(null)
+          setJobLoading(false)
+        }
+      })
+    return () => { canceled = true }
+  }, [selectedSid])
 
   const leadingHypothesis = i.hypotheses.reduce((prev, curr) =>
     (curr.support_points > prev.support_points ? curr : prev), i.hypotheses[0] || null)
@@ -612,6 +657,171 @@ function TabbedInspector({
                 )}
               </div>
             </details>
+
+            {/* Human Observation Review & Correction Workflow */}
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--cv-border-light)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--cv-text-muted)' }}>
+                  Observation Review & Correction
+                </span>
+                <span style={{ fontSize: '10px', color: 'var(--cv-brand-primary)', fontWeight: 600 }}>
+                  Revision Lineage
+                </span>
+              </div>
+
+              {i.signal_ids.length > 1 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <label htmlFor="member-obs-select" style={{ fontSize: '10px', color: 'var(--cv-text-muted)', whiteSpace: 'nowrap' }}>
+                    Member:
+                  </label>
+                  <select
+                    id="member-obs-select"
+                    style={{ fontSize: '11px', padding: '2px 6px', width: '100%', borderRadius: 4, border: '1px solid var(--cv-border-light)' }}
+                    value={selectedSid}
+                    onChange={e => { setSelectedSid(e.target.value); setEditing(false); }}
+                  >
+                    {i.signal_ids.map(sid => {
+                      const sig = signals.find(s => s.signal_id === sid)
+                      return (
+                        <option key={sid} value={sid}>
+                          {sid} ({sig?.source_family || 'record'}) · {time(sig?.observed_at || null)}
+                        </option>
+                      )
+                    })}
+                  </select>
+                </div>
+              )}
+
+              {jobLoading ? (
+                <p style={{ fontSize: '11px', color: 'var(--cv-text-muted)', padding: 6 }}>Loading observation review state…</p>
+              ) : job ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: 'var(--cv-surface-sidebar)', padding: 8, borderRadius: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span className={`qc-pill ${job.status === 'needs_review' ? 'qc-pill-watch' : 'qc-pill-candidate'}`}>
+                        {job.status === 'needs_review' ? 'Needs Review' : human(job.status)}
+                      </span>
+                      <span style={{ fontSize: '10px', fontWeight: 600 }}>Rev {job.revision}</span>
+                      <span style={{ fontSize: '9px', color: 'var(--cv-text-muted)', textTransform: 'uppercase' }}>
+                        {isImageJob(job) ? 'Image' : 'Text'}
+                      </span>
+                    </div>
+                    {job.latest?.source && (
+                      <span style={{ fontSize: '9px', color: job.latest.source === 'manual' ? 'var(--cv-brand-primary)' : 'var(--cv-text-muted)', fontWeight: 600 }}>
+                        {job.latest.source === 'manual' ? '● Human Reviewed' : 'AI Extracted'}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Original Source Quote or Image */}
+                  {job.original.text && (
+                    <blockquote dir="auto" style={{ margin: 0, padding: '6px 8px', background: '#FFFFFF', borderRadius: 4, borderLeft: '3px solid var(--cv-brand-primary)', fontSize: '11px', lineHeight: 1.4 }}>
+                      “{job.original.text}”
+                    </blockquote>
+                  )}
+                  {isImageJob(job) && (job.original.image_url || job.latest?.extraction) && (
+                    <div style={{ margin: '4px 0' }}>
+                      {job.original.image_url && (
+                        <a href={job.original.image_url} target="_blank" rel="noreferrer" style={{ display: 'block' }}>
+                          <img src={job.original.image_url} alt="Original observation" style={{ width: '100%', maxHeight: 120, objectFit: 'cover', borderRadius: 4 }} />
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Latest Extraction State */}
+                  {job.latest && (
+                    <div style={{ fontSize: '10px' }}>
+                      {isImageJob(job) ? (
+                        <ImageResult job={job} />
+                      ) : (
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
+                          <tbody>
+                            {conditions.map(f => {
+                              const ext = (job.latest as Revision | null)?.extraction
+                              const state = ext ? ext[f] : 'not_mentioned'
+                              return (
+                                <tr key={f} style={{ borderBottom: '1px solid var(--cv-border-light)' }}>
+                                  <td style={{ padding: '2px 0', color: 'var(--cv-text-muted)', textTransform: 'capitalize' }}>{human(f)}</td>
+                                  <td style={{ padding: '2px 0', textAlign: 'right', fontWeight: 700 }}>
+                                    {state.toUpperCase()}
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Provenance and Lineage Drawer */}
+                  <details style={{ fontSize: '10px' }}>
+                    <summary style={{ cursor: 'pointer', color: 'var(--cv-text-muted)' }}>
+                      Provenance lineage ({job.revisions.length} revision{job.revisions.length === 1 ? '' : 's'})
+                    </summary>
+                    <div style={{ padding: '4px 0' }}>
+                      <p style={{ margin: '2px 0' }}>Author / Operator: {job.original.operator}</p>
+                      <p style={{ margin: '2px 0' }}>Origin: {job.original.content_origin} content · {job.original.placement_origin || 'original'} placement</p>
+                      {job.revisions.map((rev, rIdx) => (
+                        <div key={rIdx} style={{ margin: '3px 0', padding: '2px 4px', background: '#FFFFFF', borderRadius: 3 }}>
+                          <strong>Rev {rev.revision}</strong> · {rev.source === 'manual' ? 'Human review' : rev.source} · {rev.review_state}
+                          {rev.model && <small style={{ display: 'block', color: 'var(--cv-text-muted)' }}>Model: {rev.model}</small>}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+
+                  {/* Correction Form Toggle & ReviewForm */}
+                  {!editing ? (
+                    <button
+                      type="button"
+                      className="btn-sm primary"
+                      style={{ alignSelf: 'flex-start' }}
+                      onClick={() => setEditing(true)}
+                    >
+                      {isImageJob(job) ? 'Correct image labels' : 'Correct extraction'}
+                    </button>
+                  ) : (
+                    <div style={{ borderTop: '1px solid var(--cv-border-light)', paddingTop: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                        <span style={{ fontSize: '11px', fontWeight: 700 }}>Correct Extraction</span>
+                        <button type="button" className="btn-sm" onClick={() => setEditing(false)}>Cancel</button>
+                      </div>
+                      {isImageJob(job) ? (
+                        <ImageReviewForm
+                          key={job.signal_id + ':' + job.revision}
+                          job={job}
+                          saved={updated => {
+                            setJob(updated)
+                            setEditing(false)
+                            onReviewSaved?.()
+                          }}
+                        />
+                      ) : (
+                        <ReviewForm
+                          key={job.signal_id + ':' + job.revision}
+                          job={job}
+                          saved={updated => {
+                            setJob(updated)
+                            setEditing(false)
+                            onReviewSaved?.()
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Replay or static record where processing API returns 404 */
+                <div className="overview-item-card" style={{ padding: 8 }}>
+                  <span style={{ fontSize: '10px', fontWeight: 600 }}>{selectedSid}</span>
+                  <p style={{ fontSize: '10px', color: 'var(--cv-text-muted)', margin: '4px 0 0' }}>
+                    Bundled scenario record (immutable fixture, revision 0). Human review and correction APIs apply to live-captured or operator observations.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -854,6 +1064,7 @@ export function OperationsWorkbench() {
             incident={chosen}
             signals={signals}
             onInspectSignal={setInspectedSignal}
+            onReviewSaved={loadData}
           />
         ) : (
           <aside className="ops-col-inspector" style={{ padding: 20, textAlign: 'center', justifyContent: 'center' }}>

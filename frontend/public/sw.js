@@ -42,7 +42,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => {
-        return caches.match('/index.html') || caches.match('/');
+        return caches.match('/index.html').then((cached) => cached || caches.match('/'));
       })
     );
     return;

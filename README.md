@@ -1,10 +1,10 @@
 # Converge
 
-Phase 3: a local municipal inspection workbench with bounded OpenAI text and
-image perception, sourced road geography and cached modeled rainfall context. Team: **Control Alt Delete**,
-IMPACTX 2026 Smart Cities. AI extracts report claims and visibly supported image
+Phase 4 & 5B: a responsive, installable municipal incident-intelligence application with bounded OpenAI text and
+image perception, sourced road geography, cached modeled rainfall context, and an operator human review workflow.
+Team: **Control Alt Delete**, IMPACTX 2026 Smart Cities. AI extracts report claims and visibly supported image
 conditions; the existing deterministic engine alone controls membership, risk,
-hypotheses and evidence strength. Deployment, responsive PWA work and Phase 4 are deferred.
+hypotheses and evidence strength.
 
 ## Run on this Windows machine
 
@@ -17,11 +17,12 @@ npm run build --prefix frontend
 .\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open **http://127.0.0.1:8000**. The backend serves the production frontend and all
+Open **http://127.0.0.1:8000**. The backend serves the production frontend, PWA shell, and all
 map assets. After the first build, only the last command is needed. The prepared
 structured replay requires no internet. Cached analysis and human correction work
-locally. New uncached text or image analysis uses OpenAI, but the prepared database
-has reached its persistent 80-request development cap.
+locally. New uncached text or image analysis uses OpenAI within configured limits
+(80 max requests, $1.00 max spend in `%LOCALAPPDATA%\Converge\runtime\converge-text.sqlite3`).
+The live database is not blocked (78 requests remaining).
 
 For frontend development, leave the backend running and open a second terminal:
 
@@ -179,10 +180,11 @@ ODbL/CC BY attribution and adapter semantics are in
 [fixtures/context/README.md](fixtures/context/README.md) and its manifest.
 No weather or map request occurs during replay or scoring; all map assets are local.
 
-The eventual product is one responsive React/Vite PWA and shared backend:
-`/report` for mobile-first Signal Capture and `/operations` for the desktop-first
-municipal workbench. Those surfaces and installability are **not implemented in
-Phase 3**; no separate native/mobile codebase is planned.
+The application provides a responsive React/Vite PWA and shared backend:
+`/` provides the Entry Gateway, `/report` provides mobile-first Signal Capture with
+honest geolocation study area handling and offline form preservation, and
+`/operations` provides the desktop municipal incident intelligence workbench with
+an integrated human review and correction workflow.
 
 Additional read-only APIs: `GET /api/v1/context` returns the source manifest and
 selected sections; `GET /api/v1/context/road-match?lon=...&lat=...&accuracy_m=...`
@@ -262,8 +264,7 @@ current analysis clock with the same engine and never committed.
 
 Implementation interpretations and deferred pieces are in
 [`docs/PHASE1_DECISIONS.md`](docs/PHASE1_DECISIONS.md). Phase 2A implementation and
-measured results are in [`BUILD_STATUS.md`](BUILD_STATUS.md). Phase 1, 2A and 2B are complete. Phase 3 verification is recorded below and in
-`BUILD_STATUS.md`; Phase 4 is not started.
+measured results are in [`BUILD_STATUS.md`](BUILD_STATUS.md). Phase 1, 2A, 2B, 3, 4, and 5B blocker repairs are complete and verified.
 
 Additional APIs:
 

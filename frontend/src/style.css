@@ -462,6 +462,47 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   font-size: 12px;
 }
 
+.report-out-of-area-banner {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #92400E;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.preset-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.preset-buttons-row span {
+  font-size: 11px;
+  font-weight: 500;
+  color: #78350F;
+}
+
+.btn-preset {
+  background: #FFFFFF;
+  border: 1px solid #D97706;
+  color: #B45309;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-preset:hover {
+  background: #FEF3C7;
+}
+
 .report-receipt-card {
   max-width: 440px;
   width: 100%;
@@ -1199,4 +1240,79 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .ops-bottom-tray {
     display: none;
   }
+}
+
+/* Human Review and Correction Form Styles in Operations Workbench */
+.review-form {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.review-form h3 {
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--cv-text-primary);
+}
+.review-form p {
+  font-size: 10px;
+  color: var(--cv-text-muted);
+  margin: 0;
+}
+.review-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--cv-text-secondary);
+}
+.review-form input,
+.review-form select,
+.review-form textarea {
+  font-size: 11px;
+  padding: 4px 6px;
+  border: 1px solid var(--cv-border-light);
+  border-radius: 4px;
+  font-family: inherit;
+  background: #FFFFFF;
+}
+.observation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px;
+}
+.image-result {
+  border-top: 1px solid var(--cv-border-light);
+  margin-top: 8px;
+  padding-top: 6px;
+}
+.image-result table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.image-result th {
+  text-align: left;
+  padding: 3px 0;
+  color: var(--cv-text-muted);
+  font-weight: 600;
+  width: 50%;
+}
+.image-result td {
+  padding: 3px 0;
+}
+.image-result td small {
+  display: block;
+  color: var(--cv-text-muted);
+  font-size: 9px;
+}
+.visible-description {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: var(--cv-surface-sidebar);
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1.4;
 }

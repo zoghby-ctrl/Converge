@@ -41,7 +41,7 @@ def load_fixture(name):
 
 
 def create_app(db_path=None, perception_settings=None, perception_client=None):
-    app = FastAPI(title="Converge — Phase 3", version="3.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Converge — Incident Intelligence", version="4.0", docs_url=None, redoc_url=None)
     store = Store(db_path)
     app.state.store = store
     lock = RLock()
