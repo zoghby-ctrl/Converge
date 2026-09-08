@@ -235,7 +235,7 @@ export function ReportSurface() {
         <button className="report-back-btn" onClick={() => navigate('/')} aria-label="Return home">
           ⋈ <span style={{ marginLeft: 4 }}>Converge</span>
         </button>
-        <span className="report-header-title">Signal Capture</span>
+        <span className="report-header-title">Report an Observation</span>
         <button className="report-ops-link" onClick={() => navigate('/operations')}>
           Operations ➔
         </button>
@@ -248,12 +248,13 @@ export function ReportSurface() {
             <div className="receipt-check-glyph">✓</div>
             <h2 className="receipt-heading">Observation registered</h2>
             <p className="receipt-message">
-              Signal <strong>#{submittedSignalId}</strong> has been registered. Registration does not mean completed analysis or admission as independent evidence.
+              Your observation has been registered. Registration does not mean completed analysis or admission as independent evidence.
             </p>
             <div className="receipt-meta-box">
               <span>Time: {submittedTimestamp} Cairo</span>
               <span>Location: {matchedRoad ? roadLabel : `${lat}° N, ${lon}° E`}</span>
             </div>
+            <details><summary>Observation reference</summary><code>{submittedSignalId}</code></details>
             <div className="receipt-actions">
               <button className="btn-lg btn-primary" onClick={handleReset}>
                 Submit another observation

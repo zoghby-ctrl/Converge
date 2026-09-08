@@ -1,3 +1,4 @@
+import { scenarioLabel, reviewerLabel, roadLabel } from './display'
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import * as maplibregl from 'maplibre-gl'
 import type { GeoJSONSource } from 'maplibre-gl'
@@ -250,7 +251,7 @@ function MapPanel({
     markers.current = incidents.map(i => {
       const label = document.createElement('button')
       label.className = 'map-label'
-      label.textContent = i.road_name.split(' · ')[0]
+      label.textContent = roadLabel(i.road_name).split(' · ')[0]
       label.setAttribute('aria-label', `Select map ${label.textContent}`)
       label.onclick = () => selectRef.current(i.incident_id)
       return new maplibregl.Marker({ element: label, offset: [0, -28] })
@@ -407,7 +408,7 @@ function TabbedInspector({
             <div className="inspector-eyebrow">
               {i.status === 'candidate' ? 'Candidate Incident' : 'Watch Item'} · Revision {i.revision}
             </div>
-            <h2 className="inspector-title">{i.road_name}</h2>
+            <h2 className="inspector-title">{roadLabel(i.road_name)}</h2>
 
             {/* Dual Metric Module */}
             <div className="dual-metric-panel">
@@ -445,9 +446,7 @@ function TabbedInspector({
             {/* Why Inspect Here? */}
             <div className="overview-summary-box">
               <strong>Why Inspect Here:</strong> {i.tag}. Maximum pair distance: {i.max_pair_distance_m.toFixed(1)} m across {i.signal_ids.length} records.
-              <div style={{ fontSize: '10px', color: 'var(--cv-text-muted)', marginTop: 4 }}>
-                {i.trace.formation_rule}
-              </div>
+              <details style={{ fontSize: '10px', marginTop: 4 }}><summary>Grouping rule</summary><code>{i.trace.formation_rule}</code></details>
             </div>
 
             {/* Strongest Hypothesis */}
@@ -500,7 +499,7 @@ function TabbedInspector({
                 const wording = e.field_verified
                   ? `Engineer field-verified ${human(e.feature)}`
                   : reviewedImage
-                  ? `Engineer-verified image label: ${human(e.feature)}`
+                  ? `Human-reviewed image label: ${human(e.feature)}`
                   : e.basis === 'visually_suggested'
                   ? `AI visual suggestion: ${human(e.feature)}`
                   : e.basis === 'reported'
@@ -543,9 +542,9 @@ function TabbedInspector({
                         className="btn-sm"
                         onClick={() => source && onInspectSignal(source)}
                       >
-                        Inspect record {e.signal_id}
+                        Inspect observation
                       </button>
-                      <code style={{ fontSize: '9px', color: 'var(--cv-text-muted)' }}>{e.evidence_id}</code>
+                      <details><summary>Evidence ID</summary><code>{e.evidence_id}</code></details>
                     </div>
                   </article>
                 )
@@ -627,9 +626,7 @@ function TabbedInspector({
                   <span style={{ color: 'var(--cv-brand-primary)', fontWeight: 700 }}>□</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <span style={{ fontSize: '11px', color: 'var(--cv-text-primary)' }}>{c.text}</span>
-                    <small style={{ fontSize: '9px', color: 'var(--cv-text-muted)' }}>
-                      Rule: {c.rule_id} · Evidence: {c.evidence_ids.join(', ')}
-                    </small>
+                    <details><summary>Supporting evidence</summary><small>Rule: {c.rule_id} · Evidence: {c.evidence_ids.join(', ')}</small></details>
                   </div>
                 </div>
               ))}
@@ -684,7 +681,7 @@ function TabbedInspector({
                       const sig = signals.find(s => s.signal_id === sid)
                       return (
                         <option key={sid} value={sid}>
-                          {sid} ({sig?.source_family || 'record'}) · {time(sig?.observed_at || null)}
+                          {human(sig?.source_family || 'Observation')} observation {i.signal_ids.indexOf(sid) + 1} · {time(sig?.observed_at || null)}
                         </option>
                       )
                     })}
@@ -744,7 +741,7 @@ function TabbedInspector({
                                 <tr key={f} style={{ borderBottom: '1px solid var(--cv-border-light)' }}>
                                   <td style={{ padding: '2px 0', color: 'var(--cv-text-muted)', textTransform: 'capitalize' }}>{human(f)}</td>
                                   <td style={{ padding: '2px 0', textAlign: 'right', fontWeight: 700 }}>
-                                    {state.toUpperCase()}
+                                    {human(state).toUpperCase()}
                                   </td>
                                 </tr>
                               )
@@ -761,11 +758,11 @@ function TabbedInspector({
                       Provenance lineage ({job.revisions.length} revision{job.revisions.length === 1 ? '' : 's'})
                     </summary>
                     <div style={{ padding: '4px 0' }}>
-                      <p style={{ margin: '2px 0' }}>Author / Operator: {job.original.operator}</p>
+                      <p style={{ margin: '2px 0' }}>Author / Operator: {reviewerLabel(job.original.operator)}</p>
                       <p style={{ margin: '2px 0' }}>Origin: {job.original.content_origin} content · {job.original.placement_origin || 'original'} placement</p>
                       {job.revisions.map((rev, rIdx) => (
                         <div key={rIdx} style={{ margin: '3px 0', padding: '2px 4px', background: '#FFFFFF', borderRadius: 3 }}>
-                          <strong>Rev {rev.revision}</strong> · {rev.source === 'manual' ? 'Human review' : rev.source} · {rev.review_state}
+                          <strong>Rev {rev.revision}</strong> · {rev.source === 'manual' ? 'Human review' : rev.source} · {human(rev.review_state)}
                           {rev.model && <small style={{ display: 'block', color: 'var(--cv-text-muted)' }}>Model: {rev.model}</small>}
                         </div>
                       ))}
@@ -815,9 +812,9 @@ function TabbedInspector({
               ) : (
                 /* Replay or static record where processing API returns 404 */
                 <div className="overview-item-card" style={{ padding: 8 }}>
-                  <span style={{ fontSize: '10px', fontWeight: 600 }}>{selectedSid}</span>
+                  <details><summary>Observation reference</summary><code>{selectedSid}</code></details>
                   <p style={{ fontSize: '10px', color: 'var(--cv-text-muted)', margin: '4px 0 0' }}>
-                    Bundled scenario record (immutable fixture, revision 0). Human review and correction APIs apply to live-captured or operator observations.
+                    Bundled demo observation. To record a Human Review or correction, select an operator-submitted observation.
                   </p>
                 </div>
               )}
@@ -922,7 +919,7 @@ export function OperationsWorkbench() {
           </button>
           <span className="ops-sector-pill">Nasr City Study Prototype · IMPACTX 2026</span>
           <span className={`mode-pill ${live ? 'mode-live' : 'mode-sandbox'}`}>
-            {live ? '● Live Municipal Mode' : '⚗ Replay & Audit Mode'}
+            {live ? '● Live Municipal Mode' : '⚗ Demo Replay Mode'}
           </span>
         </div>
 
@@ -937,9 +934,9 @@ export function OperationsWorkbench() {
           <button
             className="btn-sm"
             onClick={() => { requestGeneration.current++; setLive(!live) }}
-            title="Toggle between Live Municipal ingestion and Replay & Audit mode"
+            title="Toggle between Live Municipal ingestion and Demo Replay mode"
           >
-            {live ? 'Switch to Replay & Audit' : 'Switch to Live Municipal'}
+            {live ? 'Switch to Demo Replay' : 'Switch to Live Municipal'}
           </button>
 
           <button
@@ -983,7 +980,7 @@ export function OperationsWorkbench() {
                 onClick={() => setSelected(i.incident_id)}
               >
                 <div className="qc-top-row">
-                  <span className="qc-road-name">{i.road_name.split(' · ')[0]}</span>
+                  <span className="qc-road-name">{roadLabel(i.road_name).split(' · ')[0]}</span>
                   <div className="qc-risk-metric">
                     {i.risk.display} <small>/100</small>
                   </div>
@@ -1012,7 +1009,7 @@ export function OperationsWorkbench() {
                     onClick={() => setSelected(i.incident_id)}
                   >
                     <div className="qc-top-row">
-                      <span className="qc-road-name">{i.road_name.split(' · ')[0]}</span>
+                      <span className="qc-road-name">{roadLabel(i.road_name).split(' · ')[0]}</span>
                       <div className="qc-risk-metric" style={{ color: 'var(--cv-text-secondary)' }}>
                         {i.risk.display} <small>/100</small>
                       </div>
@@ -1099,7 +1096,7 @@ export function OperationsWorkbench() {
             <span style={{ color: 'var(--cv-brand-primary)' }}>{ribbonExpanded ? '▼' : '▲'}</span>
             <span>Multi-Signal Convergence Ribbon</span>
             <small style={{ color: 'var(--cv-text-muted)', fontWeight: 400 }}>
-              · {signals.length} records across {totalCaptures} independent captures · {live ? 'Local engine' : `Step ${data.step}/${data.total_steps}`}
+              · {signals.length} records across {totalCaptures} independent captures · {live ? 'Current observations' : `Step ${data.step}/${data.total_steps}`}
             </small>
           </div>
           <button
@@ -1136,9 +1133,9 @@ export function OperationsWorkbench() {
                           {s.source_family}
                         </span>
                       </div>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px' }}>{s.signal_id}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px' }}>{human(s.source_family)} observation</span>
                       <small style={{ color: isMember ? 'var(--cv-brand-primary)' : 'var(--cv-text-muted)' }}>
-                        {s.duplicate_of ? `Copy of ${s.duplicate_of}` : `Capture ${s.capture_group_id}`}
+                        {s.duplicate_of ? 'Duplicate report' : 'Source capture'}
                       </small>
                     </div>
                   )
@@ -1150,12 +1147,12 @@ export function OperationsWorkbench() {
               )}
             </div>
 
-            {/* Quarantined Replay Sandbox Bar (Only in Replay & Audit Mode) */}
+            {/* Quarantined Replay Sandbox Bar (Only in Demo Replay Mode) */}
             {!live && (
               <div className="tray-sandbox-bar">
                 <div className="sandbox-tag">
-                  <span>SANDBOX</span>
-                  <strong>Replay & Audit Controls:</strong>
+                  <span>DEMO</span>
+                  <strong>Demo Replay Controls:</strong>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1171,7 +1168,7 @@ export function OperationsWorkbench() {
                         'signature', 'signature_image', 'context_signature', 'context_archive',
                         'missing_road_damage', 'conflicting_water', 'spatial_119m', 'spatial_121m',
                         'time_5h59', 'time_6h', 'time_over_6h', 'chain_guard', 'road_incompatible'
-                      ].map(s => <option value={s} key={s}>{human(s)}</option>)}
+                      ].map(s => <option value={s} key={s}>{scenarioLabel(s)}</option>)}
                     </select>
                   </label>
 
@@ -1194,7 +1191,7 @@ export function OperationsWorkbench() {
                       disabled={busy || !data.step}
                       onChange={e => handleCompare(e.target.checked, copies)}
                     />
-                    Hide image evidence (Ablation)
+                    Hide image evidence
                   </label>
 
                   <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
@@ -1204,7 +1201,7 @@ export function OperationsWorkbench() {
                       disabled={busy || !data.step}
                       onChange={e => handleCompare(hideImage, e.target.checked)}
                     />
-                    Add 10 duplicates (Independence test)
+                    Add 10 duplicate reports
                   </label>
                 </div>
               </div>
@@ -1243,7 +1240,7 @@ export function OperationsWorkbench() {
             onClick={e => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <strong style={{ fontSize: '14px' }}>Signal Record: {inspectedSignal.signal_id}</strong>
+              <strong style={{ fontSize: '14px' }}>Observation details</strong>
               <button className="btn-sm" onClick={() => setInspectedSignal(null)}>Close ✕</button>
             </div>
 
@@ -1269,11 +1266,10 @@ export function OperationsWorkbench() {
             <div style={{ fontSize: '11px', display: 'flex', flexDirection: 'column', gap: 4, background: 'var(--cv-surface-bg)', padding: 10, borderRadius: 6 }}>
               <div><strong>Observed:</strong> {inspectedSignal.observed_at} ({time(inspectedSignal.observed_at)} Cairo)</div>
               <div><strong>Received:</strong> {inspectedSignal.received_at} ({time(inspectedSignal.received_at)} Cairo)</div>
-              <div><strong>Capture Group:</strong> {inspectedSignal.capture_group_id}</div>
+              <details><summary>Technical identifiers</summary><div><strong>Observation ID:</strong> {inspectedSignal.signal_id}</div><div><strong>Capture Group:</strong> {inspectedSignal.capture_group_id}</div>
               {inspectedSignal.duplicate_of && <div><strong>Duplicate Of:</strong> {inspectedSignal.duplicate_of}</div>}
-              <div><strong>Provenance:</strong> {inspectedSignal.provenance.content_origin} content · {inspectedSignal.provenance.annotation_method}</div>
-              <div><strong>Author / Reviewer:</strong> {inspectedSignal.provenance.reviewer}</div>
-              {inspectedSignal.provenance.source_ref && <div><strong>Source Ref:</strong> {inspectedSignal.provenance.source_ref}</div>}
+              <div><strong>Recorded author / reviewer:</strong> {inspectedSignal.provenance.reviewer}</div>{inspectedSignal.provenance.source_ref && <div><strong>Source Ref:</strong> {inspectedSignal.provenance.source_ref}</div>}</details><div><strong>Provenance:</strong> {human(inspectedSignal.provenance.content_origin)} content · {human(inspectedSignal.provenance.annotation_method)}</div>
+              <div><strong>Placement / time:</strong> {human(inspectedSignal.provenance.placement_origin)} placement · {human(inspectedSignal.provenance.time_origin)} time</div><div><strong>Author / Reviewer:</strong> {reviewerLabel(inspectedSignal.provenance.reviewer)}</div>
             </div>
           </div>
         </div>
