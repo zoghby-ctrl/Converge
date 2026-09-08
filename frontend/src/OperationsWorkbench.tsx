@@ -276,7 +276,7 @@ function MapPanel({
       {/* Top overlay metadata */}
       <div className="map-overlay-caption">
         <b>Nasr City Study Extent</b>
-        <span>{data.context_notice ? 'Real OSM geography · synthetic placement' : data.mode.startsWith('operator_') ? 'Operator coordinates · reviewed road context' : 'Local road network · verified OSM segments'}</span>
+        <span>{data.context_notice ? 'Real OSM geography · synthetic placement' : data.mode.startsWith('operator_') ? 'Operator coordinates · road context may be unverified' : 'Simulated road context · schematic road segments'}</span>
         {data.roads.some(r => r.source?.provider === 'OpenStreetMap') && (
           <small><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors · ODbL</a></small>
         )}
@@ -842,16 +842,19 @@ export function OperationsWorkbench() {
   const [ribbonExpanded, setRibbonExpanded] = useState(false)
   const [inspectedSignal, setInspectedSignal] = useState<Signal | null>(null)
 
+  const requestGeneration = useRef(0)
   const loadData = useCallback(() => {
+    const generation = ++requestGeneration.current
     api<Replay>(live ? 'live/incidents' : 'incidents')
-      .then(setData)
-      .catch(e => setError(String(e)))
+      .then(result => { if (generation === requestGeneration.current) setData(result) })
+      .catch(e => { if (generation === requestGeneration.current) setError(String(e)) })
   }, [live])
 
   useEffect(() => {
     loadData()
     setComparison(null)
     setSelected(null)
+    return () => { requestGeneration.current++ }
   }, [live, loadData])
 
   const incidents = comparison?.incidents ?? data.incidents
@@ -861,10 +864,13 @@ export function OperationsWorkbench() {
     incidents[0]
 
   async function handleReplay(action: 'start' | 'advance' | 'reset') {
+    const generation = ++requestGeneration.current
     setBusy(true)
     setError('')
     try {
-      setData(await api<Replay>('demo/replay', { action, scenario }))
+      const result = await api<Replay>('demo/replay', { action, scenario })
+      if (generation !== requestGeneration.current) return
+      setData(result)
       setComparison(null)
       setHideImage(false)
       setCopies(false)
@@ -877,6 +883,7 @@ export function OperationsWorkbench() {
   }
 
   async function handleCompare(image: boolean, duplicates: boolean) {
+    const generation = requestGeneration.current
     const prevImage = hideImage
     const prevCopies = copies
     setBusy(true)
@@ -886,8 +893,10 @@ export function OperationsWorkbench() {
     try {
       const result = await api<Comparison>('demo/compare', {
         disable_families: image ? ['image'] : [],
+        source_signal_id: chosen?.signal_ids.find(sid => signals.some(s => s.signal_id === sid && s.source_family === 'text' && !s.duplicate_of)),
         add_duplicates: duplicates ? 10 : 0
       })
+      if (generation !== requestGeneration.current) return
       setComparison(image || duplicates ? result : null)
     } catch (e) {
       setError(String(e))
@@ -927,7 +936,7 @@ export function OperationsWorkbench() {
 
           <button
             className="btn-sm"
-            onClick={() => setLive(!live)}
+            onClick={() => { requestGeneration.current++; setLive(!live) }}
             title="Toggle between Live Municipal ingestion and Replay & Audit mode"
           >
             {live ? 'Switch to Replay & Audit' : 'Switch to Live Municipal'}

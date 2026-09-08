@@ -1,3 +1,4 @@
+// HISTORICAL UI SCRIPT: retired selectors. Current release instructions and selectors: docs/browser-release-qa.js.
 // Run with playwright-cli run-code --filename docs/browser-qa.js after opening the app.
 async (page) => {
   const failures = [];

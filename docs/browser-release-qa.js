@@ -1,0 +1,121 @@
+// playwright-cli run-code --filename docs/browser-release-qa.js
+// Use a disposable runtime with OPENAI_API_KEY blank. Submission tests intercept writes.
+async (page) => {
+  const origin = page.url().split('/').slice(0, 3).join('/');
+  const results = [], errors = [], consoleErrors = [], failedResponses = [];
+  page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
+  page.on('response', r => { if (r.status() >= 400) failedResponses.push({url: r.url(), status: r.status()}); });
+  page.on('pageerror', e => errors.push(e.message));
+  const check = (ok, name) => { if (!ok) throw new Error(name); results.push(name); };
+  await page.context().addInitScript(() => {
+    navigator.geolocation.getCurrentPosition = (ok, denied) => {
+      const mode = localStorage.getItem('release-gps');
+      if (mode === 'gps' || mode === 'outside') ok({coords: {latitude: mode === 'outside' ? 30.02 : 30.054, longitude: 31.336, accuracy: 17.25}});
+      else denied({code: 1});
+    };
+  });
+  await page.route('**/context/road-match?*', route => route.fulfill({json: {road_context_id: null, reason: 'ambiguous_mapped_way'}}));
+  let submitted;
+  await page.route('**/api/v1/signals', route => {
+    if (route.request().method() !== 'POST') return route.continue();
+    submitted = route.request().postDataJSON();
+    return route.fulfill({json: {signal_id: 'release-intercepted'}});
+  });
+  await page.evaluate(() => localStorage.removeItem('release-gps'));
+  await page.goto(origin + '/report');
+  await page.getByLabel('What do you see?').fill('Release smoke water report');
+  check(await page.locator('#report-submit-btn').isDisabled(), 'denied GPS blocks submission');
+  check((await page.locator('body').innerText()).includes('No location selected'), 'denied GPS has no fallback');
+  await page.getByRole('button', {name: 'Street 14', exact: true}).click();
+  check((await page.locator('body').innerText()).includes('SIMULATED / DEMO PLACEMENT'), 'preset visibly simulated');
+  await page.getByRole('button', {name: 'Send observation', exact: true}).click();
+  await page.getByRole('heading', {name: 'Observation registered'}).waitFor();
+  check(submitted.content_origin === 'synthetic' && submitted.location_accuracy_m === null && submitted.road_context_id === null && submitted.independence === 'uncertain', 'preset metadata has no fabricated accuracy, road or independence');
+  await page.evaluate(() => localStorage.setItem('release-gps', 'gps'));
+  await page.goto(origin + '/report');
+  await page.getByLabel('What do you see?').fill('Genuine GPS test');
+  check(await page.locator('#report-submit-btn').isDisabled(), 'GPS requires confirmation');
+  await page.getByRole('checkbox', {name: 'I confirm these coordinates for submission'}).check();
+  await page.getByRole('button', {name: 'About 1 hour ago', exact: true}).click();
+  await page.getByRole('button', {name: 'Send observation', exact: true}).click();
+  await page.getByRole('heading', {name: 'Observation registered'}).waitFor();
+  check(submitted.content_origin === 'collected' && submitted.location_accuracy_m === 17.25 && submitted.road_context_id === null && submitted.independence === 'uncertain', 'GPS preserves measured accuracy and unknown road');
+  check(Math.abs(Date.now() - Date.parse(submitted.observed_at) - 3600000) < 10000, 'one-hour label matches timestamp');
+  await page.evaluate(() => localStorage.setItem('release-gps', 'outside'));
+  await page.goto(origin + '/report');
+  await page.getByLabel('What do you see?').fill('Outside boundary');
+  await page.getByRole('checkbox', {name: 'I confirm these coordinates for submission'}).check();
+  check(await page.locator('#report-submit-btn').isDisabled(), 'outside boundary remains blocked');
+  await page.unroute('**/api/v1/signals');
+  await page.goto(origin + '/operations');
+  await page.getByRole('button', {name: 'Expand Timeline ▲', exact: true}).click();
+  await page.getByLabel('Scenario:').selectOption('signature_image');
+  const replay = async name => {
+    const waiting = page.waitForResponse(r => r.url().endsWith('/demo/replay'));
+    await page.getByRole('button', {name, exact: true}).click();
+    const response = await waiting; if (!response.ok()) throw new Error(await response.text());
+    return response.json();
+  };
+  await replay('Reset'); await replay('Start'); let state = await replay('Advance');
+  const a = state.incidents.find(i => i.signal_ids.includes('a-water-0')) || state.incidents[0];
+  check(a.signal_ids.length === 8 && a.independent_capture_count === 1, 'A duplicate burst: 8 records / 1 capture');
+  for (let n=0;n<3;n++) state = await replay('Advance');
+  await page.locator('.queue-card').filter({hasText: 'Location B'}).click();
+  const b = state.incidents.find(i => i.signal_ids.includes('b-water-first'));
+  check(b.risk.display === '68' && b.evidence_strength === 'Moderate' && b.independent_capture_count === 3, 'B: 68 / Moderate / 3');
+  const compare = async (label, enabled) => {
+    const waiting = page.waitForResponse(r => r.url().endsWith('/demo/compare'));
+    await page.getByRole('checkbox', {name: label, exact: true}).setChecked(enabled);
+    const response = await waiting; if (!response.ok()) throw new Error(await response.text());
+    return response.json();
+  };
+  let result = await compare('Hide image evidence (Ablation)', true);
+  let changed = result.incidents.find(i => i.signal_ids.includes('b-water-first'));
+  check(changed.risk.display === '52–83' && changed.evidence_strength === 'Limited' && changed.independent_capture_count === 2, 'image ablation: 52–83 / Limited / 2');
+  const restored = await compare('Hide image evidence (Ablation)', false);
+  const restoredB = restored.incidents.find(i => i.signal_ids.includes('b-water-first'));
+  check(restoredB.risk.display === '68' && restoredB.evidence_strength === 'Moderate' && restoredB.independent_capture_count === 3, 'restored image: 68 / Moderate / 3');
+  result = await compare('Add 10 duplicates (Independence test)', true);
+  changed = result.incidents.find(i => i.signal_ids.includes('b-water-first'));
+  check(changed.evidence_strength === 'Moderate' && changed.signal_ids.length === 13 && changed.independent_capture_count === 3 && JSON.stringify(changed.risk) === JSON.stringify(b.risk) && JSON.stringify(changed.hypotheses) === JSON.stringify(b.hypotheses), 'restored image then B duplicates: 13 / 3 / unchanged risk and hypotheses');
+  await compare('Add 10 duplicates (Independence test)', false);
+  let release, started;
+  const began = new Promise(resolve => started = resolve);
+  const held = new Promise(resolve => release = resolve);
+  await page.route('**/live/incidents', async route => {
+    const response = await route.fetch(); started(); await held; await route.fulfill({response});
+  });
+  await page.getByRole('button', {name: 'Switch to Live Municipal', exact: true}).click();
+  await began;
+  const loaded = page.waitForResponse(r => r.url().endsWith('/api/v1/incidents'));
+  await page.getByRole('button', {name: 'Switch to Replay & Audit', exact: true}).click();
+  await loaded;
+  release();
+  await page.unroute('**/live/incidents');
+  await page.waitForTimeout(300);
+  check((await page.locator('.queue-card').filter({hasText: 'Location B'}).count()) === 1, 'delayed live response cannot overwrite replay');
+  const liveLoaded = page.waitForResponse(r => r.url().endsWith('/live/incidents'));
+  await page.getByRole('button', {name: 'Switch to Live Municipal', exact: true}).click();
+  const liveData = await (await liveLoaded).json();
+  const admitted = liveData.incidents.find(i => i.signal_ids.some(s => s.startsWith('image-')));
+  if (!admitted) throw new Error('Prepare an admitted image observation in the disposable runtime first');
+  await page.locator('.queue-card').filter({hasText: admitted.road_name}).click();
+  await page.getByRole('button', {name: 'Review', exact: true}).click();
+  await page.getByRole('button', {name: 'Correct image labels', exact: true}).click();
+  const sid = admitted.signal_ids.find(s => s.startsWith('image-'));
+  const before = await (await page.request.get(origin + '/api/v1/signals/' + sid + '/processing')).json();
+  const description = page.getByLabel('Visible description', {exact: true});
+  await description.fill('Broken asphalt surface with loose aggregate and debris; reviewed from the cached source image.');
+  await page.getByLabel('Correction reason', {exact: true}).fill('Release rehearsal: clarify visible surface description from cached pixels.');
+  const savedResponse = page.waitForResponse(r => r.url().includes(sid) && r.request().method() === 'POST');
+  await page.getByRole('button', {name: 'Save reviewed image labels', exact: true}).click();
+  const saved = await savedResponse;
+  check(saved.ok(), 'prepared admitted observation correction saved');
+  const after = await (await page.request.get(origin + '/api/v1/signals/' + sid + '/processing')).json();
+  check(after.revision === before.revision + 1 && JSON.stringify(after.original) === JSON.stringify(before.original), 'correction appends revision and preserves original');
+  check((await page.request.get(origin + '/api/v1/signals/' + sid + '/image')).ok(), 'cached raw image delivered');
+  await page.screenshot({path: 'output/playwright/release-live.png'});
+  check(errors.length === 0, 'no browser page errors');
+  return {passed: results.length, results, errors, consoleErrors, failedResponses};
+}
+

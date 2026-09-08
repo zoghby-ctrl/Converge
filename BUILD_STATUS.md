@@ -10,8 +10,8 @@ No git commit was made. Phase 1, Phase 2A, Phase 2B, Phase 3, and Phase 4 were p
    - Reused existing backend review/correction API (`POST /api/v1/signals/{sid}/review`) and `ReviewForm`/`ImageReviewForm` components from `ObservationPanel.tsx`.
    - Preserves complete revision lineage (`extraction_revisions`), retains raw source evidence unmodified, and automatically recomputes incidents and triage upon review save.
 2. **AI Ledger Runtime State Verified (Finding SYS-HIGH-02 Refuted):**
-   - Measured actual live runtime SQLite database (`%LOCALAPPDATA%\Converge\runtime\converge-text.sqlite3`): exactly 2 requests used, $0.00087 spent out of an 80-request / $1.00 budget cap.
-   - Live submissions are **not blocked** (78 requests remain). Auditor mistook static evaluation artifact `docs/image-usage-observed.json` for live database state. Historical records were preserved without tampering.
+   - Current development ledger: **80 / 80 requests used**; live uncached inference is blocked by the internal development cap. History is preserved.
+   - Signature replay/cached paths are available; cached raw-image paths were verified without new provider calls.
 3. **Honest Geolocation & Study Area Boundary:**
    - Prohibited silent coordinate substitution. Real detected GPS coordinates are preserved in state and displayed honestly.
    - If detected location is outside the Nasr City study area (30.045°–30.063° N, 31.325°–31.346° E), the UI displays an amber warning banner, explains the boundary constraint, and offers one-click study area presets (Street 14, Al-Tayaran, Youssef Abbas).

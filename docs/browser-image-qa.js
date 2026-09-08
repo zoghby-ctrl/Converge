@@ -1,3 +1,4 @@
+// HISTORICAL UI SCRIPT: retired selectors. Current release instructions and selectors: docs/browser-release-qa.js.
 // Image workflow smoke check. This is intentionally read-only by default: selecting a
 // fixture and rendering its preview does not call OpenAI or create a saved observation.
 // Set CONVERGE_IMAGE_LIVE=1 for an end-to-end upload. damage-01 is in the locked

@@ -76,6 +76,18 @@ def test_cached_image_signature_replay_and_scoped_image_delivery(tmp_path):
         ablation = client.post('/api/v1/demo/compare', json={'disable_families': ['image']}).json()
         changed = next(i for i in ablation['incidents'] if i['status'] == 'candidate')
         assert changed['risk']['display'] == '52–83' and changed['evidence_strength'] == 'Limited'
+        assert changed['independent_capture_count'] == 2
+        copies = client.post('/api/v1/demo/compare', json={
+            'add_duplicates': 10, 'source_signal_id': 'b-water-first'}).json()
+        duplicate_b = next(i for i in copies['incidents'] if 'b-water-first' in i['signal_ids'])
+        assert len(duplicate_b['signal_ids']) == 13
+        assert duplicate_b['independent_capture_count'] == 3
+        assert duplicate_b['risk'] == b['risk']
+        assert duplicate_b['hypotheses'] == b['hypotheses']
+        assert duplicate_b['evidence_strength'] == b['evidence_strength']
+        assert client.post('/api/v1/demo/compare', json={
+            'add_duplicates': 10, 'source_signal_id': 'missing'}).status_code == 422
+
 
 
 def test_legacy_structured_image_does_not_advertise_missing_file(tmp_path):

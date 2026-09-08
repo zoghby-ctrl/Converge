@@ -186,12 +186,12 @@ class ImageObservations:
                     independence="uncertain" if near else metadata.independence,
                     text=None, image_path=str(path), exact_image_hash=raw_hash,
                     lat=metadata.lat, lon=metadata.lon, location_accuracy_m=metadata.location_accuracy_m,
-                    location_method="operator reviewed coordinates", road_context_id=metadata.road_context_id,
+                    location_method="submission coordinates", road_context_id=metadata.road_context_id,
                     observed_at=metadata.observed_at, received_at=received, available_at=received,
                     provenance=provenance, evidence=[])
                 from .context import attach_operator_road
                 sourced = attach_operator_road(dataset, signal)
-                if not sourced and not any(r.road_context_id == metadata.road_context_id for r in dataset.roads):
+                if signal.road_context_id is not None and not sourced and not any(r.road_context_id == metadata.road_context_id for r in dataset.roads):
                     dataset.roads.append(RoadContext(road_context_id=metadata.road_context_id,
                         name=metadata.road_context_id, road_class=None,
                         coordinates=[(metadata.lon, metadata.lat), (metadata.lon, metadata.lat)],

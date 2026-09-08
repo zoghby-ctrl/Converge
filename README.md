@@ -22,7 +22,7 @@ map assets. After the first build, only the last command is needed. The prepared
 structured replay requires no internet. Cached analysis and human correction work
 locally. New uncached text or image analysis uses OpenAI within configured limits
 (80 max requests, $1.00 max spend in `%LOCALAPPDATA%\Converge\runtime\converge-text.sqlite3`).
-The live database is not blocked (78 requests remaining).
+The development ledger is at **80 / 80 requests used**. Live uncached inference is blocked by the internal development cap; replay and cached paths remain available.
 
 For frontend development, leave the backend running and open a second terminal:
 
@@ -84,26 +84,10 @@ human review. Use one local backend worker; no background API polling.
 
 ## Enter and review an observation
 
-1. Click **New observation**. Enter text, coordinates within the existing study
-   extent, observation time, location accuracy, operator and reviewed road segment.
-2. Confirm capture independence only when the source supports it. Copies share
-   a capture group. Uncertain independence prevents engine admission. Mark authored
-   demo reports as **synthetic** so provenance does not imply field collection.
-3. Optionally attach a JPEG/PNG up to 5 MiB and 12 megapixels. Select collected,
-   public-source, or synthetic provenance; public sources require a reference and
-   licence. The server applies EXIF orientation, strips metadata and stores a clean
-   copy outside OneDrive. Text and image in one submission share one capture.
-4. Click **Submit for text analysis** or **Submit image and report**.
-   Pending/analyzing jobs become processed,
-   needs review or failed. The saved report, exact source quotes, temporal claims,
-   visible image states/support, model, fallback reason and live/cached/manual
-   origin remain visible.
-5. The operator queue shows the engine's watch/candidate result or admission
-   exclusions. **Correct extraction** or **Correct image labels** appends a
-   human-reviewed revision and
-   recomputes locally. The original report and prior revisions remain unchanged.
-6. **Show offline replay** returns to the deterministic replay. Reset affects only that
-   dataset, not operator records, extraction revisions, cache or usage.
+1. Open `/report` or click **+ Submit Observation**. Enter text or a JPEG/PNG.
+2. Confirm genuine GPS coordinates, or explicitly select a **SIMULATED / DEMO PLACEMENT**. Denied GPS has no fallback. Presets/manual placement have unknown accuracy and synthetic provenance; submissions have uncertain independence and are excluded from independent evidence. Unknown road matches remain unknown.
+3. Click **Send observation**. The receipt confirms registration, not admission or successful inference. Uncached inference is blocked at the development cap.
+4. To demonstrate correction, use a prepared admitted operator observation in **Live Municipal → Review**. Save a correction with a reason. Failed/excluded observations are not fully recoverable through the current UI. Replay fixtures cannot be corrected.
 
 Text presence alone does not measure severity. Positive evidence therefore has
 unknown ordinal severity; reported duration does not establish independently
@@ -121,7 +105,7 @@ revision as the active evidence until a replacement is accepted.
 
 ## Replay the signature story
 
-1. Select `signature_image`, click **Reset**, then **Start replay**. This
+1. Open `/operations`, click **Expand Timeline**, select `signature_image`, click **Reset**, then **Start**. This
    mixed-source variant includes one licensed public image extraction with explicit
    simulated placement/time; `signature` remains the fully structured legacy case.
 2. **Advance**: A now contains eight copies, one capture, and remains a watch item.
@@ -132,7 +116,7 @@ revision as the active evidence until a replacement is accepted.
    **68/100** inspection-triage index.
 6. Select B and enable **Hide image evidence**. Road condition becomes unknown,
    evidence drops to Limited, and the risk range becomes **52–83**.
-7. Restore images and enable **Add 10 duplicates**. No risk, support-point or
+7. Restore images, keep B selected, and enable **Add 10 duplicates (Independence test)**. B now has **13 records / 3 captures**. No risk, support-point or
    independent-capture inflation occurs. Comparisons never alter the saved replay.
 
 Expand calculation, membership and hypothesis sections to inspect evidence/rule
@@ -169,7 +153,7 @@ mapped ways compete too. These conservative defaults can split a real event;
 no road or drainage connectivity is inferred. Independent human geography review
 has not been performed.
 
-In **New observation**, **Match sourced road** fills a validated OSM segment ID
+On `/report`, a successful bounded GPS road match supplies an OSM segment ID
 when the pin is unambiguous. Text and image submission recheck it server-side.
 Ambiguous/unmapped pins require manual review; manual labels retain the previous
 operator workflow with unknown exposure. Context never adds a witness.
@@ -205,25 +189,10 @@ production backend running:
 ```powershell
 New-Item -ItemType Directory -Force output\playwright | Out-Null
 npx --yes --package @playwright/cli playwright-cli -s=converge open http://127.0.0.1:8000 --headed
-npx --yes --package @playwright/cli playwright-cli -s=converge run-code --filename docs/browser-qa.js
+npx --yes --package @playwright/cli playwright-cli -s=converge run-code --filename docs/browser-release-qa.js
 ```
 
-The browser check blocks every non-loopback request, drives the complete replay,
-checks reset, comparisons, Arabic record viewing, local resource failures and
-1280×720 layout, and saves screenshots under `output/playwright`. Initial CLI
-installation may need the internet. This is a simulated loss of external network
-access while retaining the local server, not a physical Wi-Fi disconnection.
-
-The Phase 2B image check uses the locked `damage-01` cache entry. To guarantee it
-cannot make a provider call, start the backend with `OPENAI_API_KEY` blank, then run:
-
-```powershell
-$env:CONVERGE_IMAGE_LIVE='1'
-npx --yes --package @playwright/cli playwright-cli -s=converge run-code --filename docs/browser-image-qa.js
-```
-
-It checks upload preview, cached Luna output, the saved thumbnail, review state and
-a persisted human-correction revision. See `docs/browser-image-result.json`.
+The current release check is `docs/browser-release-qa.js`. It intercepts report submissions for provenance assertions, then exercises real local replay, ablation, duplicate comparison and the delayed-response race. Use a disposable database with the provider key blank. Historical Phase 2/3 browser scripts target the retired observation panel and are not current release checks. Human correction is rehearsed on a prepared admitted observation in Live Municipal → Review.
 
 ## Project layout
 
@@ -319,3 +288,7 @@ npx --yes --package @playwright/cli playwright-cli -s=converge run-code --filena
 Run the text check on a fresh operator dataset/segment for its initial-watch
 assertion. It can make two provider calls. The image check is cache-only with the
 locked local entry. Neither browser check runs automatically under pytest.
+
+Release rehearsal: Open `/operations` in Replay & Audit mode. Click **Expand Timeline**, select `signature_image` in the scenario selector, then **Reset**, **Start**, and **Advance**. A shows 8 records / 1 capture. Advance three more times to step 5, select B: **68 / Moderate / 3 captures**. Check **Hide image evidence**: **52–83 / Limited / 2 captures**. Restore the image first, then check **Add 10 duplicates (Independence test)** with B selected: **13 records / 3 captures**, unchanged risk and hypotheses. For human correction, switch to **Live Municipal**, select a prepared admitted operator observation, open **Review**, choose its member record, and save a correction with a reason. Replay fixtures are immutable. Failed/excluded submissions are not fully recoverable through this UI.
+
+Development ledger: **80 / 80 requests used**. Live uncached development inference is blocked by the internal development cap. The signature demo uses verified replay/cached paths; cached raw-image paths were verified without new provider calls. Do not reset the ledger or call a live provider for rehearsal.

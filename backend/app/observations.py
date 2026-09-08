@@ -101,12 +101,12 @@ class Observations:
             source_record_id=sid, source_family="text", capture_group_id=request.capture_group_id,
             copy_lineage=request.copy_lineage, independence=request.independence, text=request.text,
             lat=request.lat, lon=request.lon, location_accuracy_m=request.location_accuracy_m,
-            location_method="operator reviewed coordinates", road_context_id=request.road_context_id,
+            location_method="submission coordinates", road_context_id=request.road_context_id,
             observed_at=request.observed_at, received_at=timestamp, available_at=timestamp,
             provenance=provenance, evidence=[])
         from .context import attach_operator_road
         sourced = attach_operator_road(dataset, signal)
-        if not sourced and not any(r.road_context_id == request.road_context_id for r in dataset.roads):
+        if signal.road_context_id is not None and not sourced and not any(r.road_context_id == request.road_context_id for r in dataset.roads):
             dataset.roads.append(RoadContext(road_context_id=request.road_context_id, name=request.road_context_id,
                 road_class=None, coordinates=[(request.lon, request.lat), (request.lon, request.lat)],
                 provenance=provenance.model_copy(update={"annotation_method": "manual_structured"})))

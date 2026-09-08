@@ -107,8 +107,8 @@ class ImageObservationMetadata(Contract):
     lat: float = Field(ge=30.045, le=30.063)
     lon: float = Field(ge=31.325, le=31.346)
     observed_at: datetime
-    location_accuracy_m: float = Field(ge=0, le=500)
-    road_context_id: str = Field(min_length=1, max_length=80, pattern=r"^[\w -]+$")
+    location_accuracy_m: float | None = Field(default=None, ge=0)
+    road_context_id: str | None = Field(default=None, min_length=1, max_length=80, pattern=r"^[\w -]+$")
     capture_group_id: str = Field(min_length=1, max_length=80, pattern=r"^[\w-]+$")
     independence: Literal["asserted", "uncertain"] = "uncertain"
     copy_lineage: str | None = Field(default=None, max_length=80)
@@ -125,7 +125,7 @@ class ImageObservationMetadata(Contract):
     @field_validator("operator", "road_context_id")
     @classmethod
     def nonblank(cls, value):
-        if not value.strip():
+        if value is not None and not value.strip():
             raise ValueError("Must not be blank")
         return value
 

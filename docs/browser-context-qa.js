@@ -1,3 +1,4 @@
+// HISTORICAL UI SCRIPT: retired selectors. Current release instructions and selectors: docs/browser-release-qa.js.
 // Run against a disposable local runtime with the OpenAI key blank.
 async (page) => {
   const externalRequests = [], consoleErrors = [], failures = [];

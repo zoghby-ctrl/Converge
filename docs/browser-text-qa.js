@@ -1,3 +1,4 @@
+// HISTORICAL UI SCRIPT: retired selectors. Current release instructions and selectors: docs/browser-release-qa.js.
 // Explicitly submits two synthetic reports via the real UI/API. May make two billed calls.
 // Run after opening the local app with playwright-cli. Never runs automatically.
 async (page) => {

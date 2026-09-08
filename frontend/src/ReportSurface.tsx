@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { navigate } from './router'
 
 interface RoadMatchResult {
@@ -26,18 +26,20 @@ function isInsideStudyArea(lat: number, lon: number): boolean {
 }
 
 export function ReportSurface() {
+  const locationChosen = useRef(false)
   const [text, setText] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState('')
   
   // Geolocation & Fallback
-  const [lat, setLat] = useState(30.054)
-  const [lon, setLon] = useState(31.336)
-  const [accuracy, setAccuracy] = useState(10)
+  const [lat, setLat] = useState(0)
+  const [lon, setLon] = useState(0)
+  const [accuracy, setAccuracy] = useState<number | null>(null)
   const [matchedRoad, setMatchedRoad] = useState<string | null>(null)
-  const [roadLabel, setRoadLabel] = useState('Street 14')
-  const [showLocationEdit, setShowLocationEdit] = useState(false)
-  const [locationSource, setLocationSource] = useState<'default_demo' | 'detected_gps' | 'preset' | 'manual'>('default_demo')
+  const [roadLabel, setRoadLabel] = useState('')
+  const [showLocationEdit, setShowLocationEdit] = useState(true)
+  const [locationSource, setLocationSource] = useState<'unavailable' | 'detected_gps' | 'preset' | 'manual'>('unavailable')
+  const [locationConfirmed, setLocationConfirmed] = useState(false)
   
   // Time selector
   const [timeChoice, setTimeChoice] = useState<'just_now' | '15m_ago' | 'earlier'>('just_now')
@@ -51,6 +53,8 @@ export function ReportSurface() {
   // Resolve road match via backend if available
   useEffect(() => {
     let active = true
+    setMatchedRoad(null)
+    if (accuracy === null || locationSource !== 'detected_gps') return
     fetch(`/api/v1/context/road-match?lon=${lon}&lat=${lat}&accuracy_m=${accuracy}`)
       .then(res => res.ok ? res.json() : null)
       .then((data: RoadMatchResult | null) => {
@@ -63,19 +67,21 @@ export function ReportSurface() {
         }
       })
       .catch(() => {
-        if (!active) setMatchedRoad(null)
+        if (active) setMatchedRoad(null)
       })
     return () => { active = false }
-  }, [lat, lon, accuracy])
+  }, [lat, lon, accuracy, locationSource])
 
   // Optional HTML5 geolocation attempt on mount (Constraint 3: never silently substitute Street 14)
   useEffect(() => {
+    let active = true
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const userLat = Number(pos.coords.latitude.toFixed(5))
-          const userLon = Number(pos.coords.longitude.toFixed(5))
-          const userAccuracy = Math.min(500, Math.round(pos.coords.accuracy || 10))
+          if (!active || locationChosen.current) return
+          const userLat = pos.coords.latitude
+          const userLon = pos.coords.longitude
+          const userAccuracy = pos.coords.accuracy
           setLat(userLat)
           setLon(userLon)
           setAccuracy(userAccuracy)
@@ -85,11 +91,12 @@ export function ReportSurface() {
           }
         },
         () => {
-          // Geolocation denied or unavailable; retains explicit default demo coordinates
+          if (active) setError('Location unavailable. Choose a SIMULATED demo placement or enter and confirm coordinates.')
         },
         { timeout: 4000 }
       )
     }
+    return () => { active = false }
   }, [])
 
   // Manage photo preview URL
@@ -140,6 +147,7 @@ export function ReportSurface() {
       setError('Please describe what you observed or attach a photo.')
       return
     }
+    if (!locationConfirmed) { setError('Choose or confirm the submission location.'); return }
     if (!isInsideStudyArea(lat, lon)) {
       setError(`Coordinates (${lat}°, ${lon}°) are outside the active Nasr City study area (30.045°–30.063° N, 31.325°–31.346° E). Please select a study location preset or adjust coordinates before sending.`)
       return
@@ -149,7 +157,7 @@ export function ReportSurface() {
 
     const captureGroupId = 'cg-' + crypto.randomUUID().slice(0, 8)
     const idempotencyKey = 'rep-' + crypto.randomUUID().slice(0, 12)
-    const effectiveRoad = matchedRoad || (roadLabel.trim() || 'Street 14')
+    const effectiveRoad = locationSource === 'detected_gps' ? matchedRoad : null
     const observedAt = calculateObservedAt()
 
     const metadata = {
@@ -160,9 +168,9 @@ export function ReportSurface() {
       location_accuracy_m: accuracy,
       road_context_id: effectiveRoad,
       capture_group_id: captureGroupId,
-      independence: 'asserted',
+      independence: 'uncertain',
       operator: 'Citizen report',
-      content_origin: 'collected',
+      content_origin: locationSource === 'detected_gps' ? 'collected' : 'synthetic',
       idempotency_key: idempotencyKey
     }
 
@@ -240,7 +248,7 @@ export function ReportSurface() {
             <div className="receipt-check-glyph">✓</div>
             <h2 className="receipt-heading">Observation registered</h2>
             <p className="receipt-message">
-              Signal <strong>#{submittedSignalId}</strong> has been registered in the municipal signal network. It will be synthesized with nearby observations, road context, and weather data.
+              Signal <strong>#{submittedSignalId}</strong> has been registered. Registration does not mean completed analysis or admission as independent evidence.
             </p>
             <div className="receipt-meta-box">
               <span>Time: {submittedTimestamp} Cairo</span>
@@ -307,12 +315,12 @@ export function ReportSurface() {
 
               {!isInsideStudyArea(lat, lon) && (
                 <div className="report-out-of-area-banner" role="alert">
-                  <strong>Location outside study area:</strong>
+                  <strong>{locationSource === 'unavailable' ? 'Choose a location:' : 'Location outside study area:'}</strong>
                   <p style={{ margin: '4px 0' }}>
-                    Detected coordinates ({lat}° N, {lon}° E) are outside the active Nasr City coverage area (30.045°–30.063° N, 31.325°–31.346° E). The backend requires an observation within this sector.
+                    {locationSource === 'unavailable' ? 'GPS unavailable or pending. No submission location has been selected.' : `Coordinates (${lat}° N, ${lon}° E) are outside the active Nasr City coverage area (30.045°–30.063° N, 31.325°–31.346° E).`}
                   </p>
                   <div className="preset-buttons-row">
-                    <span>Select a study area location:</span>
+                    <span>Choose a SIMULATED demo placement:</span>
                     {STUDY_PRESETS.map(preset => (
                       <button
                         key={preset.name}
@@ -322,7 +330,7 @@ export function ReportSurface() {
                           setLat(preset.lat)
                           setLon(preset.lon)
                           setRoadLabel(preset.name)
-                          setLocationSource('preset')
+                          locationChosen.current = true; setLocationSource('preset'); setAccuracy(null); setMatchedRoad(null); setLocationConfirmed(true)
                           setError('')
                         }}
                       >
@@ -333,16 +341,19 @@ export function ReportSurface() {
                 </div>
               )}
 
+              <p>{locationSource === 'unavailable' ? 'No location selected.' : locationSource === 'detected_gps' ? `GPS accuracy: ${accuracy} m` : 'SIMULATED / DEMO PLACEMENT — no GPS accuracy; excluded from independent evidence.'}</p>
+              <p>{matchedRoad ? 'Bounded road match available.' : 'Road context unknown / unverified.'}</p>
+              <label><input type="checkbox" checked={locationConfirmed} disabled={locationSource === 'unavailable'} onChange={e => setLocationConfirmed(e.target.checked)} /> I confirm these coordinates for submission</label>
               <div className="location-pill-card">
                 <div className="loc-info">
                   <span className="loc-title">
-                    {isInsideStudyArea(lat, lon)
-                      ? (matchedRoad ? 'Location detected' : 'Nasr City Study Area')
+                    {locationSource === 'unavailable' ? 'No location selected' : isInsideStudyArea(lat, lon)
+                      ? (locationSource === 'detected_gps' ? 'GPS location' : 'SIMULATED / DEMO PLACEMENT')
                       : 'Location outside study area'}
                   </span>
                   <span className="loc-subtitle" style={!isInsideStudyArea(lat, lon) ? { color: '#B45309' } : undefined}>
-                    {isInsideStudyArea(lat, lon)
-                      ? (matchedRoad ? `${roadLabel} (Accurate)` : `${lat}° N, ${lon}° E (Study area)`)
+                    {locationSource === 'unavailable' ? 'No location selected' : isInsideStudyArea(lat, lon)
+                      ? (matchedRoad ? `${roadLabel} (bounded road match)` : `${lat}° N, ${lon}° E (Study area)`)
                       : `${lat}° N, ${lon}° E (Adjustment required)`}
                   </span>
                 </div>
@@ -357,15 +368,6 @@ export function ReportSurface() {
 
               {showLocationEdit && (
                 <div className="location-edit-drawer">
-                  <label className="form-sublabel">
-                    Road / Street Name
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={roadLabel}
-                      onChange={e => setRoadLabel(e.target.value)}
-                    />
-                  </label>
                   <div className="location-coords-row">
                     <label className="form-sublabel">
                       Lat
@@ -376,7 +378,7 @@ export function ReportSurface() {
                         max="30.063"
                         className="form-input"
                         value={lat}
-                        onChange={e => setLat(Number(e.target.value))}
+                        onChange={e => { setLat(Number(e.target.value)); setAccuracy(null); setMatchedRoad(null); locationChosen.current = true; setLocationSource('manual'); setLocationConfirmed(false) }}
                       />
                     </label>
                     <label className="form-sublabel">
@@ -388,13 +390,13 @@ export function ReportSurface() {
                         max="31.346"
                         className="form-input"
                         value={lon}
-                        onChange={e => setLon(Number(e.target.value))}
+                        onChange={e => { setLon(Number(e.target.value)); setAccuracy(null); setMatchedRoad(null); locationChosen.current = true; setLocationSource('manual'); setLocationConfirmed(false) }}
                       />
                     </label>
                   </div>
                   {isInsideStudyArea(lat, lon) && (
                     <div className="preset-buttons-row">
-                      <span>Presets:</span>
+                      <span>SIMULATED demo presets:</span>
                       {STUDY_PRESETS.map(preset => (
                         <button
                           key={preset.name}
@@ -404,7 +406,7 @@ export function ReportSurface() {
                             setLat(preset.lat)
                             setLon(preset.lon)
                             setRoadLabel(preset.name)
-                            setLocationSource('preset')
+                            locationChosen.current = true; setLocationSource('preset'); setAccuracy(null); setMatchedRoad(null); setLocationConfirmed(true)
                           }}
                         >
                           {preset.name}
@@ -438,7 +440,7 @@ export function ReportSurface() {
                   className={`time-chip ${timeChoice === 'earlier' ? 'active' : ''}`}
                   onClick={() => setTimeChoice('earlier')}
                 >
-                  Earlier today
+                  About 1 hour ago
                 </button>
               </div>
             </div>
@@ -447,7 +449,7 @@ export function ReportSurface() {
               id="report-submit-btn"
               type="submit"
               className="btn-lg btn-primary report-submit-btn"
-              disabled={busy || (!text.trim() && !file) || !isInsideStudyArea(lat, lon)}
+              disabled={!locationConfirmed || busy || (!text.trim() && !file) || !isInsideStudyArea(lat, lon)}
             >
               {busy
                 ? 'Registering signal…'

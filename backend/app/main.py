@@ -24,6 +24,7 @@ class ReplayRequest(Contract):
 
 class CompareRequest(Contract):
     disable_families: list[Literal["image"]] = Field(default_factory=list, max_length=1)
+    source_signal_id: str | None = None
     add_duplicates: int = Field(default=0, ge=0, le=10)
 
 
@@ -211,7 +212,10 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
             originals = sorted([s for s in dataset.signals if s.available_at <= clock and s.source_family == "text"],
                                key=lambda s: s.signal_id)
             if request.add_duplicates and originals:
-                original = originals[0]
+                original = next((s for s in originals if s.signal_id == request.source_signal_id), None)
+                if request.source_signal_id and original is None:
+                    raise HTTPException(422, "Duplicate source must be an available text record")
+                original = original or next((s for s in originals if s.signal_id == "b-water-first"), originals[0])
                 for n in range(request.add_duplicates):
                     payload = original.model_dump(mode="json")
                     sid = f"zz-compare-copy-{n}"
