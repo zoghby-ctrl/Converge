@@ -136,6 +136,6 @@ These checks validate implementation behavior and reproducibility; they do not e
 
 ## Team
 
-**Control Alt Elite**
+**Ctrl Alt Elite**
 
 Built for **IMPACTX 2026 · Smart Cities**.
