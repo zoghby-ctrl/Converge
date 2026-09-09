@@ -99,7 +99,7 @@ async (page) => {
   const liveData = await (await liveLoaded).json();
   const admitted = liveData.incidents.find(i => i.signal_ids.some(s => s.startsWith('image-')));
   if (!admitted) throw new Error('Prepare an admitted image observation in the disposable runtime first');
-  await page.locator('.queue-card').filter({hasText: admitted.road_name}).click();
+  await page.locator(`.queue-card[data-incident-id="${admitted.incident_id}"]`).click();
   await page.getByRole('button', {name: 'Review', exact: true}).click();
   await page.getByRole('button', {name: 'Correct image labels', exact: true}).click();
   const sid = admitted.signal_ids.find(s => s.startsWith('image-'));

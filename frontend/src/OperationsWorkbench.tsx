@@ -308,7 +308,7 @@ function MapPanel({
           <span>Image observation</span>
         </div>
         <small style={{ color: 'var(--cv-text-muted)', marginTop: 2 }}>
-          ≤120 m all-member threshold, not a flood footprint.
+          Markers show observation and incident locations.
         </small>
       </div>
 
@@ -370,6 +370,12 @@ function TabbedInspector({
     (curr.support_points > prev.support_points ? curr : prev), i.hypotheses[0] || null)
 
   const filledPips = Math.min(4, Math.max(1, i.independent_capture_count))
+  const riskTone = i.status === 'watch' || i.risk.risk_band.toLowerCase().includes('watch')
+    ? 'watch'
+    : i.risk.risk_band.toLowerCase().includes('inspect first')
+    ? 'high'
+    : 'medium'
+  const primaryAction = i.trace.inspection_checks[0]?.text
 
   return (
     <aside className="ops-col-inspector" aria-label="Incident Inspector">
@@ -406,14 +412,18 @@ function TabbedInspector({
         {tab === 'overview' && (
           <div className="tab-content">
             <div className="inspector-eyebrow">
-              {i.status === 'candidate' ? 'Candidate Incident' : 'Watch Item'} · Revision {i.revision}
+              {i.status === 'candidate' ? 'Candidate incident' : 'Watch item'} · Revision {i.revision}
             </div>
             <h2 className="inspector-title">{roadLabel(i.road_name)}</h2>
+            <div className="incident-type-line">
+              <span>Incident type</span>
+              <strong>{i.tag}</strong>
+            </div>
 
             {/* Dual Metric Module */}
             <div className="dual-metric-panel">
-              <div className="metric-card">
-                <span className="metric-header">Risk Index — Triage</span>
+              <div className={`metric-card risk-tone-${riskTone}`}>
+                <span className="metric-header">Risk priority</span>
                 <div className="metric-score">
                   {i.risk.display} <small>/100</small>
                 </div>
@@ -421,8 +431,8 @@ function TabbedInspector({
                   {i.risk.risk_band}
                   {i.risk.provisional && i.risk.risk_band !== 'provisional' ? ' · provisional' : ''}
                 </span>
-                <small style={{ fontSize: '9px', color: 'var(--cv-text-muted)', marginTop: 2 }}>
-                  Impact heuristic · cause unverified
+                <small className="metric-footnote">
+                  Inspection triage · not a probability
                 </small>
               </div>
 
@@ -438,14 +448,27 @@ function TabbedInspector({
                   ))}
                 </div>
                 <small style={{ fontSize: '10px', color: 'var(--cv-text-secondary)' }}>
-                  {i.independent_capture_count} independent capture{i.independent_capture_count === 1 ? '' : 's'} across {i.signal_ids.length} records
+                  {i.independent_capture_count} independent capture{i.independent_capture_count === 1 ? '' : 's'} across {i.signal_ids.length} record{i.signal_ids.length === 1 ? '' : 's'}
                 </small>
+                <small className="metric-footnote">Corroboration · not severity</small>
               </div>
             </div>
 
+            {primaryAction && (
+              <section className="recommended-action-card" aria-label="Recommended next action">
+                <span>Recommended next action</span>
+                <strong>{primaryAction}</strong>
+                <small>Municipal field check · confirm physical cause before intervention.</small>
+              </section>
+            )}
+
             {/* Why Inspect Here? */}
             <div className="overview-summary-box">
-              <strong>Why Inspect Here:</strong> {i.tag}. Maximum pair distance: {i.max_pair_distance_m.toFixed(1)} m across {i.signal_ids.length} records.
+              {i.status === 'candidate' ? (
+                <><strong>Why these observations converge:</strong> Maximum pair distance is {i.max_pair_distance_m.toFixed(1)} m across {i.signal_ids.length} records.</>
+              ) : (
+                <><strong>Current correlation basis:</strong> {i.independent_capture_count} independent capture{i.independent_capture_count === 1 ? '' : 's'} across {i.signal_ids.length} record{i.signal_ids.length === 1 ? '' : 's'}; the current engine result remains a watch item.</>
+              )}
               <details style={{ fontSize: '10px', marginTop: 4 }}><summary>Grouping rule</summary><code>{i.trace.formation_rule}</code></details>
             </div>
 
@@ -454,17 +477,17 @@ function TabbedInspector({
               <div className="overview-item-card leading">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--cv-brand-dark)' }}>
-                    Strongest Hypothesis ({leadingHypothesis.hypothesis_id})
+                    Leading working explanation ({leadingHypothesis.hypothesis_id})
                   </span>
                   <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--cv-brand-dark)', fontSize: '11px' }}>
-                    {leadingHypothesis.support_points.toFixed(1)} pts
+                    {leadingHypothesis.support_points.toFixed(1)} support pts
                   </strong>
                 </div>
                 <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--cv-text-primary)' }}>
                   {leadingHypothesis.title}
                 </div>
                 <small style={{ fontSize: '10px', color: 'var(--cv-text-secondary)' }}>
-                  {leadingHypothesis.tied_or_leading} · Missing: {leadingHypothesis.missing_discriminators[0] || 'Physical cause requires engineering field check'}
+                  Not a diagnosis · {leadingHypothesis.tied_or_leading} · Evidence gap: {leadingHypothesis.missing_discriminators[0] || 'Physical cause requires engineering field check'}
                 </small>
               </div>
             )}
@@ -508,6 +531,10 @@ function TabbedInspector({
 
                 return (
                   <article className="evidence-item" key={e.evidence_id}>
+                    <div className="evidence-source-line">
+                      <span>{source ? `${human(source.source_family)} observation · ${time(source.observed_at)} Cairo` : 'Linked observation'}</span>
+                      {source && <span>{human(source.provenance.content_origin)}</span>}
+                    </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <strong style={{ fontSize: '11px', color: 'var(--cv-text-primary)' }}>{wording}</strong>
                       <span className={`prov-badge ${e.field_verified ? 'prov-human' : e.basis === 'visually_suggested' ? 'prov-ai' : 'prov-citizen'}`}>
@@ -581,7 +608,7 @@ function TabbedInspector({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {i.hypotheses.map(h => (
-                <details className="hypothesis" key={h.hypothesis_id} open>
+                <details className="hypothesis" key={h.hypothesis_id}>
                   <summary style={{ cursor: 'pointer', padding: '6px 8px', background: 'var(--cv-surface-sidebar)', borderRadius: 5 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <strong style={{ fontSize: '12px', color: 'var(--cv-text-primary)' }}>
@@ -617,7 +644,7 @@ function TabbedInspector({
         {tab === 'review' && (
           <div className="tab-content">
             <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--cv-text-muted)' }}>
-              Recommended Municipal Inspection Checks
+              Recommended municipal action
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -833,6 +860,7 @@ export function OperationsWorkbench() {
   const [hideImage, setHideImage] = useState(false)
   const [copies, setCopies] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [scenario, setScenario] = useState('signature')
   const [live, setLive] = useState(false)
@@ -842,9 +870,21 @@ export function OperationsWorkbench() {
   const requestGeneration = useRef(0)
   const loadData = useCallback(() => {
     const generation = ++requestGeneration.current
+    setLoading(true)
+    setError('')
     api<Replay>(live ? 'live/incidents' : 'incidents')
-      .then(result => { if (generation === requestGeneration.current) setData(result) })
-      .catch(e => { if (generation === requestGeneration.current) setError(String(e)) })
+      .then(result => {
+        if (generation === requestGeneration.current) {
+          setData(result)
+          setLoading(false)
+        }
+      })
+      .catch(e => {
+        if (generation === requestGeneration.current) {
+          setError(String(e))
+          setLoading(false)
+        }
+      })
   }, [live])
 
   useEffect(() => {
@@ -957,7 +997,13 @@ export function OperationsWorkbench() {
 
       {error && (
         <div className="error" role="alert" style={{ padding: '6px 16px', fontSize: '11px' }}>
-          {error}
+          Could not refresh this view. Previously loaded data remains unchanged. {error}
+        </div>
+      )}
+
+      {loading && data.incidents.length > 0 && (
+        <div className="refresh-status" role="status">
+          Refreshing {live ? 'municipal records' : 'bundled replay'}… The current values remain visible until the refresh completes.
         </div>
       )}
 
@@ -968,7 +1014,7 @@ export function OperationsWorkbench() {
           <div className="queue-header-area">
             <div className="queue-title">
               <span>Inspection Queue</span>
-              <span className="queue-count-badge">{candidateCount} Candidates</span>
+              <span className="queue-count-badge">{candidateCount} Candidate{candidateCount === 1 ? '' : 's'}</span>
             </div>
           </div>
 
@@ -976,13 +1022,15 @@ export function OperationsWorkbench() {
             {incidents.filter(i => i.status === 'candidate').map(i => (
               <button
                 key={i.incident_id}
+                data-incident-id={i.incident_id}
                 className={`queue-card ${chosen?.incident_id === i.incident_id ? 'selected' : ''}`}
                 onClick={() => setSelected(i.incident_id)}
               >
                 <div className="qc-top-row">
                   <span className="qc-road-name">{roadLabel(i.road_name).split(' · ')[0]}</span>
                   <div className="qc-risk-metric">
-                    {i.risk.display} <small>/100</small>
+                    <span className="qc-risk-label">Risk</span>
+                    <span>{i.risk.display} <small>/100</small></span>
                   </div>
                 </div>
                 <div className="qc-tags-row">
@@ -1005,13 +1053,15 @@ export function OperationsWorkbench() {
                 {incidents.filter(i => i.status === 'watch').map(i => (
                   <button
                     key={i.incident_id}
+                    data-incident-id={i.incident_id}
                     className={`queue-card ${chosen?.incident_id === i.incident_id ? 'selected' : ''}`}
                     onClick={() => setSelected(i.incident_id)}
                   >
                     <div className="qc-top-row">
                       <span className="qc-road-name">{roadLabel(i.road_name).split(' · ')[0]}</span>
                       <div className="qc-risk-metric" style={{ color: 'var(--cv-text-secondary)' }}>
-                        {i.risk.display} <small>/100</small>
+                        <span className="qc-risk-label">Risk</span>
+                        <span>{i.risk.display} <small>/100</small></span>
                       </div>
                     </div>
                     <div className="qc-tags-row">
@@ -1027,10 +1077,12 @@ export function OperationsWorkbench() {
             )}
 
             {incidents.length === 0 && (
-              <p style={{ padding: 12, color: 'var(--cv-text-muted)', fontSize: '11px', textAlign: 'center' }}>
-                {live
-                  ? 'No admitted observations yet. Submit a signal via /report.'
-                  : 'Start replay to advance the simulation.'}
+              <p className="queue-empty-state" aria-live="polite">
+                {loading
+                  ? `Loading ${live ? 'municipal records' : 'bundled replay'}…`
+                  : live
+                  ? 'No admitted municipal observations yet. Submit an observation to begin.'
+                  : 'This replay has no incidents at the current step. Advance it to add observations.'}
               </p>
             )}
 

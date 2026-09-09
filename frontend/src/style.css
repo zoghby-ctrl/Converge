@@ -582,6 +582,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   height: 48px;
   background: #FFFFFF;
   border-bottom: 1px solid var(--cv-border-light);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -657,7 +658,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .ops-workspace {
   flex: 1;
   display: grid;
-  grid-template-columns: 260px 1fr 380px;
+  grid-template-columns: 250px minmax(320px, 1fr) 410px;
   height: calc(100% - 48px - 34px); /* Subtract Header + Collapsed Ribbon */
   min-height: 0;
   overflow: hidden;
@@ -679,7 +680,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 .queue-header-area {
-  padding: 10px 14px;
+  padding: 12px 14px;
   background: #FFFFFF;
   border-bottom: 1px solid var(--cv-border-light);
 }
@@ -714,16 +715,16 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 .queue-card {
   background: #FFFFFF;
-  border-radius: 6px;
-  padding: 10px 12px;
+  border-radius: 8px;
+  padding: 11px 12px;
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   text-align: left;
-  border: 1px solid transparent;
+  border: 1px solid var(--cv-border-light);
 }
 
 .queue-card:hover {
@@ -733,7 +734,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .queue-card.selected {
   background: #F0FDFA;
   border-left: 3px solid var(--cv-brand-primary);
-  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.08);
+  border-top-color: #99F6E4;
+  border-right-color: #99F6E4;
+  border-bottom-color: #99F6E4;
+  box-shadow: 0 3px 10px rgba(15, 118, 110, 0.08);
 }
 
 .qc-top-row {
@@ -743,8 +747,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 .qc-road-name {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--cv-text-primary);
 }
 
@@ -754,6 +758,19 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   font-weight: 700;
   color: var(--cv-risk-high);
   line-height: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.qc-risk-label {
+  color: var(--cv-text-muted);
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .qc-risk-metric small {
@@ -791,6 +808,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.queue-empty-state {
+  padding: 18px 12px;
+  color: var(--cv-text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 /* Column 2: Cartographic Hero Map */
@@ -924,7 +949,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .inspector-body {
   flex: 1;
   overflow-y: auto;
-  padding: 14px 16px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -937,7 +962,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 .inspector-eyebrow {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -945,26 +970,54 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 .inspector-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--cv-text-primary);
   line-height: 1.2;
+}
+
+.incident-type-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -5px;
+  font-size: 11px;
+  color: var(--cv-text-secondary);
+}
+
+.incident-type-line span {
+  color: var(--cv-text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.incident-type-line strong {
+  font-weight: 600;
 }
 
 /* Dual Metric Module */
 .dual-metric-panel {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  background: var(--cv-surface-sidebar);
-  border-radius: 6px;
-  padding: 10px;
+  gap: 0;
+  background: #FFFFFF;
+  border: 1px solid var(--cv-border-light);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .metric-card {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+  min-width: 0;
+  padding: 11px 12px;
+}
+
+.metric-card + .metric-card {
+  border-left: 1px solid var(--cv-border-light);
 }
 
 .metric-header {
@@ -976,10 +1029,22 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 .metric-score {
   font-family: var(--font-mono);
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 700;
   line-height: 1.1;
   color: var(--cv-risk-high);
+}
+
+.risk-tone-medium .metric-score { color: var(--cv-risk-med); }
+.risk-tone-watch .metric-score { color: var(--cv-risk-low); }
+.risk-tone-medium .metric-band-pill { background: var(--cv-risk-med-bg); color: var(--cv-risk-med); }
+.risk-tone-watch .metric-band-pill { background: var(--cv-risk-low-bg); color: var(--cv-risk-low); }
+
+.metric-footnote {
+  color: var(--cv-text-muted);
+  font-size: 9px;
+  line-height: 1.3;
+  margin-top: 2px;
 }
 
 .metric-score small {
@@ -1016,24 +1081,55 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 .corroboration-label {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--cv-brand-dark);
+}
+
+.recommended-action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  border-left: 4px solid var(--cv-brand-primary);
+  border-radius: 7px;
+}
+
+.recommended-action-card > span {
+  color: var(--cv-brand-dark);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.recommended-action-card strong {
+  color: var(--cv-text-primary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.recommended-action-card small {
+  color: var(--cv-text-secondary);
+  font-size: 10px;
 }
 
 .overview-summary-box {
   font-size: 11px;
   line-height: 1.45;
   color: var(--cv-text-secondary);
-  background: #FFFFFF;
+  background: #F8FAFC;
   border-left: 2px solid var(--cv-brand-primary);
-  padding: 4px 8px;
+  padding: 7px 9px;
+  border-radius: 0 5px 5px 0;
 }
 
 .overview-item-card {
   background: var(--cv-surface-sidebar);
   border-radius: 5px;
-  padding: 8px 10px;
+  padding: 9px 10px;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -1067,13 +1163,43 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 /* Evidence & Hypotheses Items */
 .evidence-item {
-  background: var(--cv-surface-sidebar);
-  border-radius: 6px;
-  padding: 8px 10px;
+  background: #F8FAFC;
+  border: 1px solid var(--cv-border-light);
+  border-radius: 7px;
+  padding: 10px 11px;
   font-size: 11px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.evidence-source-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--cv-text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.hypothesis {
+  border: 1px solid var(--cv-border-light);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.hypothesis[open] {
+  border-color: #99F6E4;
+}
+
+.refresh-status {
+  padding: 5px 16px;
+  border-bottom: 1px solid #FDE68A;
+  background: #FFFBEB;
+  color: #92400E;
+  font-size: 10px;
 }
 
 .evidence-quote {
@@ -1217,9 +1343,13 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 /* Responsive Rules */
-@media (max-width: 1024px) {
+@media (max-width: 1120px) {
+  .ops-sector-pill {
+    display: none;
+  }
+
   .ops-workspace {
-    grid-template-columns: 220px 1fr 320px;
+    grid-template-columns: 220px minmax(300px, 1fr) 360px;
   }
 }
 
