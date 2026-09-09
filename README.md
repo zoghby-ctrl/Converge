@@ -1,181 +1,122 @@
 # Converge
 
-Phase 4 & 5B: a responsive, installable municipal incident-intelligence application with bounded OpenAI text and
-image perception, sourced road geography, cached modeled rainfall context, and an operator human review workflow.
-Team: **Control Alt Delete**, IMPACTX 2026 Smart Cities. AI extracts report claims and visibly supported image
-conditions; the existing deterministic engine alone controls membership, risk,
-hypotheses and evidence strength.
+### Turn fragmented urban observations into actionable incident intelligence.
 
-## Run on this Windows machine
+Converge is an AI-assisted municipal incident-intelligence and infrastructure early-warning prototype for **IMPACTX 2026 · Smart Cities**.
 
-Open PowerShell in the repository. Dependencies and a Python 3.11 virtual
-environment have already been prepared here.
+![Converge operations workbench](docs/assets/operations-workbench.png)
 
-```powershell
-Set-Location 'C:\Users\Zoghby\OneDrive - Egyptian Chinese University (ECU)\Documents\ChatGPT\Converge'
-npm run build --prefix frontend
-.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+## The problem
+
+Cities receive many signals about the same place: citizen reports, images, operator observations, maps, and contextual data. Raw report volume is not the same as independent corroboration. Without a way to separate duplicates from genuinely independent captures, teams can miss emerging incidents—or overreact to amplified noise.
+
+## The solution
+
+Converge turns unstructured text and images into traceable evidence, groups observations that are spatially and temporally related, and presents a transparent inspection-triage view for municipal teams. It keeps source provenance visible, distinguishes independent captures from duplicate records, and separates the urgency of a location from the strength of its corroboration.
+
+It is designed for municipalities, governorates, private urban operators, and managed communities. Citizens contribute signals; they are not the paying customer.
+
+Converge is not a generic complaint dashboard, an autonomous government decision-maker, a root-cause diagnosis engine, a failure-probability predictor, or a chatbot.
+
+## How Converge works
+
+```text
+Urban observations
+        ↓
+AI perception and extraction
+        ↓
+Independence and duplicate handling
+        ↓
+Spatial + temporal correlation
+        ↓
+Candidate incident intelligence
+        ↓
+Risk Index + Evidence Strength + working hypotheses
+        ↓
+Municipal inspection triage
 ```
 
-Open **http://127.0.0.1:8000**. The backend serves the production frontend, PWA shell, and all
-map assets. After the first build, only the last command is needed. The prepared
-structured replay requires no internet. Cached analysis and human correction work
-locally. New uncached text or image analysis uses OpenAI within configured limits
-(80 max requests, $1.00 max spend in `%LOCALAPPDATA%\Converge\runtime\converge-text.sqlite3`).
-The development ledger is at **80 / 80 requests used**. Live uncached inference is blocked by the internal development cap; replay and cached paths remain available.
+![Evidence detail in the operations workbench](docs/assets/evidence-inspector.png)
 
-For frontend development, leave the backend running and open a second terminal:
+## Product surfaces
 
-```powershell
-Set-Location 'C:\Users\Zoghby\OneDrive - Egyptian Chinese University (ECU)\Documents\ChatGPT\Converge'
-npm run dev --prefix frontend -- --port 5173 --strictPort
+| Surface | Purpose |
+| --- | --- |
+| Signal Capture | Mobile-first text, image, time, and location submission |
+| Operations Workbench | Map-based incident queue, evidence, hypotheses, and review |
+| Evidence Inspector | Source text, extracted claims, provenance, and human-review context |
+| Replay & Audit | A deterministic signature demo for inspecting system behavior |
+
+![Signal Capture entry point](docs/assets/signal-capture.png)
+
+## Signature demo
+
+The frozen replay demonstrates why independent capture handling matters:
+
+- **Location A:** 8 raw records collapse to 1 independent capture → **Watch**.
+- **Location B:** 3 independent captures produce **Risk Index 68** with **Moderate evidence**.
+- Hide the image evidence → the result becomes **52–83** with **Limited evidence**.
+- Restore the image and add 10 duplicate reports → **13 records**, still **3 independent captures**, still **68 / Moderate**.
+
+Duplicate volume does not inflate the result. The replay is synthetic and demonstrates system behavior; it does not claim that a real incident occurred.
+
+![Risk and evidence ablation](docs/assets/risk-evidence-ablation.png)
+
+## Risk Index vs Evidence Strength
+
+These are deliberately different signals:
+
+| Measure | Meaning |
+| --- | --- |
+| **Risk Index** | A transparent prototype heuristic for inspection triage |
+| **Evidence Strength** | The degree of independent corroboration available |
+
+**68 is not a 68% probability.** Converge does not predict infrastructure failure or replace engineering inspection.
+
+## AI safety boundary
+
+AI is used for perception: extracting structured claims from unstructured text and identifying visibly supported conditions in images.
+
+Deterministic application code controls incident membership, duplicate and capture independence, Risk Index, Evidence Strength, working hypotheses, and decision-support rules. Human operators make the final operational decisions.
+
+## Architecture
+
+```text
+React + TypeScript + Vite  →  FastAPI + Pydantic  →  SQLite
+          ↓                         ↓
+    MapLibre context       Deterministic correlation/scoring
+                                      ↑
+                         Hosted pretrained AI perception
 ```
 
-Open **http://127.0.0.1:5173**. Vite proxies `/api` to the local backend. Use one
-backend process. Stop servers with Ctrl+C. No activation, Docker or GPU setup is
-required. The backend's SQLite file is outside OneDrive at
-`%LOCALAPPDATA%\Converge\runtime\converge.sqlite3`.
+The application is a responsive React/Vite PWA with a shared FastAPI backend. Geographic context is represented with MapLibre and sourced road data; perception is bounded and server-side; correlation and scoring run locally and deterministically.
 
-## Fresh checkout setup
+## Tech stack
 
-Install Python 3.11 and Node.js 22.12+ (tested here with 24.18.0), then:
+- React, TypeScript, Vite, and MapLibre
+- FastAPI, Pydantic, and Python
+- SQLite for local persistence
+- Hosted pretrained AI for bounded text and image perception
+- Deterministic spatial, temporal, evidence, and scoring engine
+
+## Running locally
+
+Requirements: Python 3.11+, Node.js 22.12+, and an optional `OPENAI_API_KEY` for uncached perception.
 
 ```powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
 npm ci --prefix frontend
 npm run build --prefix frontend
+if (-not (Test-Path -LiteralPath .env)) { Copy-Item .env.example .env }
+.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
-On this prepared machine the local runtime lives under `.runtime`, so the
-existing `.venv` works even though `py -3.11` does not resolve a system install.
-`.venv`, `.runtime`, and `.tools` are ignored and are not portable checkout files.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The bundled replay and cached paths work without a provider request. For frontend development, run `npm run dev --prefix frontend -- --port 5173 --strictPort` in a second terminal.
 
-The backend reads the repository `.env`; process environment values take precedence.
-Ahmed's Converge API key is already there and must be reused. Never copy the example
-over that file. On a **fresh checkout only**, prepare the file if it is missing:
+## Verification
 
-```powershell
-if (-not (Test-Path -LiteralPath .env)) { Copy-Item -LiteralPath .env.example -Destination .env }
-notepad .env
-```
-
-Enter your API key locally in `OPENAI_API_KEY`, save, close the editor and restart
-the backend. Do not paste it into chat, React, a fixture or a command line.
-`.env` is gitignored and `.env.example` contains no credentials.
-
-```dotenv
-OPENAI_PRIMARY_MODEL=gpt-5.6-luna
-OPENAI_FALLBACK_MODEL=gpt-5.6-terra
-OPENAI_FALLBACK_ENABLED=true
-OPENAI_REASONING_EFFORT=none
-OPENAI_MAX_REQUESTS=80
-OPENAI_MAX_SPEND_USD=1.00
-```
-
-Defaults apply when optional entries are missing. Usage limits persist in the
-local text database; restarting does not reset them. The spend limit uses a
-conservative local token-price estimate and reservations, **not provider-reported
-billing**. Unknown/unpriced model IDs fail closed. SDK retries are disabled. Luna
-gets at most one schema repair. For images, Terra is called only if that repair
-fails or through **Deeper image review with Terra**; text keeps its Phase 2A
-material-ambiguity fallback. No ensembling occurs. Remaining ambiguity requires
-human review. Use one local backend worker; no background API polling.
-
-## Enter and review an observation
-
-1. Open `/report` or click **+ Submit Observation**. Enter text or a JPEG/PNG.
-2. Confirm genuine GPS coordinates, or explicitly select a **SIMULATED / DEMO PLACEMENT**. Denied GPS has no fallback. Presets/manual placement have unknown accuracy and synthetic provenance; submissions have uncertain independence and are excluded from independent evidence. Unknown road matches remain unknown.
-3. Click **Send observation**. The receipt confirms registration, not admission or successful inference. Uncached inference is blocked at the development cap.
-4. To demonstrate correction, use a prepared admitted operator observation in **Live Municipal → Review**. Save a correction with a reason. Failed/excluded observations are not fully recoverable through the current UI. Replay fixtures cannot be corrected.
-
-Text presence alone does not measure severity. Positive evidence therefore has
-unknown ordinal severity; reported duration does not establish independently
-corroborated persistence. Text-only risk can remain **0–100** with Limited evidence.
-A matched sourced OSM section supplies road-class exposure; a manual segment with
-unknown class retains its risk range. Current operator rainfall remains unknown:
-the bundled weather covers a historical demo period. The LLM never fills context gaps. The incident
-clock is the last local computation, not a continuously refreshed forecast.
-
-Operator data is stored at `%LOCALAPPDATA%\Converge\runtime\converge-text.sqlite3`.
-Raw structured response text is local-only; OpenAI requests use `store=false`.
-No automatic job resumption occurs after restart: interrupted jobs require an
-explicit retry or manual review. A failed reanalysis retains the last accepted
-revision as the active evidence until a replacement is accepted.
-
-## Replay the signature story
-
-1. Open `/operations`, click **Expand Timeline**, select `signature_image`, click **Reset**, then **Start**. This
-   mixed-source variant includes one licensed public image extraction with explicit
-   simulated placement/time; `signature` remains the fully structured legacy case.
-2. **Advance**: A now contains eight copies, one capture, and remains a watch item.
-3. **Advance** twice: B receives an Arabic water report and an independent
-   cached image-derived road-damage observation. A candidate forms.
-4. **Advance**: later independent water evidence establishes temporal persistence.
-5. **Advance**: C stays separate. B has three captures, Moderate evidence, and a
-   **68/100** inspection-triage index.
-6. Select B and enable **Hide image evidence**. Road condition becomes unknown,
-   evidence drops to Limited, and the risk range becomes **52–83**.
-7. Restore images, keep B selected, and enable **Add 10 duplicates (Independence test)**. B now has **13 records / 3 captures**. No risk, support-point or
-   independent-capture inflation occurs. Comparisons never alter the saved replay.
-
-Expand calculation, membership and hypothesis sections to inspect evidence/rule
-IDs. Open an evidence record for original Arabic and provenance. The timeline
-uses observation time; availability controls what each replay step can know.
-
-In `signature_image`, the photograph content is a licensed Wikimedia Commons
-source; its placement and time, all reports, rainfall, road segments and other
-events are simulated. The map is an explicitly labeled schematic in the Nasr City
-study extent. Nothing in the demo claims a real incident, a physical diagnosis, or
-a failure probability. Full source/licence details are in
-`fixtures/images/manifest.json`.
-
-## Real context demo (Phase 3)
-
-Select **context signature**, Reset, then Start/Advance. This preserves the
-signature evidence story on real OpenStreetMap roads with explicitly synthetic
-rainfall. **context archive** uses the same fictional observations placed in
-January 2025 and the authentic, unchanged Open-Meteo ERA5 response for that period.
-Its 0 mm is provider-modeled dry context, not a measurement at the street.
-
-Both variants retain B's **68/100**, three captures and Moderate evidence; image
-ablation remains **52–83**. Weather changes only the existing hypothesis rules.
-The historical example explicitly relaxes availability for retrospective replay,
-while retaining the true acquisition time and provider interval timestamps. It is
-not an as-issued forecast test and does not claim any real incident occurred.
-The original `signature` and `signature_image` fixtures remain unchanged.
-
-The local map contains 910 sourced highway ways and 20 selected short context
-sections, each no longer than 110 m. All cross-section compatibility lists are
-empty. A pin must be within 30 m of its nearest section, with no incompatible
-competitor within nearest distance + 10 m, and accuracy at most 50 m. Unreviewed
-mapped ways compete too. These conservative defaults can split a real event;
-no road or drainage connectivity is inferred. Independent human geography review
-has not been performed.
-
-On `/report`, a successful bounded GPS road match supplies an OSM segment ID
-when the pin is unambiguous. Text and image submission recheck it server-side.
-Ambiguous/unmapped pins require manual review; manual labels retain the previous
-operator workflow with unknown exposure. Context never adds a witness.
-
-Provenance is visible in the map attribution and incident context panel. Raw
-response hashes, request URLs, acquisition timestamps, grid/product identity,
-ODbL/CC BY attribution and adapter semantics are in
-[fixtures/context/README.md](fixtures/context/README.md) and its manifest.
-No weather or map request occurs during replay or scoring; all map assets are local.
-
-The application provides a responsive React/Vite PWA and shared backend:
-`/` provides the Entry Gateway, `/report` provides mobile-first Signal Capture with
-honest geolocation study area handling and offline form preservation, and
-`/operations` provides the desktop municipal incident intelligence workbench with
-an integrated human review and correction workflow.
-
-Additional read-only APIs: `GET /api/v1/context` returns the source manifest and
-selected sections; `GET /api/v1/context/road-match?lon=...&lat=...&accuracy_m=...`
-returns an assignment or explicit review reason. `/health` reports the historical
-weather cache separately from current weather. There is no arbitrary URL-fetch API.
-
-## Verify
+The current frozen release has **129 automated backend tests passing** and browser release checks passing.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
@@ -183,112 +124,18 @@ npm run typecheck --prefix frontend
 npm run build --prefix frontend
 ```
 
-Browser QA uses the Playwright CLI (not required to run the demo). With the
-production backend running:
+These checks validate implementation behavior and reproducibility; they do not establish real-world predictive accuracy.
 
-```powershell
-New-Item -ItemType Directory -Force output\playwright | Out-Null
-npx --yes --package @playwright/cli playwright-cli -s=converge open http://127.0.0.1:8000 --headed
-npx --yes --package @playwright/cli playwright-cli -s=converge run-code --filename docs/browser-release-qa.js
-```
+## Limitations
 
-The current release check is `docs/browser-release-qa.js`. It intercepts report submissions for provenance assertions, then exercises real local replay, ablation, duplicate comparison and the delayed-response race. Use a disposable database with the provider key blank. Historical Phase 2/3 browser scripts target the retired observation panel and are not current release checks. Human correction is rehearsed on a prepared admitted observation in Live Municipal → Review.
+- Hackathon prototype; no municipal field pilot yet.
+- Risk weights and the 120 m spatial threshold are transparent prototype heuristics intended for future real-world calibration.
+- Exact and known duplicate handling does not guarantee resistance to coordinated paraphrase or Sybil behavior.
+- No production access-control or deployment architecture yet.
+- Geography and contextual weather data support the demo but are not a substitute for field verification.
 
-## Project layout
+## Team
 
-- `backend/app/models.py`: validated domain contracts and provenance.
-- `backend/app/config.py`, `engine.py`: versioned, network-free correlation/scoring.
-- `backend/app/store.py`, `main.py`: SQLite and API wiring.
-- `backend/app/text_contract.py`, `perception.py`, `observations.py`: strict text
-  contract, server-only Responses adapter, cache/usage and durable review workflow.
-- `backend/app/image_contract.py`, `image_ingestion.py`, `image_perception.py`,
-  `image_observations.py`: strict visual contract, safe normalization, cached
-  Responses adapter, duplicate controls and human-review workflow.
-- `backend/evaluate_text.py`: explicitly invoked development/validation evaluation.
-- `backend/evaluate_image.py`, `verify_image_e2e.py`: locked image metrics and an
-  offline raw-upload-to-incident verification.
-- `frontend/`: React, TypeScript, Vite and MapLibre municipal workbench.
-- `fixtures/`: reproducible structured scenarios, image corpus/manifest and authoring script.
-- `tests/`: engine guards, persistence, API, isolation and offline regression checks.
-- `docs/`: implementation decisions and browser QA procedure.
-- `PRODUCT_ARCHITECTURE_FREEZE.md`: approved product/architecture source of truth.
-- `BUILD_STATUS.md`: actual verification results, limitations, and next-phase recommendation.
+**Control Alt Delete**
 
-## API
-
-`GET /api/v1/health`, `GET /api/v1/incidents`,
-`GET /api/v1/incidents/{id}`, `GET /api/v1/signals/{id}`,
-`POST /api/v1/demo/replay`, and `POST /api/v1/demo/compare`.
-
-The replay endpoint accepts `{ "action": "reset|start|advance", "scenario": "signature" }`.
-Only reset accepts a full reviewed synthetic `dataset` following the JSON fixture
-contract. Reset replaces the dedicated demo dataset. Start is idempotent once
-started; advance at the end is a no-op. Invalid data returns 422; unavailable IDs
-return 404; comparison before starting returns 409. There are no authentication,
-deployment, chatbot or external dispatch endpoints.
-
-The compare body is `{ "disable_families": ["image"], "add_duplicates": 0 }`.
-Duplicates can range from 0 to 10. The returned sandbox is recomputed from the
-current analysis clock with the same engine and never committed.
-
-Implementation interpretations and deferred pieces are in
-[`docs/PHASE1_DECISIONS.md`](docs/PHASE1_DECISIONS.md). Phase 2A implementation and
-measured results are in [`BUILD_STATUS.md`](BUILD_STATUS.md). Phase 1, 2A, 2B, 3, 4, and 5B blocker repairs are complete and verified.
-
-Additional APIs:
-
-- `POST /api/v1/signals`: durable text submission (202); client idempotency key.
-- `GET /api/v1/signals/{id}/processing`: job state, original, revisions and engine disposition.
-- `GET /api/v1/observations`: saved text jobs; never initiates extraction.
-- `POST /api/v1/signals/{id}/review`: `{extraction, reviewer, reason, expected_revision}`.
-- `POST /api/v1/signals/{id}/reanalyze`: `{action: "retry_primary"|"deeper_review", expected_revision}`.
-- `GET /api/v1/live/incidents`: operator dataset using the unchanged engine contracts.
-- `GET /api/v1/perception/usage`: persistent requests, primary/fallback calls, tokens and cache hits.
-- `POST /api/v1/images`: bounded multipart image plus operator metadata (202).
-- `GET /api/v1/signals/{id}/image`: scoped normalized source-image delivery.
-
-`GET /api/v1/health` retains Phase 1's offline mode fields; `text_perception` and
-`image_perception` separately report server configuration without returning
-credentials. Text is capped at 4,000 characters; images at 5 MiB / 12 MP; operator
-storage at 500 records. No client model/key fields are accepted. Schema failures
-and provider errors return safe job error codes.
-
-## Perception evaluation and browser checks
-
-These commands reuse cached validated outputs without making OpenAI calls:
-
-```powershell
-.\.venv\Scripts\python.exe -m backend.evaluate_text --split development
-.\.venv\Scripts\python.exe -m backend.evaluate_text --split validation
-.\.venv\Scripts\python.exe -m backend.evaluate_image --split development
-.\.venv\Scripts\python.exe -m backend.evaluate_image --split validation
-.\.venv\Scripts\python.exe -m backend.verify_image_e2e
-```
-
-On a machine without this cache, missing cases are reported as `not_cached`.
-For an explicitly billed run on cache misses, append `--live`. Development has 18
-reports; the locked validation set has 18. Reports go to `docs/text-evaluation-*.json`.
-Do not tune using validation and then describe a rerun as held-out accuracy.
-
-The image corpus has 10 development and 10 locked validation images. Image
-evaluation reports raw model states separately from evidence admitted through
-local safety checks. `verify_image_e2e` needs the locked `water-04` and `damage-01`
-cache entries; it runs in a disposable runtime with the API key blank and makes no
-provider request. Detailed measured results and limits are in `BUILD_STATUS.md`.
-
-The text browser check submits two clearly labeled synthetic reports to the real
-OpenAI adapter, checks watch-to-candidate formation, cache reuse, human revision
-history, original preservation and no refresh-triggered inference:
-
-```powershell
-npx --yes --package @playwright/cli playwright-cli -s=converge open http://127.0.0.1:8000 --headed
-npx --yes --package @playwright/cli playwright-cli -s=converge run-code --filename docs/browser-text-qa.js
-```
-
-Run the text check on a fresh operator dataset/segment for its initial-watch
-assertion. It can make two provider calls. The image check is cache-only with the
-locked local entry. Neither browser check runs automatically under pytest.
-
-Release rehearsal: Open `/operations` in Replay & Audit mode. Click **Expand Timeline**, select `signature_image` in the scenario selector, then **Reset**, **Start**, and **Advance**. A shows 8 records / 1 capture. Advance three more times to step 5, select B: **68 / Moderate / 3 captures**. Check **Hide image evidence**: **52–83 / Limited / 2 captures**. Restore the image first, then check **Add 10 duplicates (Independence test)** with B selected: **13 records / 3 captures**, unchanged risk and hypotheses. For human correction, switch to **Live Municipal**, select a prepared admitted operator observation, open **Review**, choose its member record, and save a correction with a reason. Replay fixtures are immutable. Failed/excluded submissions are not fully recoverable through this UI.
-
-Development ledger: **80 / 80 requests used**. Live uncached development inference is blocked by the internal development cap. The signature demo uses verified replay/cached paths; cached raw-image paths were verified without new provider calls. Do not reset the ledger or call a live provider for rehearsal.
+Built for **IMPACTX 2026 · Smart Cities**.
