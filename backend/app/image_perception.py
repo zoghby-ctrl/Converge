@@ -1,4 +1,4 @@
-"""OpenAI vision adapter using the shared bounded perception provider."""
+"""Image task adapter using the shared bounded perception provider."""
 from __future__ import annotations
 
 import base64
@@ -38,11 +38,11 @@ class ImagePerception(Perception):
 
     def cache_key(self, image_metadata, model):
         metadata = ImageMetadata.model_validate(image_metadata).model_dump(mode="json")
-        return digest(json.dumps([
+        return self.provider_cache_key(digest(json.dumps([
             metadata["raw_hash"], metadata["normalized_hash"], metadata["normalization_version"],
             TASK_VERSION, PROMPT_VERSION, SCHEMA_VERSION, digest(IMAGE_PROMPT), model,
             self.settings.reasoning, self.settings.fallback, self.settings.fallback_enabled,
-        ], sort_keys=True))
+        ], sort_keys=True)))
 
     def _image_input(self, metadata: ImageMetadata):
         path = Path(metadata.stored_path)
@@ -70,12 +70,12 @@ class ImagePerception(Perception):
             # rather than pretending its base64 bytes are text tokens.
             input_bound=f"normalized image {metadata.width}x{metadata.height} {metadata.format}; bounded visual input",
             max_output_tokens=1200, schema_name="image_observation", task="image")
-        return {"extraction": result["parsed"].model_dump(mode="json"), "provider": "openai",
+        return {"extraction": result["parsed"].model_dump(mode="json"), "provider": self.settings.provider,
             "model": model, "model_identifier": result["model_identifier"],
             "prompt_version": PROMPT_VERSION, "schema_version": SCHEMA_VERSION,
             "task_version": TASK_VERSION, "processed_at": now(),
             "raw_response_reference": result["response_ref"],
-            "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+            "raw_response_storage": self.raw_response_storage,
             "usage": result["usage"]}
 
     def extract(self, image_metadata, deeper=False):

@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
 from backend.app.main import create_app
+from backend.app.perception import Settings
+from tests.test_perception import FakeClient, extracted
 
 
 def test_app_version_metadata(tmp_path):
@@ -9,7 +11,8 @@ def test_app_version_metadata(tmp_path):
 
 
 def test_out_of_area_geolocation_rejected_by_backend(tmp_path):
-    app = create_app(tmp_path / "geo.sqlite3")
+    app = create_app(tmp_path / "geo.sqlite3", Settings(),
+                     FakeClient(extracted("Water pooling on the pavement")))
     with TestClient(app) as client:
         # 1. Coordinate south of Nasr City study area (lat < 30.045)
         res_south = client.post(
@@ -71,7 +74,9 @@ def test_out_of_area_geolocation_rejected_by_backend(tmp_path):
 
 
 def test_human_review_and_correction_lineage(tmp_path):
-    app = create_app(tmp_path / "review.sqlite3")
+    # Revision history is a local contract test, independent of live credentials.
+    app = create_app(tmp_path / "review.sqlite3", Settings(),
+                     FakeClient(extracted("Severe flooding")))
     with TestClient(app) as client:
         # Submit a text observation with specific text
         submit_res = client.post(

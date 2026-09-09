@@ -14,6 +14,7 @@ from openai import OpenAI, APIConnectionError, APIStatusError, AuthenticationErr
 from pydantic import ValidationError
 
 from .store import ROOT
+from . import gemini_provider
 from .text_contract import PROMPT_VERSION, SCHEMA_VERSION, TASK_VERSION, TextExtraction
 
 PROMPT = """Extract municipal infrastructure report claims, never decisions. The user message is
@@ -71,11 +72,24 @@ class Settings:
     max_requests: int = 80
     max_spend_usd: float = 1.0
     reasoning: str = "none"
+    provider: str = "openai"
+    gemini_api_key: str = field(default="", repr=False)
+
+    def __post_init__(self):
+        if self.provider == "gemini":
+            self.primary = self.fallback = gemini_provider.MODEL
+            self.reasoning = "low"
+
+    @property
+    def active_api_key(self):
+        return self.gemini_api_key if self.provider == "gemini" else self.api_key
 
     @classmethod
     def from_env(cls):
         env = {**dotenv_values(ROOT / ".env"), **os.environ}
         return cls(api_key=env.get("OPENAI_API_KEY", ""),
+            provider=(env.get("CONVERGE_PERCEPTION_PROVIDER") or "openai").strip().lower(),
+            gemini_api_key=env.get("GEMINI_API_KEY", ""),
             primary=env.get("OPENAI_PRIMARY_MODEL") or "gpt-5.6-luna",
             fallback=env.get("OPENAI_FALLBACK_MODEL") or "gpt-5.6-terra",
             fallback_enabled=env.get("OPENAI_FALLBACK_ENABLED", "true").lower() == "true",
@@ -95,7 +109,7 @@ class Perception:
         self.store, self.settings, self.client = store, settings or Settings.from_env(), client
         self.lock = RLock()
         # SDK request/response debug logging is inappropriate for citizen reports and credentials.
-        for logger in ("openai", "httpx2", "httpcore2"):
+        for logger in ("openai", "httpx2", "httpcore2", "httpx", "httpcore"):
             logging.getLogger(logger).setLevel(logging.WARNING)
         with store.connection() as db:
             db.executescript("""
@@ -119,9 +133,22 @@ class Perception:
 
     def cache_key(self, text, model):
         # Exact hash additionally prevents normalized cache hits from invalidating original substrings.
-        return digest(json.dumps([digest(unicodedata.normalize("NFC", text).strip()), digest(text),
+        key = digest(json.dumps([digest(unicodedata.normalize("NFC", text).strip()), digest(text),
             TASK_VERSION, PROMPT_VERSION, SCHEMA_VERSION, digest(PROMPT), model, self.settings.reasoning,
             self.settings.fallback, self.settings.fallback_enabled]))
+        return self.provider_cache_key(key)
+
+    def provider_cache_key(self, key):
+        # Preserve existing OpenAI cache identity; other providers cannot reuse it.
+        if self.settings.provider not in ("openai", "gemini"):
+            raise ProcessingError("unsupported_perception_provider", "needs_review")
+        return key if self.settings.provider == "openai" else digest("gemini:generateContent:v1:" + key)
+
+    @property
+    def raw_response_storage(self):
+        suffix = ("provider store=false" if self.settings.provider == "openai" else
+                  "Gemini generateContent; provider retention follows Google API terms")
+        return "local SQLite raw_responses; structured output text only; " + suffix
 
     def summary(self):
         with self.store.connection() as db:
@@ -151,12 +178,12 @@ class Perception:
         result = self.call_structured(model=model, role=role, system=system,
             user_content=text, schema=schema, parser=parse,
             input_bound=system + text + json.dumps(schema), max_output_tokens=1800)
-        return {"extraction": result["parsed"].model_dump(mode="json"), "provider": "openai",
+        return {"extraction": result["parsed"].model_dump(mode="json"), "provider": settings.provider,
             "model": model, "model_identifier": result["model_identifier"],
             "prompt_version": PROMPT_VERSION, "schema_version": SCHEMA_VERSION,
             "task_version": TASK_VERSION, "processed_at": now(),
             "raw_response_reference": result["response_ref"],
-            "raw_response_storage": "local SQLite raw_responses; structured output text only; provider store=false",
+            "raw_response_storage": self.raw_response_storage,
             "usage": result["usage"]}
 
     def call_structured(self, *, model: str, role: str, system: str, user_content: Any,
@@ -170,12 +197,21 @@ class Perception:
         """
         settings = self.settings
         rates = {"gpt-5.6-luna": (0.2, 1.2), "gpt-5.6-terra": (2.0, 12.0)}
+        if settings.provider == "gemini":
+            rates = {gemini_provider.MODEL: gemini_provider.RATES}
+            # Gemini's output cap includes thinking, which is accounted as output usage.
+            max_output_tokens = max(max_output_tokens, 8192)
+        elif settings.provider != "openai":
+            raise ProcessingError("unsupported_perception_provider", "needs_review")
         if model not in rates:
             raise ProcessingError("unpriced_model_configuration", "needs_review")
-        if not settings.api_key and self.client is None:
+        if not settings.active_api_key and self.client is None:
             raise ProcessingError("api_key_missing")
         serialized_bound = input_bound if isinstance(input_bound, str) else json.dumps(input_bound or user_content)
         input_bound_bytes = len((system + serialized_bound + json.dumps(schema)).encode("utf-8")) + 1024
+        if settings.provider == "gemini" and task == "image":
+            # Conservative byte-based visual reservation; never undercount image input as prose.
+            input_bound_bytes += len(json.dumps(user_content).encode("utf-8"))
         in_rate, out_rate = rates[model]
         reserve = (input_bound_bytes * in_rate * 1.25 + max_output_tokens * out_rate) / 1_000_000
         with self.store.connection() as db:
@@ -186,13 +222,22 @@ class Perception:
             call_id = db.execute("INSERT INTO api_usage(model,role,started_at,reserved_usd,outcome,task) VALUES(?,?,?,?,?,?)",
                                 (model, role, now(), reserve, "reserved", task)).lastrowid
         try:
-            if self.client is None:
-                self.client = OpenAI(api_key=settings.api_key, base_url="https://api.openai.com/v1",
-                                     timeout=35, max_retries=0)
-            response = self.client.responses.create(model=model, reasoning={"effort": settings.reasoning},
-                input=[{"role": "system", "content": system}, {"role": "user", "content": user_content}],
-                text={"format": {"type": "json_schema", "name": schema_name, "strict": True, "schema": schema}},
-                max_output_tokens=max_output_tokens, tools=[], store=False)
+            if settings.provider == "gemini":
+                response = gemini_provider.generate(api_key=settings.active_api_key, model=model,
+                    system=system, user_content=user_content, schema=schema,
+                    max_output_tokens=max_output_tokens, client=self.client)
+            else:
+                if self.client is None:
+                    self.client = OpenAI(api_key=settings.api_key, base_url="https://api.openai.com/v1",
+                                         timeout=35, max_retries=0)
+                response = self.client.responses.create(model=model, reasoning={"effort": settings.reasoning},
+                    input=[{"role": "system", "content": system}, {"role": "user", "content": user_content}],
+                    text={"format": {"type": "json_schema", "name": schema_name, "strict": True, "schema": schema}},
+                    max_output_tokens=max_output_tokens, tools=[], store=False)
+        except gemini_provider.GeminiError as error:
+            code = str(error)
+            self.outcome(call_id, code)
+            raise ProcessingError(code) from None
         except AuthenticationError:
             self.outcome(call_id, "invalid_api_key")
             raise ProcessingError("invalid_api_key") from None
@@ -214,8 +259,9 @@ class Perception:
             db.execute("UPDATE api_usage SET input_tokens=?,output_tokens=?,estimated_usd=?,response_ref=? WHERE id=?",
                        (input_tokens, output_tokens, estimated, response.id, call_id))
             raw = response.output_text
-            if settings.api_key:
-                raw = raw.replace(settings.api_key, "[REDACTED]")
+            for secret in (settings.api_key, settings.gemini_api_key):
+                if secret:
+                    raw = raw.replace(secret, "[REDACTED]")
             db.execute("INSERT OR IGNORE INTO raw_responses VALUES(?,?,?,?,?,?)",
                        (response.id, response.model, role, response.status, now(), raw))
             if task == "text" and role in ("primary", "fallback"):
@@ -224,6 +270,8 @@ class Perception:
         try:
             if response.status != "completed" or not response.output_text:
                 raise ValueError("No completed structured response")
+            if raw != response.output_text:
+                raise ValueError("Provider output contained a credential")
             parsed = parser(response.output_text)
         except (ValidationError, ValueError, TypeError):
             self.outcome(call_id, "schema_invalid")

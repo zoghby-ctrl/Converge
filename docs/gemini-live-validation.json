@@ -1,0 +1,104 @@
+{
+  "date": "2026-09-09",
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "api": "v1beta/models/gemini-3.8-flash:generateContent",
+  "successful_text_extractions": 1,
+  "successful_image_extractions": 1,
+  "generation_http_attempts": 9,
+  "failed_generation_requests": 7,
+  "failure_breakdown": {
+    "api_configuration_rejected": 6,
+    "api_error": 1
+  },
+  "automatic_retries": false,
+  "validation": "Existing TextExtraction.validate_source, ImageExtraction and existing evidence mappers; isolated temporary SQLite databases. No replay fixture or application history modified.",
+  "text": {
+    "accepted": true,
+    "input": "There is standing water on the road. The road surface is damaged.",
+    "result": {
+      "extraction": {
+        "language": "english",
+        "standing_water": "present",
+        "road_damage": "present",
+        "passage_obstruction": "not_mentioned",
+        "reported_duration": null,
+        "recurrence": "not_mentioned",
+        "reported_explanation": null,
+        "temporal_status": "current",
+        "evidence_spans": [
+          {
+            "field": "standing_water",
+            "quote": "There is standing water on the road",
+            "temporal_status": "current"
+          },
+          {
+            "field": "road_damage",
+            "quote": "The road surface is damaged",
+            "temporal_status": "current"
+          }
+        ],
+        "uncertainties": []
+      },
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "model_identifier": "gemini-3.8-flash",
+      "prompt_version": "text-1.1",
+      "schema_version": "text-1.0",
+      "task_version": "text-perception-1",
+      "processed_at": "2026-09-09T19:34:22.791869+00:00",
+      "raw_response_reference": "vbShatLeEsOjkdUPycWw4Q4",
+      "raw_response_storage": "local SQLite raw_responses; structured output text only; Gemini generateContent; provider retention follows Google API terms",
+      "usage": {
+        "input_tokens": 703,
+        "output_tokens": 180
+      }
+    },
+    "mapped_evidence_count": 2
+  },
+  "image": {
+    "accepted": true,
+    "input": "fixtures\\images\\water-01.jpg",
+    "result": {
+      "extraction": {
+        "standing_water": "present",
+        "visible_surface_damage": "absent",
+        "passage_obstruction": "absent",
+        "image_quality": "usable",
+        "visible_description": "A paved two-lane road curves through a desert landscape with Joshua trees under an overcast sky. A pool of standing water stretches along the right curb line.",
+        "uncertainties": [],
+        "support_descriptions": [
+          {
+            "field": "standing_water",
+            "description": "Standing water with visible reflections is gathered along the right edge of the paved road next to the curb."
+          },
+          {
+            "field": "visible_surface_damage",
+            "description": "The exposed asphalt surface shows no visible potholes, significant cracking, or structural damage."
+          },
+          {
+            "field": "passage_obstruction",
+            "description": "Both travel lanes of the road are clear of blockages or obstacles."
+          }
+        ]
+      },
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "model_identifier": "gemini-3.8-flash",
+      "prompt_version": "image-1.2",
+      "schema_version": "image-1.0",
+      "task_version": "image-perception-1",
+      "processed_at": "2026-09-09T19:32:03.331892+00:00",
+      "raw_response_reference": "MLShauL6IIn2nsEPu6zN2Q4",
+      "raw_response_storage": "local SQLite raw_responses; structured output text only; Gemini generateContent; provider retention follows Google API terms",
+      "usage": {
+        "input_tokens": 1397,
+        "output_tokens": 369
+      }
+    },
+    "raw_hash": "45ca5f2148bada4023864410c65728410e45433a6097def5809e4b546572c53a",
+    "normalized_hash": "cbee3d2ab64042f046902299b6c6c818a06c0dc25177150493c55cde521c2304",
+    "mapped_evidence_count": 3
+  },
+  "note": "Image succeeded with the full contract sent to Gemini. Text required a wire schema without length/numeric/array bounds. Final adapter uses that projection for both modalities and validates both against the unchanged complete local contracts. No second successful image extraction was performed."
+}
