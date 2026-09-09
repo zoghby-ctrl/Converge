@@ -72,6 +72,12 @@ class ImageObservations:
                                               observations.perception.client)
         except ImportError:  # adapter may be installed after the app module is loaded
             self.perception = None
+        from .upload_storage import UploadStorage
+        self.storage = UploadStorage.from_env(self.store)
+        if self.store.backend == "sqlite":
+            self._initialize_sqlite()
+
+    def _initialize_sqlite(self):
         with self.store.connection() as db:
             db.executescript("""
             CREATE TABLE IF NOT EXISTS image_jobs(
@@ -155,6 +161,8 @@ class ImageObservations:
         raw_hash = str(normalized.get("raw_hash") or raw_hash)
         path = self._stored_path(normalized["stored_path"], self.store.path.parent)
         normalized["stored_path"] = str(path)
+        if self.storage:
+            self.storage.persist(normalized)
         image_key = "image:" + metadata.idempotency_key
         with self.observations.lock:
             dataset = self._dataset()
@@ -258,6 +266,8 @@ class ImageObservations:
         if not row:
             raise HTTPException(404, "Image signal not found")
         path = self._stored_path(row[0], self.store.path.parent)
+        if self.storage:
+            self.storage.restore(path)
         if path.suffix.lower() not in {".jpg", ".jpeg", ".png"} or not path.is_file():
             raise HTTPException(404, "Image file not found")
         return path
@@ -280,6 +290,8 @@ class ImageObservations:
                     return
         try:
             metadata = json.loads(row["normalization_json"])
+            if self.storage:
+                self.storage.restore(Path(metadata["stored_path"]))
             result = self.perception.extract(metadata, deeper=deeper)
             with self.observations.lock:
                 self.accept(sid, result)

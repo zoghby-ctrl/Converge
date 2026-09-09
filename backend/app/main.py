@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from threading import RLock
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
@@ -45,11 +44,12 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
     app = FastAPI(title="Converge — Incident Intelligence", version="4.0", docs_url=None, redoc_url=None)
     store = Store(db_path)
     app.state.store = store
-    lock = RLock()
+    lock = store.lock
     from .observations import Observations, register_observations
     from .image_observations import signal_for_client
-    live_store = Store(store.path.with_name(store.path.stem + '-text.sqlite3'))
-    observations = Observations(live_store, perception_settings, perception_client)
+    live_store = store.live_store()
+    with live_store.lock:
+        observations = Observations(live_store, perception_settings, perception_client)
     app.state.observations = observations
     register_observations(app, observations)
 
@@ -99,7 +99,7 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
     def health():
         with store.connection() as db:
             ready = db.execute("PRAGMA foreign_keys").fetchone()[0] == 1
-        configured = bool(observations.perception.settings.api_key)
+        configured = bool(observations.perception.settings.active_api_key)
         from .context import manifest, read_verified
         try:
             context_info = manifest()
@@ -114,7 +114,7 @@ def create_app(db_path=None, perception_settings=None, perception_client=None):
                 "mode": "cached_and_live_perception", "openai_enabled": False,
                 "network_dependencies": [],
                 "uncached_perception_requires_network": configured,
-                "text_perception": {"configured": bool(observations.perception.settings.api_key),
+                "text_perception": {"configured": configured,
                     "primary": observations.perception.settings.primary, "fallback": observations.perception.settings.fallback,
                     "fallback_enabled": observations.perception.settings.fallback_enabled,
                     "reasoning_effort": observations.perception.settings.reasoning},

@@ -4,6 +4,7 @@ import os
 import sqlite3
 from contextlib import contextmanager, nullcontext
 from pathlib import Path
+from threading import RLock
 
 from .models import Dataset, Incident, Signal
 
@@ -18,7 +19,20 @@ def default_path():
 
 
 class Store:
-    def __init__(self, path=None):
+    backend = "sqlite"
+
+    def __new__(cls, path=None, *, namespace="replay"):
+        if cls is Store and path is None:
+            url = os.environ.get("DATABASE_URL", "").strip()
+            if url:
+                from .postgres_store import PostgresStore
+                return object.__new__(PostgresStore)
+            if os.environ.get("VERCEL"):
+                raise ValueError("DATABASE_URL is required on Vercel")
+        return object.__new__(cls)
+
+    def __init__(self, path=None, *, namespace="replay"):
+        self.lock = RLock()
         self.path = Path(path) if path else default_path()
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.connection() as db:
@@ -53,6 +67,9 @@ class Store:
                 PRIMARY KEY(incident_id, revision, signal_id),
                 FOREIGN KEY(incident_id, revision) REFERENCES incident_revisions(incident_id, revision) ON DELETE CASCADE);
             """)
+
+    def live_store(self):
+        return Store(self.path.with_name(self.path.stem + '-text.sqlite3'))
 
     @contextmanager
     def connection(self):

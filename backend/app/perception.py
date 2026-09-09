@@ -111,7 +111,11 @@ class Perception:
         # SDK request/response debug logging is inappropriate for citizen reports and credentials.
         for logger in ("openai", "httpx2", "httpcore2", "httpx", "httpcore"):
             logging.getLogger(logger).setLevel(logging.WARNING)
-        with store.connection() as db:
+        if store.backend == "sqlite":
+            self._initialize_sqlite()
+
+    def _initialize_sqlite(self):
+        with self.store.connection() as db:
             db.executescript("""
             CREATE TABLE IF NOT EXISTS extraction_cache(cache_key TEXT PRIMARY KEY, payload TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS api_usage(id INTEGER PRIMARY KEY, model TEXT, role TEXT,
@@ -148,7 +152,8 @@ class Perception:
     def raw_response_storage(self):
         suffix = ("provider store=false" if self.settings.provider == "openai" else
                   "Gemini generateContent; provider retention follows Google API terms")
-        return "local SQLite raw_responses; structured output text only; " + suffix
+        location = "PostgreSQL" if self.store.backend == "postgres" else "local SQLite"
+        return location + " raw_responses; structured output text only; " + suffix
 
     def summary(self):
         with self.store.connection() as db:

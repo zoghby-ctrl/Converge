@@ -2,7 +2,6 @@
 import json
 import re
 from datetime import datetime, timezone
-from threading import RLock
 from uuid import uuid4
 
 from fastapi import BackgroundTasks, HTTPException, Request, UploadFile
@@ -51,9 +50,16 @@ async def _read_multipart_fallback(request: Request):
 
 class Observations:
     def __init__(self, store, settings=None, client=None):
-        self.store, self.lock = store, RLock()
+        self.store, self.lock = store, store.lock
         self.perception = Perception(store, settings, client)
-        with store.connection() as db:
+        if store.backend == "sqlite":
+            self._initialize_sqlite()
+        if not store.state():
+            store.reset(Dataset(dataset_id="operator-text", title="Operator text observations", roads=[], rainfall=[], signals=[]))
+        self.images = ImageObservations(self)
+
+    def _initialize_sqlite(self):
+        with self.store.connection() as db:
             db.executescript("""
             CREATE TABLE IF NOT EXISTS text_jobs(signal_id TEXT PRIMARY KEY, original_json TEXT NOT NULL,
                 status TEXT NOT NULL, error_code TEXT, revision INTEGER NOT NULL DEFAULT 0,
@@ -66,9 +72,6 @@ class Observations:
             if "linked_image_signal_id" not in columns:
                 db.execute("ALTER TABLE text_jobs ADD COLUMN linked_image_signal_id TEXT")
             db.execute("UPDATE text_jobs SET status='needs_review',error_code='interrupted_restart' WHERE status IN ('pending','analyzing')")
-        if not store.state():
-            store.reset(Dataset(dataset_id="operator-text", title="Operator text observations", roads=[], rainfall=[], signals=[]))
-        self.images = ImageObservations(self)
 
     def dataset(self):
         return Dataset.model_validate_json(self.store.state()["fixture_json"])

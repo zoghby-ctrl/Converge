@@ -1,3 +1,4 @@
+import { UPLOAD_LIMIT_MB } from './uploadLimit'
 import React, { useState, useEffect, useRef } from 'react'
 import { navigate } from './router'
 
@@ -122,8 +123,8 @@ export function ReportSurface() {
       setFile(null)
       return
     }
-    if (chosen.size > 5 * 1024 * 1024) {
-      setError('Photo must be smaller than 5 MB.')
+    if (chosen.size > UPLOAD_LIMIT_MB * 1024 * 1024) {
+      setError(`Photo must be smaller than ${UPLOAD_LIMIT_MB} MB.`)
       setFile(null)
       return
     }
