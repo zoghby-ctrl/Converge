@@ -11,6 +11,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def default_path():
+    runtime_dir = os.environ.get("CONVERGE_RUNTIME_DIR")
+    if runtime_dir:
+        return Path(runtime_dir).expanduser() / "converge.sqlite3"
     return Path(os.environ.get("LOCALAPPDATA", str(Path.home() / ".local"))) / "Converge" / "runtime" / "converge.sqlite3"
 
 

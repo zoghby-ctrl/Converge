@@ -1,0 +1,19 @@
+# Allow only application build inputs; exclude local secrets, runtime and artifacts.
+**
+!Dockerfile
+!.dockerignore
+!backend/
+!backend/**
+!fixtures/
+!fixtures/**
+!frontend/
+!frontend/**
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc
+**/.env
+**/.env.*
+**/*.sqlite*
+**/.runtime
+**/.pytest_cache
